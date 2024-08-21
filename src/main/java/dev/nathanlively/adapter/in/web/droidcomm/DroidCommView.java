@@ -1,4 +1,4 @@
-package dev.nathanlively.views.droidcomm;
+package dev.nathanlively.adapter.in.web.droidcomm;
 
 import com.vaadin.collaborationengine.CollaborationAvatarGroup;
 import com.vaadin.collaborationengine.CollaborationMessageInput;
@@ -29,7 +29,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Overflow;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
-import dev.nathanlively.views.MainLayout;
+import dev.nathanlively.adapter.in.web.MainLayout;
 import jakarta.annotation.security.PermitAll;
 import java.util.UUID;
 

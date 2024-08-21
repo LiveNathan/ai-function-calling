@@ -1,4 +1,4 @@
-package dev.nathanlively.views.dashboard;
+package dev.nathanlively.adapter.in.web.dashboard;
 
 /**
  * Simple DTO class for the inbox list to demonstrate complex object data

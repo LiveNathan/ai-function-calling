@@ -1,4 +1,4 @@
-package dev.nathanlively.views.home;
+package dev.nathanlively.adapter.in.web.home;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -7,7 +7,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-import dev.nathanlively.views.MainLayout;
+import dev.nathanlively.adapter.in.web.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
 @PageTitle("Home")

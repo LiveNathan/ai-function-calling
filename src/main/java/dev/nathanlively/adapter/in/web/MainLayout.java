@@ -1,4 +1,4 @@
-package dev.nathanlively.views;
+package dev.nathanlively.adapter.in.web;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -10,9 +10,9 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import dev.nathanlively.views.dashboard.DashboardView;
-import dev.nathanlively.views.droidcomm.DroidCommView;
-import dev.nathanlively.views.home.HomeView;
+import dev.nathanlively.adapter.in.web.dashboard.DashboardView;
+import dev.nathanlively.adapter.in.web.droidcomm.DroidCommView;
+import dev.nathanlively.adapter.in.web.home.HomeView;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /**

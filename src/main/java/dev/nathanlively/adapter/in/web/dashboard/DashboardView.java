@@ -1,4 +1,4 @@
-package dev.nathanlively.views.dashboard;
+package dev.nathanlively.adapter.in.web.dashboard;
 
 
 import com.vaadin.flow.component.Component;
@@ -26,8 +26,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
-import dev.nathanlively.views.MainLayout;
-import dev.nathanlively.views.dashboard.ServiceHealth.Status;
+import dev.nathanlively.adapter.in.web.MainLayout;
+import dev.nathanlively.adapter.in.web.dashboard.ServiceHealth.Status;
 import jakarta.annotation.security.PermitAll;
 
 @PageTitle("Dashboard")
