@@ -56,19 +56,15 @@ public class DroidCommView extends VerticalLayout {
                         .stream()
                         .content();
 
-                contentStream.subscribe(content -> {
-                            getUI().ifPresent(ui1 -> ui1.access(() -> {  // Ensure UI modifications happen within the UI thread
-                                reply.setText(reply.getText() + content);
-                                messageList.setItems(items);
-                            }));
-                        },
+                contentStream.subscribe(content -> getUI().ifPresent(ui1 -> ui1.access(() -> {  // Ensure UI modifications happen within the UI thread
+                    reply.setText(reply.getText() + content);
+                    messageList.setItems(items);
+                })),
                         Throwable::printStackTrace,
-                        () -> {
-                            getUI().ifPresent(ui1 -> ui1.access(() -> {
-                                messages.add(new AssistantMessage(reply.getText()));
-                                messageList.setItems(items);  // Update the message list with the final reply
-                            }));
-                        });
+                        () -> getUI().ifPresent(ui1 -> ui1.access(() -> {
+                            messages.add(new AssistantMessage(reply.getText()));
+                            messageList.setItems(items);  // Update the message list with the final reply
+                        })));
 
                 scrollToBottom(messageScroller);
             }));
