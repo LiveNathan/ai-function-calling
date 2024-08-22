@@ -1,78 +1,79 @@
 package dev.nathanlively.adapter.in.web.droidcomm;
 
-import com.vaadin.collaborationengine.CollaborationAvatarGroup;
-import com.vaadin.collaborationengine.CollaborationMessageInput;
-import com.vaadin.collaborationengine.CollaborationMessageList;
-import com.vaadin.collaborationengine.MessageManager;
-import com.vaadin.collaborationengine.UserInfo;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.html.Aside;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.messages.MessageInput;
+import com.vaadin.flow.component.messages.MessageList;
+import com.vaadin.flow.component.messages.MessageListItem;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Page;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.component.tabs.Tabs.Orientation;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
-import com.vaadin.flow.theme.lumo.LumoUtility.Background;
-import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
-import com.vaadin.flow.theme.lumo.LumoUtility.Display;
-import com.vaadin.flow.theme.lumo.LumoUtility.Flex;
-import com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
-import com.vaadin.flow.theme.lumo.LumoUtility.JustifyContent;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import com.vaadin.flow.theme.lumo.LumoUtility.Overflow;
-import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import com.vaadin.flow.theme.lumo.LumoUtility.Width;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import dev.nathanlively.adapter.in.web.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import java.util.UUID;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.messages.*;
+import reactor.core.publisher.Flux;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @PageTitle("DroidComm")
 @Route(value = "DroidComm", layout = MainLayout.class)
 @PermitAll
 public class DroidCommView extends VerticalLayout {
+    private final ArrayList<Message> messages = new ArrayList<>();
+    private final List<MessageListItem> items = new ArrayList<>();
+    private final MessageList messageList = new MessageList(items);
+    private final ChatClient chatClient;
 
-    public DroidCommView() {
-        addClassNames("droid-comm-view", Width.FULL, Display.FLEX, Flex.AUTO);
-        setSpacing(false);
+    public DroidCommView(ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder.build();
 
-        // UserInfo is used by Collaboration Engine and is used to share details
-        // of users to each other to enable collaboration.
-        UserInfo userInfo = new UserInfo(UUID.randomUUID().toString(), "Steve Lange");
+        addClassNames("droid-comm-view", LumoUtility.Width.FULL, LumoUtility.Height.FULL, "display-flex", "flex-auto");
+        setSizeFull();
 
-        // CollaborationMessageList displays messages in a given topic.
-        String aiChatTopic = "chat/ai-assistant";
-        CollaborationMessageList messageList = new CollaborationMessageList(userInfo, aiChatTopic);
-        messageList.setSizeFull();
+        Scroller messageScroller = new Scroller(messageList);
+        MessageInput messageInput = new MessageInput();
 
-        // CollaborationMessageInput is a textfield and button to submit new messages.
-        CollaborationMessageInput messageInput = new CollaborationMessageInput(messageList);
+        messageScroller.setSizeFull();
         messageInput.setWidthFull();
 
-        // Layout setup
-        setSizeFull();
-        add(messageList, messageInput);
-        expand(messageList);
+        messageInput.addSubmitListener(event -> {
+            MessageListItem userMessage = new MessageListItem(event.getValue(), Instant.now(), "Me");
+            getUI().ifPresent(ui -> ui.access(() -> {
+                items.add(userMessage);
+                MessageListItem reply = new MessageListItem("", Instant.now(), "DroidComm");
+                items.add(reply);
+                messageList.setItems(items);
+                messages.add(new UserMessage(event.getValue()));
+
+                Flux<String> contentStream = chatClient
+                        .prompt()
+                        .user(event.getValue())
+                        .stream()
+                        .content();
+
+                contentStream.subscribe(content -> getUI().ifPresent(ui1 -> ui1.access(() -> {  // Ensure UI modifications happen within the UI thread
+                    reply.setText(reply.getText() + content);
+                    messageList.setItems(items);
+                })),
+                        Throwable::printStackTrace,
+                        () -> getUI().ifPresent(ui1 -> ui1.access(() -> {
+                            messages.add(new AssistantMessage(reply.getText()));
+                            messageList.setItems(items);  // Update the message list with the final reply
+                        })));
+
+                scrollToBottom(messageScroller);
+            }));
+        });
+
+        add(messageScroller, messageInput);
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        Page page = attachEvent.getUI().getPage();
-        page.retrieveExtendedClientDetails(details -> {
-            setMobile(details.getWindowInnerWidth() < 740);
-        });
-        page.addBrowserWindowResizeListener(e -> {
-            setMobile(e.getWidth() < 740);
-        });
-    }
-
-    private void setMobile(boolean mobile) {
-        // Handle any mobile-specific UI changes here if needed
+    private void scrollToBottom(Scroller scroller) {
+        scroller.getElement().executeJs("this.scrollTo(0, this.scrollHeight);");
     }
 }
