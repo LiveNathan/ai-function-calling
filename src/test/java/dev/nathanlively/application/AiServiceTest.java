@@ -4,8 +4,7 @@ import dev.nathanlively.application.port.AiGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import reactor.test.StepVerifier;
 
 class AiServiceTest {
 AiGateway gateway;
@@ -23,8 +22,8 @@ private AiService service;
 
         Flux<String> actual = service.sendMessageAndReceiveReplies("Hello");
 
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        StepVerifier.create(actual)
+                .expectNext("Hello!")
+                .verifyComplete();
     }
 }
