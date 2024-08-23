@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("ui")
 class DroidCommViewTest {
@@ -14,12 +13,12 @@ class DroidCommViewTest {
 
     @BeforeEach
     void setUp() {
-        AiService aiService = new AiService();;
+        AiService aiService = new AiService();
         view = new DroidCommView(aiService);
     }
     
     @Test
-    void getRequestToIndex_returnsView() throws Exception {
+    void getRequestToIndex_returnsView() {
         assertThat(view).isNotNull();
     }
 }
