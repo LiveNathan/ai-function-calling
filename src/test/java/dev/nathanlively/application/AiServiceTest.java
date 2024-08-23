@@ -12,7 +12,7 @@ private AiService service;
 
     @BeforeEach
     void setUp() {
-        gateway = new InMemoryAi();
+        gateway = new MockAi();
         service = new AiService(gateway);
     }
 
