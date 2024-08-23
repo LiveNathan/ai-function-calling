@@ -9,8 +9,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import dev.nathanlively.adapter.in.web.MainLayout;
+import dev.nathanlively.application.AiService;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.messages.*;
@@ -24,53 +24,93 @@ import java.util.List;
 @Route(value = "DroidComm", layout = MainLayout.class)
 @PermitAll
 public class DroidCommView extends VerticalLayout {
-    private final ArrayList<Message> messages = new ArrayList<>();
-    private final List<MessageListItem> items = new ArrayList<>();
-    private final MessageList messageList = new MessageList(items);
-    private final ChatClient chatClient;
 
-    public DroidCommView(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.build();
+    private final List<Message> messages;
+    private final List<MessageListItem> items;
+    private final MessageList messageList;
+    private final AiService aiService;
 
+    public DroidCommView(AiService aiService) {
+        this.aiService = aiService;
+        this.messages = new ArrayList<>();
+        this.items = new ArrayList<>();
+        this.messageList = new MessageList(items);
+
+        configureView();
+    }
+
+    private void configureView() {
         addClassNames("droid-comm-view", LumoUtility.Width.FULL, LumoUtility.Height.FULL, "display-flex", "flex-auto");
         setSizeFull();
 
-        Scroller messageScroller = new Scroller(messageList);
-        MessageInput messageInput = new MessageInput();
-
-        messageScroller.setSizeFull();
-        messageInput.setWidthFull();
-
-        messageInput.addSubmitListener(event -> {
-            MessageListItem userMessage = new MessageListItem(event.getValue(), Instant.now(), "Me");
-            getUI().ifPresent(ui -> ui.access(() -> {
-                items.add(userMessage);
-                MessageListItem reply = new MessageListItem("", Instant.now(), "DroidComm");
-                items.add(reply);
-                messageList.setItems(items);
-                messages.add(new UserMessage(event.getValue()));
-
-                Flux<String> contentStream = chatClient
-                        .prompt()
-                        .user(event.getValue())
-                        .stream()
-                        .content();
-
-                contentStream.subscribe(content -> getUI().ifPresent(ui1 -> ui1.access(() -> {  // Ensure UI modifications happen within the UI thread
-                    reply.setText(reply.getText() + content);
-                    messageList.setItems(items);
-                })),
-                        Throwable::printStackTrace,
-                        () -> getUI().ifPresent(ui1 -> ui1.access(() -> {
-                            messages.add(new AssistantMessage(reply.getText()));
-                            messageList.setItems(items);  // Update the message list with the final reply
-                        })));
-
-                scrollToBottom(messageScroller);
-            }));
-        });
+        Scroller messageScroller = createMessageScroller();
+        MessageInput messageInput = createMessageInput(messageScroller);
 
         add(messageScroller, messageInput);
+    }
+
+    private Scroller createMessageScroller() {
+        Scroller scroller = new Scroller(messageList);
+        scroller.setSizeFull();
+        return scroller;
+    }
+
+    private MessageInput createMessageInput(Scroller messageScroller) {
+        MessageInput messageInput = new MessageInput();
+        messageInput.setWidthFull();
+        messageInput.addSubmitListener(event -> handleMessageSubmit(event, messageScroller));
+        return messageInput;
+    }
+
+    private void handleMessageSubmit(MessageInput.SubmitEvent event, Scroller messageScroller) {
+        String userMessageText = event.getValue();
+
+        MessageListItem userMessage = new MessageListItem(userMessageText, Instant.now(), "Me");
+        appendMessageAndReply(userMessage, messageScroller, userMessageText);
+    }
+
+    private void appendMessageAndReply(MessageListItem userMessage, Scroller messageScroller, String userMessageText) {
+        getUI().ifPresent(ui -> ui.access(() -> {
+            addMessagesToUI(userMessage);
+
+            MessageListItem reply = new MessageListItem("", Instant.now(), "DroidComm");
+            appendReplyMessages(userMessageText, reply, messageScroller);
+        }));
+    }
+
+    private void addMessagesToUI(MessageListItem userMessage) {
+        items.add(userMessage);
+        messageList.setItems(items);
+        messages.add(new UserMessage(userMessage.getText()));
+    }
+
+    private void appendReplyMessages(String userMessageText, MessageListItem reply, Scroller messageScroller) {
+        items.add(reply);
+        messageList.setItems(items);
+
+        Flux<String> contentStream = aiService.sendMessageAndReceiveReplies(userMessageText);
+
+        contentStream.subscribe(
+                content -> updateReplyContent(reply, content),
+                Throwable::printStackTrace,
+                () -> finalizeReply(reply)
+        );
+
+        scrollToBottom(messageScroller);
+    }
+
+    private void updateReplyContent(MessageListItem reply, String content) {
+        getUI().ifPresent(ui1 -> ui1.access(() -> {
+            reply.setText(reply.getText() + content);
+            messageList.setItems(items);
+        }));
+    }
+
+    private void finalizeReply(MessageListItem reply) {
+        getUI().ifPresent(ui1 -> ui1.access(() -> {
+            messages.add(new AssistantMessage(reply.getText()));
+            messageList.setItems(items);  // Update the message list with the final reply
+        }));
     }
 
     private void scrollToBottom(Scroller scroller) {
