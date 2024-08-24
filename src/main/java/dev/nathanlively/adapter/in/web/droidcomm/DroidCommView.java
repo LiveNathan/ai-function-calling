@@ -12,26 +12,30 @@ import dev.nathanlively.adapter.in.web.MainLayout;
 import dev.nathanlively.application.AiService;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.messages.*;
 import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @PageTitle("DroidComm")
 @Route(value = "DroidComm", layout = MainLayout.class)
 @PermitAll
 public class DroidCommView extends VerticalLayout {
+    private static final AtomicLong ID_GENERATOR = new AtomicLong();
 
     private final List<Message> messages;
     private final List<MessageListItem> items;
     private final MessageList messageList;
     private final AiService aiService;
+    private final String chatId;
 
     public DroidCommView(AiService aiService) {
         this.aiService = aiService;
+        this.chatId = String.valueOf(ID_GENERATOR.incrementAndGet());
         this.messages = new ArrayList<>();
         this.items = new ArrayList<>();
         this.messageList = new MessageList(items);
@@ -88,7 +92,7 @@ public class DroidCommView extends VerticalLayout {
         items.add(reply);
         messageList.setItems(items);
 
-        Flux<String> contentStream = aiService.sendMessageAndReceiveReplies(userMessageText);
+        Flux<String> contentStream = aiService.sendMessageAndReceiveReplies(userMessageText, chatId);
 
         contentStream.subscribe(
                 content -> updateReplyContent(reply, content),

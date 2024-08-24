@@ -10,7 +10,7 @@ public class AiService {
         this.aiGateway = aiGateway;
     }
 
-    public Flux<String> sendMessageAndReceiveReplies(String userMessage) {
-        return aiGateway.sendMessageAndReceiveReplies(userMessage);
+    public Flux<String> sendMessageAndReceiveReplies(String userMessage, String chatId) {
+        return aiGateway.sendMessageAndReceiveReplies(userMessage, chatId);
     }
 }

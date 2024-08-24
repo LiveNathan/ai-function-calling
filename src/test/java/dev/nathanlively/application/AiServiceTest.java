@@ -20,7 +20,7 @@ private AiService service;
     void sendMessageAndReceiveReplies() throws Exception {
         Flux<String> expected = Flux.just("Hello!");
 
-        Flux<String> actual = service.sendMessageAndReceiveReplies("Hello");
+        Flux<String> actual = service.sendMessageAndReceiveReplies("Hello", null);
 
         StepVerifier.create(actual)
                 .expectNext("Hello!")
