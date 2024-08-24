@@ -7,8 +7,8 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 class AiServiceTest {
-AiGateway gateway;
-private AiService service;
+    AiGateway gateway;
+    private AiService service;
 
     @BeforeEach
     void setUp() {
@@ -17,13 +17,13 @@ private AiService service;
     }
 
     @Test
-    void sendMessageAndReceiveReplies() throws Exception {
-        Flux<String> expected = Flux.just("Hello!");
+    void sendMessageAndReceiveReplies_commCheck() {
+        Flux<String> expected = Flux.just("good check");
 
-        Flux<String> actual = service.sendMessageAndReceiveReplies("Hello", null);
+        Flux<String> actual = service.sendMessageAndReceiveReplies("comm check", null);
 
         StepVerifier.create(actual)
-                .expectNext("Hello!")
+                .expectNext("good check")
                 .verifyComplete();
     }
 }
