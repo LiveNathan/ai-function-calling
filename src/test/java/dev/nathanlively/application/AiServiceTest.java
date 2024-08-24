@@ -26,4 +26,15 @@ class AiServiceTest {
                 .expectNext("good check")
                 .verifyComplete();
     }
+
+    @Test
+    void sendMessageAndReceiveReplies_clockIn_returnsJson() {
+        String jsonResponse = "{\"function_call\": {\"name\": \"clockIn\", \"arguments\": {\"projectId\": \"A\"}}}";
+
+        Flux<String> actual = service.sendMessageAndReceiveReplies("clock in to project A", null);
+
+        StepVerifier.create(actual)
+                .expectNext(jsonResponse)
+                .verifyComplete();
+    }
 }

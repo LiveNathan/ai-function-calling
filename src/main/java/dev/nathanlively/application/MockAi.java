@@ -11,6 +11,11 @@ public class MockAi implements AiGateway {
             return Flux.just("good check");
         } else if ("weather".equalsIgnoreCase(message)) {
             return Flux.just("The weather is sunny");
+        } else if ("clock in to project A".equalsIgnoreCase(message)) {
+            // Simulate a JSON response indicating function call
+            String jsonResponse = "{\"function_call\": {\"name\": \"clockIn\", \"arguments\": {\"projectId\": \"A\"}}}";
+            return Flux.just(jsonResponse);
+
         } else {
             return Flux.just("Hello!");
         }
