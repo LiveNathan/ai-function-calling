@@ -12,6 +12,7 @@ public class FunctionConfig {
     @Bean
     @Description("Get the weather in location") // function description
     public Function<MockWeatherService.Request, MockWeatherService.Response> weatherFunction1() {
-        return new MockWeatherService();
+//        return new MockWeatherService();
+        return null;
     }
 }
