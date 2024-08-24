@@ -23,4 +23,8 @@ public record TimesheetEntry(Instant clockIn, Instant clockOut, Duration duratio
         Duration computedDuration = Duration.between(clockIn, clockOutTime);
         return new TimesheetEntry(clockIn, clockOutTime, computedDuration, project);
     }
+
+    public TimesheetEntry appendProject(Project project) {
+        return new TimesheetEntry(clockIn, clockOut, duration, project);
+    }
 }
