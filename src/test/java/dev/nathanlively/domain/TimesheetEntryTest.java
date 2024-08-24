@@ -42,7 +42,7 @@ class TimesheetEntryTest {
     void appendProject() throws Exception {
         TimesheetEntry timesheetEntry = new TimesheetEntry(Instant.now(), null, null, null);
 
-        TimesheetEntry actual = entry.appendProject(project);
+        TimesheetEntry actual = timesheetEntry.appendProject(project);
 
         assertThat(actual.project()).isNotNull();
     }
