@@ -2,12 +2,11 @@ package dev.nathanlively.domain;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
 public record TimesheetEntry(Instant clockIn, Instant clockOut, Duration duration, Project project) {
     public TimesheetEntry {
-        if (clockIn == null) {
-            throw new IllegalArgumentException("Clock-in time cannot be null.");
-        }
+        Objects.requireNonNull(clockIn, "Clock-in time cannot be null.");
         if (clockOut != null && clockOut.isBefore(clockIn)) {
             throw new InvalidClockOutTimeException("Clock-out time cannot be before clock-in time.");
         }
