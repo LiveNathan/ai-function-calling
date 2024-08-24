@@ -8,5 +8,13 @@ public record Resource(ResourceType resourceType, JobTitle jobTitle, String name
         Objects.requireNonNull(jobTitle, "JobTitle cannot be null");
         Objects.requireNonNull(name, "Name cannot be null");
         Objects.requireNonNull(email, "Email cannot be null");
+        if (timeSheet == null) {
+            timeSheet = new Timesheet(null);
+        }
+    }
+
+    public Resource appendTimesheetEntry(TimesheetEntry timesheetEntry) {
+        Timesheet timesheet = timeSheet.appendEntry(timesheetEntry);
+        return new Resource(resourceType, jobTitle, name, email, timesheet);
     }
 }
