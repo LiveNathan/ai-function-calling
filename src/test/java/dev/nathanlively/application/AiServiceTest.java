@@ -18,8 +18,6 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_commCheck() {
-        Flux<String> expected = Flux.just("good check");
-
         Flux<String> actual = service.sendMessageAndReceiveReplies("comm check", null);
 
         StepVerifier.create(actual)
