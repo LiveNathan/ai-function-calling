@@ -1,5 +1,6 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.*;
 import org.junit.jupiter.api.Test;
@@ -14,13 +15,15 @@ class ClockInServiceTest {
     @Test
     void clockIn_givenNullProject() throws Exception {
         ResourceRepository resourceRepository = InMemoryResourceRepository.createEmpty();
+        ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
         String resourceEmail = "nathanlively@gmail.com";
         Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         resourceRepository.save(resource);
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries()).isEmpty();
-        ClockInService service = new ClockInService(resourceRepository);
+        ClockInService service = new ClockInService(resourceRepository, projectRepository);
         String projectName = "Project A (12345)";
         Instant clockInTime = Instant.now();
+
         Project project = new Project(projectName, null);
         TimesheetEntry expected = TimesheetEntry.clockIn(clockInTime);
 

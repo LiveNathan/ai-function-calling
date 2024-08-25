@@ -3,9 +3,13 @@ package dev.nathanlively.application;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class InMemoryResourceRepository implements ResourceRepository {
+
     private final Map<String, Resource> resources;
 
     public InMemoryResourceRepository(Map<String, Resource> resources) {
@@ -13,15 +17,15 @@ public class InMemoryResourceRepository implements ResourceRepository {
     }
 
     public static InMemoryResourceRepository create(List<Resource> resourcesList) {
-        Map<String, Resource> resourceMap = new HashMap<>();
+        Map<String, Resource> resourcesMap = new HashMap<>();
         for (Resource resource : resourcesList) {
-            resourceMap.put(resource.email(), resource);
+            resourcesMap.put(resource.email(), resource);
         }
-        return new InMemoryResourceRepository(resourceMap);
+        return new InMemoryResourceRepository(resourcesMap);
     }
 
     public static ResourceRepository createEmpty() {
-        return new InMemoryResourceRepository(new HashMap<>());
+        return create(List.of());
     }
 
     @Override
@@ -31,7 +35,7 @@ public class InMemoryResourceRepository implements ResourceRepository {
 
     @Override
     public List<Resource> findAll() {
-        return new ArrayList<>(resources.values());
+        return List.copyOf(resources.values());
     }
 
     @Override

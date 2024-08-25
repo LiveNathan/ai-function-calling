@@ -1,5 +1,6 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
@@ -9,9 +10,11 @@ import java.util.Objects;
 
 public class ClockInService {
     private final ResourceRepository resourceRepository;
+    private final ProjectRepository projectRepository;
 
-    public ClockInService(ResourceRepository resourceRepository) {
+    public ClockInService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         this.resourceRepository = resourceRepository;
+        this.projectRepository = projectRepository;
     }
 
     public TimesheetEntry clockIn(String resourceEmail, Instant clockInTime, String projectName) {
