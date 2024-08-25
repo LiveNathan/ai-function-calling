@@ -3,42 +3,39 @@ package dev.nathanlively.application;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class InMemoryResourceRepository implements ResourceRepository {
-    private final List<Resource> resources;
+    private final Map<String, Resource> resources;
 
-    public InMemoryResourceRepository(List<Resource> resources) {
+    public InMemoryResourceRepository(Map<String, Resource> resources) {
         this.resources = resources;
     }
 
-    public static InMemoryResourceRepository create(List<Resource> resources) {
-        return new InMemoryResourceRepository(resources);
+    public static InMemoryResourceRepository create(List<Resource> resourcesList) {
+        Map<String, Resource> resourceMap = new HashMap<>();
+        for (Resource resource : resourcesList) {
+            resourceMap.put(resource.email(), resource);
+        }
+        return new InMemoryResourceRepository(resourceMap);
     }
 
     public static ResourceRepository createEmpty() {
-        return create(new ArrayList<>());
+        return new InMemoryResourceRepository(new HashMap<>());
     }
 
     @Override
     public void save(Resource resource) {
-        resources.add(resource);
+        resources.put(resource.email(), resource);
     }
 
     @Override
     public List<Resource> findAll() {
-        return resources;
+        return new ArrayList<>(resources.values());
     }
 
     @Override
     public Optional<Resource> findByEmail(String resourceEmail) {
-        for (Resource resource : resources) {
-            if (resource.email().equals(resourceEmail)) {
-                return Optional.of(resource);
-            }
-        }
-        return Optional.empty();
+        return Optional.ofNullable(resources.get(resourceEmail));
     }
 }
