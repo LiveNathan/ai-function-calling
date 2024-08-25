@@ -10,11 +10,23 @@ public class WorkPeriod {
 
     public WorkPeriod(Instant start, Instant end) {
         Objects.requireNonNull(start, "Start time cannot be null.");
+        validateEndTime(start, end);
+        this.start = start;
+        this.end = end;
+    }
+
+    public WorkPeriod(Instant start) {
+        this(start, null); // Calls the main constructor with a null end time
+    }
+
+    private static void validateEndTime(Instant start, Instant end) {
         if (end != null && end.isBefore(start)) {
             throw new InvalidClockOutTimeException("End time cannot be before start time.");
         }
-        this.start = start;
-        this.end = end;
+    }
+
+    public static WorkPeriod startAt(Instant startTime) {
+        return new WorkPeriod(startTime);
     }
 
 //    public Instant getStart() {
@@ -24,6 +36,10 @@ public class WorkPeriod {
 //    public Instant getEnd() {
 //        return end;
 //    }
+    public void setEnd(Instant end) {
+        validateEndTime(start, end);
+        this.end = end;
+    }
 
     public Duration getDuration() {
         if (end == null) {
@@ -32,9 +48,6 @@ public class WorkPeriod {
         return Duration.between(start, end);
     }
 
-    public WorkPeriod withEnd(Instant endTime) {
-        return new WorkPeriod(start, endTime);
-    }
 
 //    @Override
 //    public boolean equals(Object o) {
