@@ -19,9 +19,9 @@ public class ClockInService {
         Resource resource = resourceRepository.findByEmail(resourceEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
         // get project
-        TimesheetEntry timesheetEntry = new TimesheetEntry(null, null);
-        Resource resourceUpdated = resource.appendTimesheetEntry(timesheetEntry);
-        resourceRepository.save(resourceUpdated);
+        TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(clockInTime);
+        resource.appendTimesheetEntry(timesheetEntry);
+        resourceRepository.save(resource);
         return timesheetEntry;
     }
 

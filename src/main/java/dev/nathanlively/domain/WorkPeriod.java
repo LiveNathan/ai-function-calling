@@ -1,11 +1,13 @@
 package dev.nathanlively.domain;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
 public class WorkPeriod {
-    private final Instant start;
+    private final @NotNull Instant start;
     private Instant end;
 
     public WorkPeriod(Instant start, Instant end) {
@@ -29,9 +31,9 @@ public class WorkPeriod {
         }
     }
 
-//    public Instant getStart() {
-//        return start;
-//    }
+    public Instant start() {
+        return start;
+    }
 
     public Instant end() {
         return end;

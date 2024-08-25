@@ -1,13 +1,16 @@
 package dev.nathanlively.domain;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Objects;
 
 public final class Resource {
-    private final ResourceType resourceType;
-    private final JobTitle jobTitle;
-    private final String name;
-    private final String email;
-    private final Timesheet timeSheet;
+    private @NotNull ResourceType resourceType;
+    private @NotNull JobTitle jobTitle;
+    private @NotBlank String name;
+    private @NotBlank String email;
+    private Timesheet timeSheet;
 
     public Resource(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet) {
         Objects.requireNonNull(resourceType, "ResourceType cannot be null");
@@ -24,9 +27,8 @@ public final class Resource {
         this.timeSheet = timeSheet;
     }
 
-    public Resource appendTimesheetEntry(TimesheetEntry timesheetEntry) {
-        Timesheet timesheet = timeSheet.appendEntry(timesheetEntry);
-        return new Resource(resourceType, jobTitle, name, email, timesheet);
+    public void appendTimesheetEntry(@NotNull TimesheetEntry timesheetEntry) {
+        timeSheet.appendEntry(timesheetEntry);
     }
 
 //    public ResourceType resourceType() {

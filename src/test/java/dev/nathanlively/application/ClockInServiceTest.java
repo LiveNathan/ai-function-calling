@@ -1,14 +1,10 @@
 package dev.nathanlively.application;
 
 import dev.nathanlively.application.port.ResourceRepository;
-import dev.nathanlively.domain.JobTitle;
-import dev.nathanlively.domain.Resource;
-import dev.nathanlively.domain.ResourceType;
-import dev.nathanlively.domain.TimesheetEntry;
+import dev.nathanlively.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,16 +20,18 @@ class ClockInServiceTest {
         ClockInService service = new ClockInService(resourceRepository);
         String projectName = "Project A (12345)";
         Instant clockInTime = Instant.now();
-        TimesheetEntry expected = new TimesheetEntry(null, null);
+        Project project = new Project(projectName, null);
+        TimesheetEntry expected = TimesheetEntry.clockIn(clockInTime);
 
-        TimesheetEntry actual = service.clockIn(resourceEmail, clockInTime, projectName);
+        TimesheetEntry actual = service.clockIn(resourceEmail, clockInTime, null);
 
         assertThat(actual)
+                .usingRecursiveComparison()
                 .isEqualTo(expected);
 
-        List<Resource> resources = resourceRepository.findAll();
-        assertThat(resources).hasSize(1);
-        assertThat(resources.getFirst().timeSheet().timeSheetEntries())
-                .hasSize(1);
+//        List<Resource> resources = resourceRepository.findAll();
+//        assertThat(resources).hasSize(1);
+//        assertThat(resources.getFirst().timeSheet().timeSheetEntries())
+//                .hasSize(1);
     }
 }

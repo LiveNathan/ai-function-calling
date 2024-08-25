@@ -1,20 +1,21 @@
 package dev.nathanlively.domain;
 
-import java.util.ArrayList;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public final class Timesheet {
-    private final List<TimesheetEntry> timeSheetEntries;
+    private List<TimesheetEntry> timeSheetEntries;
 
     public Timesheet(List<TimesheetEntry> timeSheetEntries) {
-        timeSheetEntries = timeSheetEntries == null ? List.of() : List.copyOf(timeSheetEntries);
+        if (timeSheetEntries == null) {
+            timeSheetEntries = new java.util.ArrayList<>();
+        }
         this.timeSheetEntries = timeSheetEntries;
     }
 
-    public Timesheet appendEntry(TimesheetEntry timesheetEntry) {
-        List<TimesheetEntry> updatedEntries = new ArrayList<>(this.timeSheetEntries);
-        updatedEntries.add(timesheetEntry);
-        return new Timesheet(updatedEntries);
+    public void appendEntry(@NotNull TimesheetEntry timesheetEntry) {
+        timeSheetEntries.add(timesheetEntry);
     }
 
     public List<TimesheetEntry> timeSheetEntries() {

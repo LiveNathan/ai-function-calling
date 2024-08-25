@@ -1,14 +1,16 @@
 package dev.nathanlively.domain;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
 public class TimesheetEntry {
     private Project project;
-    private WorkPeriod workPeriod;
+    private @NotNull WorkPeriod workPeriod;
 
-    public TimesheetEntry(Project project, WorkPeriod workPeriod) {
+    private TimesheetEntry(Project project, WorkPeriod workPeriod) {
         Objects.requireNonNull(workPeriod, "WorkPeriod cannot be null");
         this.project = project;
         this.workPeriod = workPeriod;
@@ -20,6 +22,10 @@ public class TimesheetEntry {
 
     public static TimesheetEntry clockIn(Instant clockInTime) {
         return new TimesheetEntry(WorkPeriod.startAt(clockInTime));
+    }
+
+    public static TimesheetEntry clockIn(Project project, Instant clockInTime) {
+        return new TimesheetEntry(project, WorkPeriod.startAt(clockInTime));
     }
 
     public void clockOut(Instant clockOutTime) {
@@ -39,7 +45,7 @@ public class TimesheetEntry {
     }
 
     public WorkPeriod workPeriod() {
-        return workPeriod;
+        return new WorkPeriod(workPeriod.start(), workPeriod.end());
     }
 
 //    @Override
