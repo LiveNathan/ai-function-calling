@@ -9,6 +9,7 @@ public final class TimesheetEntry {
     private final Instant clockOut;
     private final Duration duration;
     private final Project project;
+    private WorkPeriod workPeriod;
 
     public TimesheetEntry(Instant clockIn, Instant clockOut, Duration duration, Project project) {
         Objects.requireNonNull(clockIn, "Clock-in time cannot be null.");

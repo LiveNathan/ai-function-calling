@@ -21,6 +21,13 @@ class TimesheetEntryTest {
     }
 
     @Test
+    void clockIn_createsNewEntry() throws Exception {
+
+//        assertThat(actual)
+//                .isEqualTo(expected);
+    }
+
+    @Test
     void clockOutAndSetDuration() throws Exception {
         Instant clockOutTime = Instant.now();
 
