@@ -5,6 +5,7 @@ import dev.nathanlively.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,9 +30,9 @@ class ClockInServiceTest {
                 .usingRecursiveComparison()
                 .isEqualTo(expected);
 
-//        List<Resource> resources = resourceRepository.findAll();
-//        assertThat(resources).hasSize(1);
-//        assertThat(resources.getFirst().timeSheet().timeSheetEntries())
-//                .hasSize(1);
+        List<Resource> resources = resourceRepository.findAll();
+        assertThat(resources).hasSize(1);
+        assertThat(resources.getFirst().timeSheet().timeSheetEntries())
+                .hasSize(1);
     }
 }
