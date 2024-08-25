@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TimesheetEntryTest {
 
@@ -17,40 +16,24 @@ class TimesheetEntryTest {
     @BeforeEach
     void setUp() {
         project = new Project("Project A", new ArrayList<>());
-        entry = new TimesheetEntry(Instant.now(), null, null, project);
+        entry = new TimesheetEntry(project, WorkPeriod.startAt(Instant.now()));
     }
 
     @Test
     void clockIn_createsNewEntry() throws Exception {
+        TimesheetEntry actual = TimesheetEntry.clockIn(Instant.now());
 
-//        assertThat(actual)
-//                .isEqualTo(expected);
+        assertThat(actual.workPeriod()).isNotNull();
     }
 
     @Test
     void clockOutAndSetDuration() throws Exception {
         Instant clockOutTime = Instant.now();
 
-        TimesheetEntry actual = entry.clockOutAndSetDuration(clockOutTime);
+        entry.clockOut(clockOutTime);
 
-        assertThat(actual.clockOut()).isNotNull();
-        assertThat(actual.duration()).isNotNull();
+        assertThat(entry.workPeriod().end()).isNotNull();
+        assertThat(entry.duration()).isNotNull();
     }
 
-    @Test
-    void clockOutAndSetDuration_givenClockOutProceedsClockIn_throws() throws Exception {
-        Instant clockOutTime = entry.clockIn().minusSeconds(3600); // 1 hour before clockIn
-        assertThatThrownBy(() -> entry.clockOutAndSetDuration(clockOutTime))
-                .isInstanceOf(InvalidClockOutTimeException.class)
-                .hasMessage("Clock-out time cannot be before clock-in time.");
-    }
-    
-    @Test
-    void appendProject() throws Exception {
-        TimesheetEntry timesheetEntry = new TimesheetEntry(Instant.now(), null, null, null);
-
-        TimesheetEntry actual = timesheetEntry.appendProject(project);
-
-        assertThat(actual.project()).isNotNull();
-    }
 }

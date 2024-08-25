@@ -15,8 +15,12 @@ public class WorkPeriod {
         this.end = end;
     }
 
-    public WorkPeriod(Instant start) {
-        this(start, null); // Calls the main constructor with a null end time
+    private WorkPeriod(Instant start) {
+        this(start, null);
+    }
+
+    public static WorkPeriod startAt(Instant startTime) {
+        return new WorkPeriod(startTime);
     }
 
     private static void validateEndTime(Instant start, Instant end) {
@@ -25,17 +29,14 @@ public class WorkPeriod {
         }
     }
 
-    public static WorkPeriod startAt(Instant startTime) {
-        return new WorkPeriod(startTime);
-    }
-
 //    public Instant getStart() {
 //        return start;
 //    }
 
-//    public Instant getEnd() {
-//        return end;
-//    }
+    public Instant end() {
+        return end;
+    }
+
     public void setEnd(Instant end) {
         validateEndTime(start, end);
         this.end = end;
@@ -43,11 +44,10 @@ public class WorkPeriod {
 
     public Duration getDuration() {
         if (end == null) {
-            return null;
+            throw new InvalidClockOutTimeException("Cannot calculate duration without end time.");
         }
         return Duration.between(start, end);
     }
-
 
 //    @Override
 //    public boolean equals(Object o) {

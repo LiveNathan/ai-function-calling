@@ -24,7 +24,7 @@ class ClockInServiceTest {
         ClockInService service = new ClockInService(resourceRepository);
         String projectName = "Project A (12345)";
         Instant clockInTime = Instant.now();
-        TimesheetEntry expected = new TimesheetEntry(clockInTime, null, null, null);
+        TimesheetEntry expected = new TimesheetEntry(null, null);
 
         TimesheetEntry actual = service.clockIn(resourceEmail, clockInTime, projectName);
 

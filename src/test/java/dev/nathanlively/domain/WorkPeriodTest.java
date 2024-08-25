@@ -8,14 +8,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class WorkPeriodTest {
     @Test
-    void newWorkPeriod_givenEndProceedsStart_throws() throws Exception {
+    void newWorkPeriod_givenEndProceedsStart_throws() {
         assertThatThrownBy(() -> new WorkPeriod(Instant.now(), Instant.now().minusSeconds(3600)))
                 .isInstanceOf(InvalidClockOutTimeException.class)
                 .hasMessage("End time cannot be before start time.");
     }
 
     @Test
-    void setEnd_givenEndProceedsStart_throws() throws Exception {
+    void setEnd_givenEndProceedsStart_throws() {
         WorkPeriod workPeriod = WorkPeriod.startAt(Instant.now());
         assertThatThrownBy(() -> workPeriod.setEnd(Instant.now().minusSeconds(3600)))
                 .isInstanceOf(InvalidClockOutTimeException.class)

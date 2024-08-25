@@ -4,53 +4,42 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
-public final class TimesheetEntry {
-    private final Instant clockIn;
-    private final Instant clockOut;
-    private final Duration duration;
-    private final Project project;
+public class TimesheetEntry {
+    private Project project;
     private WorkPeriod workPeriod;
 
-    public TimesheetEntry(Instant clockIn, Instant clockOut, Duration duration, Project project) {
-        Objects.requireNonNull(clockIn, "Clock-in time cannot be null.");
-        if (clockOut != null && clockOut.isBefore(clockIn)) {
-            throw new InvalidClockOutTimeException("Clock-out time cannot be before clock-in time.");
-        }
-        if (duration == null && clockOut != null) {
-            duration = Duration.between(clockIn, clockOut);
-        }
-        this.clockIn = clockIn;
-        this.clockOut = clockOut;
-        this.duration = duration;
+    public TimesheetEntry(Project project, WorkPeriod workPeriod) {
+        Objects.requireNonNull(workPeriod, "WorkPeriod cannot be null");
+        this.project = project;
+        this.workPeriod = workPeriod;
+    }
+
+    private TimesheetEntry(WorkPeriod workPeriod) {
+        this(null, workPeriod);
+    }
+
+    public static TimesheetEntry clockIn(Instant clockInTime) {
+        return new TimesheetEntry(WorkPeriod.startAt(clockInTime));
+    }
+
+    public void clockOut(Instant clockOutTime) {
+        workPeriod.setEnd(clockOutTime);
+    }
+
+//    public Project project() {
+//        return project;
+//    }
+
+    public void setProject(Project project) {
         this.project = project;
     }
 
-    public TimesheetEntry clockOutAndSetDuration(Instant clockOutTime) {
-        if (clockOutTime.isBefore(clockIn)) {
-            throw new InvalidClockOutTimeException("Clock-out time cannot be before clock-in time.");
-        }
-        Duration computedDuration = Duration.between(clockIn, clockOutTime);
-        return new TimesheetEntry(clockIn, clockOutTime, computedDuration, project);
-    }
-
-    public TimesheetEntry appendProject(Project project) {
-        return new TimesheetEntry(clockIn, clockOut, duration, project);
-    }
-
-    public Instant clockIn() {
-        return clockIn;
-    }
-
-    public Instant clockOut() {
-        return clockOut;
-    }
-
     public Duration duration() {
-        return duration;
+        return workPeriod.getDuration();
     }
 
-    public Project project() {
-        return project;
+    public WorkPeriod workPeriod() {
+        return workPeriod;
     }
 
 //    @Override
