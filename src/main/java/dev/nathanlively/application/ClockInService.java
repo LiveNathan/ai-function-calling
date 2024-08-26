@@ -29,4 +29,8 @@ public class ClockInService {
         return timesheetEntry;
     }
 
+    public ClockInResponse clockIn(ClockInRequest request) {
+        TimesheetEntry timesheetEntry = clockIn("nathanlively@gmail.com", request.clockInTime(), request.projectName());
+        return new ClockInResponse("Clock-in successful", timesheetEntry);
+    }
 }

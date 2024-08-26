@@ -20,6 +20,7 @@ public class SpringAiAdapter implements AiGateway {
     public Flux<String> sendMessageAndReceiveReplies(String message, String chatId) {
         return chatClient.prompt()
                 .system(systemSpec -> systemSpec.param("current_date", LocalDate.now().toString()))
+                .functions("clockInFunction")
                 .user(message)
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))

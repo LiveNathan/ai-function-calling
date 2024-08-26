@@ -2,6 +2,7 @@ package dev.nathanlively.config;
 
 import dev.nathanlively.adapter.out.ai.SpringAiAdapter;
 import dev.nathanlively.application.AiService;
+import dev.nathanlively.application.ClockInService;
 import dev.nathanlively.application.port.AiGateway;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Bean;
@@ -17,5 +18,10 @@ public class ServiceConfig {
     @Bean
     public AiGateway aiGateway(ChatClient chatClient) {
         return new SpringAiAdapter(chatClient);
+    }
+
+    @Bean
+    public ClockInService clockInService() {
+        return new ClockInService();
     }
 }
