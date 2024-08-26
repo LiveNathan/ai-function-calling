@@ -23,7 +23,7 @@
     <option name="TEST_SEARCH_SCOPE">
       <value defaultName="wholeProject" />
     </option>
-    <tag value="!ui" />
+    <tag value="!ui &amp;&amp; !money" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
