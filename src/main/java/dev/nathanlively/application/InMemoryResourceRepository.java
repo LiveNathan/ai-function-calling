@@ -16,16 +16,12 @@ public class InMemoryResourceRepository implements ResourceRepository {
         this.resources = resources;
     }
 
-    public static InMemoryResourceRepository create(List<Resource> resourcesList) {
-        Map<String, Resource> resourcesMap = new HashMap<>();
-        for (Resource resource : resourcesList) {
-            resourcesMap.put(resource.email(), resource);
-        }
-        return new InMemoryResourceRepository(resourcesMap);
+    public static InMemoryResourceRepository create(Map<String, Resource> resources) {
+        return new InMemoryResourceRepository(resources);
     }
 
     public static ResourceRepository createEmpty() {
-        return create(List.of());
+        return create(new HashMap<>());
     }
 
     @Override
