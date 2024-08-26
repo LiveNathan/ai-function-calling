@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +14,7 @@ class TimesheetEntryTest {
 
     @BeforeEach
     void setUp() {
-        project = new Project("Project A", new ArrayList<>());
+        project = new Project("Project A");
         entry =  TimesheetEntry.clockIn(project, Instant.now());
     }
 

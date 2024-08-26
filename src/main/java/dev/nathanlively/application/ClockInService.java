@@ -2,6 +2,7 @@ package dev.nathanlively.application;
 
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
+import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
 
@@ -21,8 +22,8 @@ public class ClockInService {
         Objects.requireNonNull(resourceEmail, "Email must not be null");  // todo: return some message to user instead?
         Resource resource = resourceRepository.findByEmail(resourceEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
-        // get project
-        TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(clockInTime);
+        Project project = projectRepository.findByName(projectName).orElse(null);
+        TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
         resourceRepository.save(resource);
         return timesheetEntry;

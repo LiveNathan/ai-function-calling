@@ -3,10 +3,7 @@ package dev.nathanlively.application;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.domain.Project;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryProjectRepository implements ProjectRepository {
 
@@ -34,7 +31,8 @@ public class InMemoryProjectRepository implements ProjectRepository {
         return new ArrayList<>(projects.values());
     }
 
-    public Project findByName(String name) {
-        return projects.get(name);
+    @Override
+    public Optional<Project> findByName(String name) {
+        return Optional.ofNullable(projects.get(name));
     }
 }

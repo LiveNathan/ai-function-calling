@@ -32,9 +32,9 @@ public class TimesheetEntry {
         workPeriod.setEnd(clockOutTime);
     }
 
-//    public Project project() {
-//        return project;
-//    }
+    public Project project() {
+        return project;
+    }
 
     public void setProject(Project project) {
         this.project = project;
