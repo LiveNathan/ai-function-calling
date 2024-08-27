@@ -11,6 +11,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import dev.nathanlively.adapter.in.web.MainLayout;
 import dev.nathanlively.application.AiService;
 import jakarta.annotation.security.PermitAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -26,6 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @PermitAll
 public class DroidCommView extends VerticalLayout {
     private static final AtomicLong ID_GENERATOR = new AtomicLong();
+    private static final Logger log = LoggerFactory.getLogger(DroidCommView.class);
 
     private final List<Message> messages;
     private final List<MessageListItem> items;
@@ -62,23 +65,29 @@ public class DroidCommView extends VerticalLayout {
     private MessageInput createMessageInput(Scroller messageScroller) {
         MessageInput messageInput = new MessageInput();
         messageInput.setWidthFull();
+        messageInput.getElement().executeJs(
+                "this.addEventListener('submit', () => {this.setAttribute('timestamp', new Date().toISOString());});");
         messageInput.addSubmitListener(event -> handleMessageSubmit(event, messageScroller));
         return messageInput;
     }
 
     private void handleMessageSubmit(MessageInput.SubmitEvent event, Scroller messageScroller) {
         String userMessageText = event.getValue();
-
-        MessageListItem userMessage = new MessageListItem(userMessageText, Instant.now(), "Me");
-        appendMessageAndReply(userMessage, messageScroller, userMessageText);
+        String timestamp = event.getSource().getElement().getAttribute("timestamp"); // Read the timestamp attribute
+        Instant creationTime = timestamp != null ? Instant.parse(timestamp) : Instant.now(); // Default to now if timestamp isn't set
+        log.info("Messaged created at {}", creationTime);
+        String userName = "Nathan";
+        MessageListItem userMessage = new MessageListItem(userMessageText, creationTime, userName);
+        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId);
+        appendMessageAndReply(userMessage, messageScroller, userMessageText, userMessageDto);
     }
 
-    private void appendMessageAndReply(MessageListItem userMessage, Scroller messageScroller, String userMessageText) {
+    private void appendMessageAndReply(MessageListItem userMessage, Scroller messageScroller, String userMessageText, UserMessageDto userMessageDto) {
         getUI().ifPresent(ui -> ui.access(() -> {
             addMessagesToUI(userMessage);
 
             MessageListItem reply = new MessageListItem("", Instant.now(), "DroidComm");
-            appendReplyMessages(userMessageText, reply, messageScroller);
+            appendReplyMessages(userMessageText, reply, messageScroller, userMessageDto);
         }));
     }
 
@@ -88,11 +97,11 @@ public class DroidCommView extends VerticalLayout {
         messages.add(new UserMessage(userMessage.getText()));
     }
 
-    private void appendReplyMessages(String userMessageText, MessageListItem reply, Scroller messageScroller) {
+    private void appendReplyMessages(String userMessageText, MessageListItem reply, Scroller messageScroller, UserMessageDto userMessageDto) {
         items.add(reply);
         messageList.setItems(items);
 
-        Flux<String> contentStream = aiService.sendMessageAndReceiveReplies(userMessageText, chatId);
+        Flux<String> contentStream = aiService.sendMessageAndReceiveReplies(userMessageDto);
 
         contentStream.subscribe(
                 content -> updateReplyContent(reply, content),
