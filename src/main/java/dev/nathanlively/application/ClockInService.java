@@ -37,4 +37,19 @@ public class ClockInService {
         log.info("Created timesheet entry: {}", timesheetEntry);
         return new ClockInResponse("Clock-in successful", timesheetEntry);
     }
+
+    public TimesheetEntry updateProjectOfMostRecentTimesheetEntry(String resourceEmail, String projectName) {
+        Objects.requireNonNull(resourceEmail, "Email must not be null");
+        Objects.requireNonNull(projectName, "Project name must not be null");
+
+        Resource resource = resourceRepository.findByEmail(resourceEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
+        Project project = projectRepository.findByName(projectName)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectName));
+
+        TimesheetEntry mostRecentEntry = resource.timeSheet().mostRecentEntry();
+        mostRecentEntry.setProject(project);
+        resourceRepository.save(resource);
+        return mostRecentEntry;
+    }
 }

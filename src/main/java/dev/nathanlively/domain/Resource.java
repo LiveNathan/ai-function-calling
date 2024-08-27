@@ -51,31 +51,4 @@ public final class Resource {
         return timeSheet;
     }
 
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (obj == this) return true;
-//        if (obj == null || obj.getClass() != this.getClass()) return false;
-//        var that = (Resource) obj;
-//        return Objects.equals(this.resourceType, that.resourceType) &&
-//                Objects.equals(this.jobTitle, that.jobTitle) &&
-//                Objects.equals(this.name, that.name) &&
-//                Objects.equals(this.email, that.email) &&
-//                Objects.equals(this.timeSheet, that.timeSheet);
-//    }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(resourceType, jobTitle, name, email, timeSheet);
-//    }
-
-//    @Override
-//    public String toString() {
-//        return "Resource[" +
-//                "resourceType=" + resourceType + ", " +
-//                "jobTitle=" + jobTitle + ", " +
-//                "name=" + name + ", " +
-//                "email=" + email + ", " +
-//                "timeSheet=" + timeSheet + ']';
-//    }
-
 }
