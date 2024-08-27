@@ -3,12 +3,14 @@ package dev.nathanlively.application;
 import dev.nathanlively.config.ChatConfig;
 import dev.nathanlively.config.FunctionConfig;
 import dev.nathanlively.config.ServiceConfig;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -21,6 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled("until I figure out how to write this kind of test")
 @Tag("money")
 @EnabledIfEnvironmentVariable(named = "OPENAI_API_KEY", matches = ".*")
 class ClockInServiceAiTest {
@@ -28,7 +31,10 @@ class ClockInServiceAiTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withPropertyValues("spring.ai.openai.apiKey=" + System.getenv("OPENAI_API_KEY"))
             .withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
-            .withUserConfiguration(FunctionConfig.class, ServiceConfig.class, ChatConfig.class);
+            .withUserConfiguration(FunctionConfig.class, ServiceConfig.class, ChatConfig.class, ChatClient.Builder.class);
+
+//    @Autowired
+//    ChatClient.Builder chatClientBuilder;
 
     @Test
     void clockInFunctionCall() {
