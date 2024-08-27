@@ -1,10 +1,13 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.adapter.in.web.droidcomm.UserMessageDto;
 import dev.nathanlively.application.port.AiGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
+
+import java.time.Instant;
 
 class AiServiceTest {
     AiGateway gateway;
@@ -18,7 +21,8 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_commCheck() {
-        Flux<String> actual = service.sendMessageAndReceiveReplies("comm check", null);
+        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "comm check", "chatId1");
+        Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);
 
         StepVerifier.create(actual)
                 .expectNext("good check")
@@ -27,9 +31,10 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_clockIn_returnsJson() {
+        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "clock in to project A", "chatId1");
         String jsonResponse = "{\"function_call\": {\"name\": \"clockIn\", \"arguments\": {\"projectId\": \"A\"}}}";
 
-        Flux<String> actual = service.sendMessageAndReceiveReplies("clock in to project A", null);
+        Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);
 
         StepVerifier.create(actual)
                 .expectNext(jsonResponse)

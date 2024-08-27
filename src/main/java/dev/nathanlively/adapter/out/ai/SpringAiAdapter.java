@@ -1,5 +1,6 @@
 package dev.nathanlively.adapter.out.ai;
 
+import dev.nathanlively.adapter.in.web.droidcomm.UserMessageDto;
 import dev.nathanlively.application.port.AiGateway;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
@@ -25,12 +26,13 @@ public class SpringAiAdapter implements AiGateway {
     }
 
     @Override
-    public Flux<String> sendMessageAndReceiveReplies(String message, String chatId) {
+    public Flux<String> sendMessageAndReceiveReplies(UserMessageDto userMessageDto) {
         return chatClient.prompt()
-                .system(sp -> sp.param("current_date", LocalDate.now().toString()))
+                .system(sp -> sp.param("current_date", LocalDate.now().toString())
+                        .param("message_creation_time", userMessageDto.creationTime().toString()))
                 .functions("clockInFunction")
-                .user(message)
-                .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                .user(userMessageDto.userMessageText())
+                .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
                 .stream()
                 .content();

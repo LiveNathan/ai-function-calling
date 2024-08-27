@@ -1,5 +1,6 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.adapter.in.web.droidcomm.UserMessageDto;
 import dev.nathanlively.application.port.AiGateway;
 import reactor.core.publisher.Flux;
 
@@ -10,7 +11,7 @@ public class AiService {
         this.aiGateway = aiGateway;
     }
 
-    public Flux<String> sendMessageAndReceiveReplies(String userMessage, String chatId) {
-        return aiGateway.sendMessageAndReceiveReplies(userMessage, chatId);
+    public Flux<String> sendMessageAndReceiveReplies(UserMessageDto userMessageDto) {
+        return aiGateway.sendMessageAndReceiveReplies(userMessageDto);
     }
 }
