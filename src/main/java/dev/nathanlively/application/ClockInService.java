@@ -5,6 +5,8 @@ import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -12,6 +14,7 @@ import java.util.Objects;
 public class ClockInService {
     private final ResourceRepository resourceRepository;
     private final ProjectRepository projectRepository;
+    private static final Logger log = LoggerFactory.getLogger(ClockInService.class);
 
     public ClockInService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         this.resourceRepository = resourceRepository;
@@ -31,6 +34,7 @@ public class ClockInService {
 
     public ClockInResponse clockIn(ClockInRequest request) {
         TimesheetEntry timesheetEntry = clockIn("nathanlively@gmail.com", request.clockInTime(), request.projectName());
+        log.info("Created timesheet entry: {}", timesheetEntry);
         return new ClockInResponse("Clock-in successful", timesheetEntry);
     }
 }

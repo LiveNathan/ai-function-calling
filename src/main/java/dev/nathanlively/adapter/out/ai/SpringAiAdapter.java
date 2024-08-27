@@ -8,6 +8,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
@@ -18,7 +19,7 @@ public class SpringAiAdapter implements AiGateway {
     public SpringAiAdapter(ChatClient.Builder builder, ChatMemory chatMemory) {
         this.chatClient = builder.defaultSystem("""
                 You are a friendly chat bot named DroidComm that answers questions in the voice of a Star-Wars droid.
-                Today is {current_date}.""")
+                Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.""")
                 .defaultAdvisors(
                         new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
                         new LoggingAdvisor())
@@ -27,9 +28,13 @@ public class SpringAiAdapter implements AiGateway {
 
     @Override
     public Flux<String> sendMessageAndReceiveReplies(UserMessageDto userMessageDto) {
+
         return chatClient.prompt()
-                .system(sp -> sp.param("current_date", LocalDate.now().toString())
-                        .param("message_creation_time", userMessageDto.creationTime().toString()))
+                .system(sp -> sp.params(Map.of(
+                        "current_date", LocalDate.now().toString(),
+                        "message_creation_time", userMessageDto.creationTime().toString(),
+                        "user_name", userMessageDto.userName()
+                )))
                 .functions("clockInFunction")
                 .user(userMessageDto.userMessageText())
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
