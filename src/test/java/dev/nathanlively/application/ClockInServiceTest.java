@@ -57,11 +57,14 @@ class ClockInServiceTest {
         service.clockIn(resourceEmail, clockInTime, null);
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNull();
 
-
         TimesheetEntry actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
 
         assertThat(actual)
                 .usingRecursiveComparison()
                 .isEqualTo(expected);
+
+        List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries();
+        assertThat(timesheetEntries).hasSize(1);
+        assertThat(timesheetEntries.getFirst().project()).isNotNull();
     }
 }
