@@ -1,4 +1,4 @@
-package dev.nathanlively.application;
+package dev.nathanlively.application.clockin;
 
 import java.time.Instant;
 

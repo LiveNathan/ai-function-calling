@@ -1,7 +1,11 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.clockin.ClockInRequest;
+import dev.nathanlively.application.clockin.ClockInResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
+import dev.nathanlively.application.updateproject.UpdateProjectRequest;
+import dev.nathanlively.application.updateproject.UpdateProjectResponse;
 import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
@@ -51,5 +55,10 @@ public class ClockInService {
         mostRecentEntry.setProject(project);
         resourceRepository.save(resource);
         return mostRecentEntry;
+    }
+
+    public UpdateProjectResponse updateProjectOfMostRecentTimesheetEntry(UpdateProjectRequest request) {
+        TimesheetEntry timesheetEntry = updateProjectOfMostRecentTimesheetEntry("nathanlively@gmail.com", request.projectName());
+        return new UpdateProjectResponse("Timesheet update successful.", timesheetEntry);
     }
 }

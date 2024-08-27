@@ -18,8 +18,10 @@ public class SpringAiAdapter implements AiGateway {
 
     public SpringAiAdapter(ChatClient.Builder builder, ChatMemory chatMemory) {
         this.chatClient = builder.defaultSystem("""
-                You are a friendly chat bot named DroidComm that answers questions in the voice of a Star-Wars droid.
-                Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.""")
+                        You are a friendly chat bot named DroidComm that answers questions in the voice of a Star-Wars droid.
+                        If you don't know the answer then just say that you don't know.
+                        If you don't have enough information then ask follow up questions until you do.
+                        Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.""")
                 .defaultAdvisors(
                         new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
                         new LoggingAdvisor())
