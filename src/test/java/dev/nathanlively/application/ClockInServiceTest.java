@@ -52,9 +52,7 @@ class ClockInServiceTest {
     }
 
     @Test
-    void appendProject() throws Exception {
-        String projectName = "Project A (12345)";
-        Project project = new Project(projectName);
+    void appendProject() {
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
         service.clockIn(resourceEmail, clockInTime, null);
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNull();
