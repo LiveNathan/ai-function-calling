@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ClockInServiceTest {
 
     @Test
-    void clockIn_givenNullProject() throws Exception {
+    void clockIn_givenNullProject() {
         ResourceRepository resourceRepository = InMemoryResourceRepository.createEmpty();
         ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
         String resourceEmail = "nathanlively@gmail.com";

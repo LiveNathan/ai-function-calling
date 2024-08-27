@@ -21,7 +21,7 @@ public class SpringAiAdapter implements AiGateway {
                 .defaultAdvisors(
                         new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
                         new LoggingAdvisor())
-                .build();;
+                .build();
     }
 
     @Override
