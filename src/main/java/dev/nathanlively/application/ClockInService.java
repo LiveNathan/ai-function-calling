@@ -1,10 +1,17 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.clockin.ClockInRequest;
+import dev.nathanlively.application.clockin.ClockInResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
+import dev.nathanlively.application.updateproject.UpdateProjectRequest;
+import dev.nathanlively.application.updateproject.UpdateProjectResponse;
 import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +28,12 @@ public class ClockInService {
         this.projectRepository = projectRepository;
     }
 
-    public TimesheetEntry clockIn(String resourceEmail, Instant clockInTime, String projectName) {
+    public TimesheetEntry clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime,
+                                  @Nullable String projectName) {
         Objects.requireNonNull(resourceEmail, "Email must not be null");  // todo: return some message to user instead?
         Resource resource = resourceRepository.findByEmail(resourceEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
-        Project project = projectRepository.findByName(projectName).orElse(null);
+        Project project = (projectName == null) ? null : projectRepository.findByName(projectName).orElse(null);
         TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
         resourceRepository.save(resource);
@@ -33,8 +41,29 @@ public class ClockInService {
     }
 
     public ClockInResponse clockIn(ClockInRequest request) {
-        TimesheetEntry timesheetEntry = clockIn("nathanlively@gmail.com", request.clockInTime(), request.projectName());
+        TimesheetEntry timesheetEntry = clockIn("nathanlively@gmail.com",
+                request.messageCreationTime(), request.projectName());
         log.info("Created timesheet entry: {}", timesheetEntry);
         return new ClockInResponse("Clock-in successful", timesheetEntry);
+    }
+
+    public TimesheetEntry updateProjectOfMostRecentTimesheetEntry(String resourceEmail, String projectName) {
+        Objects.requireNonNull(resourceEmail, "Email must not be null");
+        Objects.requireNonNull(projectName, "Project name must not be null");
+
+        Resource resource = resourceRepository.findByEmail(resourceEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
+        Project project = projectRepository.findByName(projectName)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectName));
+
+        TimesheetEntry mostRecentEntry = resource.timeSheet().mostRecentEntry();
+        mostRecentEntry.setProject(project);
+        resourceRepository.save(resource);
+        return mostRecentEntry;
+    }
+
+    public UpdateProjectResponse updateProjectOfMostRecentTimesheetEntry(UpdateProjectRequest request) {
+        TimesheetEntry timesheetEntry = updateProjectOfMostRecentTimesheetEntry("nathanlively@gmail.com", request.projectName());
+        return new UpdateProjectResponse("Timesheet update successful.", timesheetEntry);
     }
 }

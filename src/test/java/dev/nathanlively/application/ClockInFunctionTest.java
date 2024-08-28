@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Disabled("until I figure out how to write this kind of test")
 @Tag("money")
 @EnabledIfEnvironmentVariable(named = "OPENAI_API_KEY", matches = ".*")
-class ClockInServiceAiTest {
-    private static final Logger log = LoggerFactory.getLogger(ClockInServiceAiTest.class);
+class ClockInFunctionTest {
+    private static final Logger log = LoggerFactory.getLogger(ClockInFunctionTest.class);
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withPropertyValues("spring.ai.openai.apiKey=" + System.getenv("OPENAI_API_KEY"))
             .withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))

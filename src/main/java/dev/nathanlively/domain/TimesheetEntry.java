@@ -37,6 +37,7 @@ public class TimesheetEntry {
     }
 
     public void setProject(Project project) {
+        Objects.requireNonNull(project, "Project cannot be null");
         this.project = project;
     }
 
@@ -48,28 +49,11 @@ public class TimesheetEntry {
         return new WorkPeriod(workPeriod.start(), workPeriod.end());
     }
 
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (obj == this) return true;
-//        if (obj == null || obj.getClass() != this.getClass()) return false;
-//        var that = (TimesheetEntry) obj;
-//        return Objects.equals(this.clockIn, that.clockIn) &&
-//                Objects.equals(this.clockOut, that.clockOut) &&
-//                Objects.equals(this.duration, that.duration) &&
-//                Objects.equals(this.project, that.project);
-//    }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(clockIn, clockOut, duration, project);
-//    }
-
-//    @Override
-//    public String toString() {
-//        return "TimesheetEntry[" +
-//                "clockIn=" + clockIn + ", " +
-//                "clockOut=" + clockOut + ", " +
-//                "duration=" + duration + ", " +
-//                "project=" + project + ']';
-//    }
+    @Override
+    public String toString() {
+        return "TimesheetEntry{" +
+                "project=" + project +
+                ", workPeriod=" + workPeriod +
+                '}';
+    }
 }

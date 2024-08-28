@@ -22,23 +22,10 @@ public final class Timesheet {
         return List.copyOf(timeSheetEntries);
     }
 
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (obj == this) return true;
-//        if (obj == null || obj.getClass() != this.getClass()) return false;
-//        var that = (Timesheet) obj;
-//        return Objects.equals(this.timeSheetEntries, that.timeSheetEntries);
-//    }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(timeSheetEntries);
-//    }
-
-//    @Override
-//    public String toString() {
-//        return "Timesheet[" +
-//                "timeSheetEntries=" + timeSheetEntries + ']';
-//    }
-
+    public TimesheetEntry mostRecentEntry() {
+        if (timeSheetEntries.isEmpty()) {
+            throw new IllegalStateException("No timesheet entries found");
+        }
+        return timeSheetEntries.getLast();
+    }
 }

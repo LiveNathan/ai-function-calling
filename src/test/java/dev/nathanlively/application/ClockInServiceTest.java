@@ -3,6 +3,7 @@ package dev.nathanlively.application;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -12,20 +13,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ClockInServiceTest {
 
-    @Test
-    void clockIn_givenNullProject() {
-        ResourceRepository resourceRepository = InMemoryResourceRepository.createEmpty();
-        ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
-        String resourceEmail = "nathanlively@gmail.com";
-        String projectName = "Project A (12345)";
+    private final String resourceEmail = "nathanlively@gmail.com";
+    private final String projectName = "Project A (12345)";
+    private final Project project = new Project(projectName);
+    private final Instant clockInTime = Instant.now();
+    private ResourceRepository resourceRepository;
+    private ProjectRepository projectRepository;
+    private ClockInService service;
+
+    @BeforeEach
+    void setUp() {
+        resourceRepository = InMemoryResourceRepository.createEmpty();
+        projectRepository = InMemoryProjectRepository.createEmpty();
+        service = new ClockInService(resourceRepository, projectRepository);
         Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
-        Project project = new Project(projectName);
         resourceRepository.save(resource);
         projectRepository.save(project);
+    }
+
+    @Test
+    void clockIn_givenNullProject() {
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries()).isEmpty();
         assertThat(projectRepository.findAll()).hasSize(1);
-        ClockInService service = new ClockInService(resourceRepository, projectRepository);
-        Instant clockInTime = Instant.now();
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
 
         TimesheetEntry actual = service.clockIn(resourceEmail, clockInTime, projectName);
@@ -40,5 +49,22 @@ class ClockInServiceTest {
         assertThat(projects).hasSize(1);
         assertThat(resources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
         assertThat(resources.getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNotNull();
+    }
+
+    @Test
+    void appendProject() {
+        TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
+        service.clockIn(resourceEmail, clockInTime, null);
+        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNull();
+
+        TimesheetEntry actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
+
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+
+        List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries();
+        assertThat(timesheetEntries).hasSize(1);
+        assertThat(timesheetEntries.getFirst().project()).isNotNull();
     }
 }
