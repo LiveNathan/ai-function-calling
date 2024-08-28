@@ -1,4 +1,4 @@
-package dev.nathanlively;
+package dev.nathanlively.application;
 
 import java.util.ArrayList;
 import java.util.Collections;

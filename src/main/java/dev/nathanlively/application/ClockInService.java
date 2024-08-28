@@ -28,8 +28,8 @@ public class ClockInService {
         this.projectRepository = projectRepository;
     }
 
-    public TimesheetEntry clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime,
-                                  @Nullable String projectName) {
+    public Result<TimesheetEntry> clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime,
+                                          @Nullable String projectName) {
         Objects.requireNonNull(resourceEmail, "Email must not be null");  // todo: return some message to user instead?
         Resource resource = resourceRepository.findByEmail(resourceEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
@@ -37,14 +37,19 @@ public class ClockInService {
         TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
         resourceRepository.save(resource);
-        return timesheetEntry;
+        return Result.success(timesheetEntry);
     }
 
     public ClockInResponse clockIn(ClockInRequest request) {
-        TimesheetEntry timesheetEntry = clockIn("nathanlively@gmail.com",
+        Result<TimesheetEntry> result = clockIn("nathanlively@gmail.com",
                 request.messageCreationTime(), request.projectName());
-        log.info("Created timesheet entry: {}", timesheetEntry);
-        return new ClockInResponse("Clock-in successful", timesheetEntry);
+        if (result.isSuccess()) {
+            log.info("Created timesheet entry: {}", result.values().getFirst());
+            return new ClockInResponse("Clock-in successful. New timesheet entry created: " + result.values().getFirst().toString(), result.values().getFirst());
+        } else {
+            log.error("Clock-in failed: {}", result.failureMessages().getFirst());
+            return new ClockInResponse("Clock-in failed: " + result.failureMessages().getFirst(), null);
+        }
     }
 
     public TimesheetEntry updateProjectOfMostRecentTimesheetEntry(String resourceEmail, String projectName) {

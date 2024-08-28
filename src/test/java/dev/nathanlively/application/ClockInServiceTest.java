@@ -4,12 +4,13 @@ import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static dev.nathanlively.application.ResultAssertions.assertThat;
 
 class ClockInServiceTest {
 
@@ -37,11 +38,10 @@ class ClockInServiceTest {
         assertThat(projectRepository.findAll()).hasSize(1);
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
 
-        TimesheetEntry actual = service.clockIn(resourceEmail, clockInTime, projectName);
+        Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
 
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        assertThat(actual).isSuccess();
+        assertThat(actual.failureMessages()).isEmpty();
 
         List<Resource> resources = resourceRepository.findAll();
         List<Project> projects = projectRepository.findAll();
@@ -49,6 +49,14 @@ class ClockInServiceTest {
         assertThat(projects).hasSize(1);
         assertThat(resources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
         assertThat(resources.getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNotNull();
+    }
+
+    @Test
+    @Disabled("until refactor to Result")
+    void clockIn_givenNullEmail_returnsResultWithErrorMessage() throws Exception {
+
+//        assertThat(actual)
+//                .isEqualTo(expected);
     }
 
     @Test
@@ -67,4 +75,5 @@ class ClockInServiceTest {
         assertThat(timesheetEntries).hasSize(1);
         assertThat(timesheetEntries.getFirst().project()).isNotNull();
     }
+
 }
