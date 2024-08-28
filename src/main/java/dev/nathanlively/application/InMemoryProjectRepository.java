@@ -35,4 +35,9 @@ public class InMemoryProjectRepository implements ProjectRepository {
     public Optional<Project> findByName(String name) {
         return Optional.ofNullable(projects.get(name));
     }
+
+    @Override
+    public List<String> findAllNames() {
+        return findAll().stream().map(Project::name).toList();
+    }
 }

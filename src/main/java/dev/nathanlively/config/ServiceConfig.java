@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ServiceConfig {
     @Bean
-    public AiService aiService(ChatClient.Builder chatClientBuilder, ChatMemory chatMemory) {
-        AiGateway gateway = new SpringAiAdapter(chatClientBuilder, chatMemory);
+    public AiService aiService(ChatClient.Builder chatClientBuilder, ChatMemory chatMemory, ProjectRepository projectRepository) {
+        AiGateway gateway = new SpringAiAdapter(chatClientBuilder, chatMemory, projectRepository);
         return new AiService(gateway);
     }
 

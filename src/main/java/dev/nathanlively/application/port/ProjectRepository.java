@@ -10,4 +10,6 @@ public interface ProjectRepository {
     List<Project> findAll();
 
     Optional<Project> findByName(String projectName);
+
+    List<String> findAllNames();
 }
