@@ -1,4 +1,4 @@
-package dev.nathanlively.application.findallprojectnames;
+package dev.nathanlively.application.functions.findallprojectnames;
 
 import java.util.List;
 

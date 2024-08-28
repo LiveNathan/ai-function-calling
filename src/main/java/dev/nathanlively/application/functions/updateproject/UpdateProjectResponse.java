@@ -1,4 +1,4 @@
-package dev.nathanlively.application.updateproject;
+package dev.nathanlively.application.functions.updateproject;
 
 import dev.nathanlively.domain.TimesheetEntry;
 

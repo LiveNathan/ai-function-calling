@@ -1,16 +1,16 @@
 package dev.nathanlively.config;
 
-import dev.nathanlively.application.ClockInFunction;
 import dev.nathanlively.application.ClockInService;
-import dev.nathanlively.application.FindAllProjectNamesFunction;
-import dev.nathanlively.application.UpdateProjectFunction;
-import dev.nathanlively.application.clockin.ClockInRequest;
-import dev.nathanlively.application.clockin.ClockInResponse;
-import dev.nathanlively.application.findallprojectnames.FindAllProjectNamesRequest;
-import dev.nathanlively.application.findallprojectnames.FindAllProjectNamesResponse;
+import dev.nathanlively.application.functions.clockin.ClockInFunction;
+import dev.nathanlively.application.functions.clockin.ClockInRequest;
+import dev.nathanlively.application.functions.clockin.ClockInResponse;
+import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
+import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
+import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
+import dev.nathanlively.application.functions.updateproject.UpdateProjectFunction;
+import dev.nathanlively.application.functions.updateproject.UpdateProjectRequest;
+import dev.nathanlively.application.functions.updateproject.UpdateProjectResponse;
 import dev.nathanlively.application.port.ProjectRepository;
-import dev.nathanlively.application.updateproject.UpdateProjectRequest;
-import dev.nathanlively.application.updateproject.UpdateProjectResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;

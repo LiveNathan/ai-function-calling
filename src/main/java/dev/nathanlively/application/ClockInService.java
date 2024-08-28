@@ -1,11 +1,11 @@
 package dev.nathanlively.application;
 
-import dev.nathanlively.application.clockin.ClockInRequest;
-import dev.nathanlively.application.clockin.ClockInResponse;
+import dev.nathanlively.application.functions.clockin.ClockInRequest;
+import dev.nathanlively.application.functions.clockin.ClockInResponse;
+import dev.nathanlively.application.functions.updateproject.UpdateProjectRequest;
+import dev.nathanlively.application.functions.updateproject.UpdateProjectResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
-import dev.nathanlively.application.updateproject.UpdateProjectRequest;
-import dev.nathanlively.application.updateproject.UpdateProjectResponse;
 import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
@@ -14,10 +14,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
-import java.util.Objects;
 
+@Validated
 public class ClockInService {
     private final ResourceRepository resourceRepository;
     private final ProjectRepository projectRepository;
@@ -28,42 +29,72 @@ public class ClockInService {
         this.projectRepository = projectRepository;
     }
 
-    public TimesheetEntry clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime,
-                                  @Nullable String projectName) {
-        Objects.requireNonNull(resourceEmail, "Email must not be null");  // todo: return some message to user instead?
-        Resource resource = resourceRepository.findByEmail(resourceEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
+    public Result<TimesheetEntry> clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime,
+                                          @Nullable String projectName) {
+        if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
+            return Result.failure("Email must not be null or empty.");
+        }
+        Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
+        if (resource == null) {
+            return Result.failure("Resource not found with email: " + resourceEmail);
+        }
+
         Project project = (projectName == null) ? null : projectRepository.findByName(projectName).orElse(null);
-        TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
-        resource.appendTimesheetEntry(timesheetEntry);
-        resourceRepository.save(resource);
-        return timesheetEntry;
+        TimesheetEntry timesheetEntry;
+        try {
+            timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
+            resource.appendTimesheetEntry(timesheetEntry);
+            resourceRepository.save(resource);
+        } catch (Exception e) {
+            return Result.failure("Error during clock-in process: " + e.getMessage());
+        }
+        return Result.success(timesheetEntry);
     }
 
     public ClockInResponse clockIn(ClockInRequest request) {
-        TimesheetEntry timesheetEntry = clockIn("nathanlively@gmail.com",
+        Result<TimesheetEntry> result = clockIn("nathanlively@gmail.com",
                 request.messageCreationTime(), request.projectName());
-        log.info("Created timesheet entry: {}", timesheetEntry);
-        return new ClockInResponse("Clock-in successful", timesheetEntry);
+        if (result.isSuccess()) {
+            log.info("Prove to me that you received this message by printing the new timesheet entry to the screen for the user. Created timesheet entry: {}", result.values().getFirst());
+            return new ClockInResponse("Clock-in successful. New timesheet entry created: " + result.values().getFirst().toString(), result.values().getFirst());
+        } else {
+            log.error("Clock-in failed: {}", result.failureMessages().getFirst());
+            return new ClockInResponse("Clock-in failed with these errors: " + result.failureMessages().getFirst(), null);
+        }
     }
 
-    public TimesheetEntry updateProjectOfMostRecentTimesheetEntry(String resourceEmail, String projectName) {
-        Objects.requireNonNull(resourceEmail, "Email must not be null");
-        Objects.requireNonNull(projectName, "Project name must not be null");
+    public Result<TimesheetEntry> updateProjectOfMostRecentTimesheetEntry(String resourceEmail, String projectName) {
+        if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
+            return Result.failure("Email must not be null or empty.");
+        }
+        if (projectName == null || projectName.trim().isEmpty()) {
+            return Result.failure("Project name must not be null or empty.");
+        }
 
-        Resource resource = resourceRepository.findByEmail(resourceEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
-        Project project = projectRepository.findByName(projectName)
-                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectName));
+        Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
+        if (resource == null) {
+            return Result.failure("Resource not found with email: " + resourceEmail);
+        }
+
+        Project project = projectRepository.findByName(projectName).orElse(null);
+        if (project == null) {
+            return Result.failure("Project not found with name: " + projectName);
+        }
 
         TimesheetEntry mostRecentEntry = resource.timeSheet().mostRecentEntry();
         mostRecentEntry.setProject(project);
         resourceRepository.save(resource);
-        return mostRecentEntry;
+        return Result.success(mostRecentEntry);
     }
 
     public UpdateProjectResponse updateProjectOfMostRecentTimesheetEntry(UpdateProjectRequest request) {
-        TimesheetEntry timesheetEntry = updateProjectOfMostRecentTimesheetEntry("nathanlively@gmail.com", request.projectName());
-        return new UpdateProjectResponse("Timesheet update successful.", timesheetEntry);
+        Result<TimesheetEntry> result = updateProjectOfMostRecentTimesheetEntry("nathanlively@gmail.com", request.projectName());
+        if (result.isSuccess()) {
+            TimesheetEntry timesheetEntry = result.values().getFirst();
+            return new UpdateProjectResponse("Timesheet update successful: " + timesheetEntry.toString(), timesheetEntry);
+        } else {
+            log.error("Timesheet update failed: {}", result.failureMessages().getFirst());
+            return new UpdateProjectResponse("Timesheet update with these errors: " + result.failureMessages().getFirst(), null);
+        }
     }
 }

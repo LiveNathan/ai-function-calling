@@ -1,4 +1,4 @@
-package dev.nathanlively.application.clockin;
+package dev.nathanlively.application.functions.clockin;
 
 import jakarta.annotation.Nullable;
 

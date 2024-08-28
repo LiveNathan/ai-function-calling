@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static dev.nathanlively.application.ResultAssertions.assertThat;
 
 class ClockInServiceTest {
 
@@ -32,16 +32,16 @@ class ClockInServiceTest {
     }
 
     @Test
-    void clockIn_givenNullProject() {
+    void clockIn() {
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries()).isEmpty();
         assertThat(projectRepository.findAll()).hasSize(1);
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
 
-        TimesheetEntry actual = service.clockIn(resourceEmail, clockInTime, projectName);
+        Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
 
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        assertThat(actual).isSuccess();
+        assertThat(actual.failureMessages()).isEmpty();
+        assertThat(actual).successValues().contains(expected);
 
         List<Resource> resources = resourceRepository.findAll();
         List<Project> projects = projectRepository.findAll();
@@ -52,19 +52,33 @@ class ClockInServiceTest {
     }
 
     @Test
+    void clockIn_givenNullEmail_returnsResultWithErrorMessage() {
+        Result<TimesheetEntry> actual = service.clockIn(null, clockInTime, projectName);
+        assertThat(actual).isFailure().failureMessages().contains("Email must not be null or empty.");
+    }
+
+    @Test
+    void clockIn_resourceNotFound_returnResultWithErrorMessage() {
+        String resourceEmail = "bademail@gmail.com";
+        Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
+        assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
+    }
+
+    @Test
     void appendProject() {
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
         service.clockIn(resourceEmail, clockInTime, null);
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNull();
 
-        TimesheetEntry actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
+        Result<TimesheetEntry> actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
 
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        assertThat(actual).isSuccess();
+        assertThat(actual.failureMessages()).isEmpty();
+        assertThat(actual).successValues().contains(expected);
 
         List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries();
         assertThat(timesheetEntries).hasSize(1);
         assertThat(timesheetEntries.getFirst().project()).isNotNull();
     }
+
 }

@@ -1,7 +1,5 @@
-package dev.nathanlively.application;
+package dev.nathanlively.application.functions.findallprojectnames;
 
-import dev.nathanlively.application.findallprojectnames.FindAllProjectNamesRequest;
-import dev.nathanlively.application.findallprojectnames.FindAllProjectNamesResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.domain.Project;
 
