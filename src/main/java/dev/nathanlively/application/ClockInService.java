@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 
 @Validated
 public class ClockInService {
@@ -36,8 +37,12 @@ public class ClockInService {
         if (Objects.isNull(resourceEmail) || Strings.isEmpty(resourceEmail.trim())) {
             return Result.failure("Email must not be null or empty.");
         }
-        Resource resource = resourceRepository.findByEmail(resourceEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
+        Optional<Resource> resourceOpt = resourceRepository.findByEmail(resourceEmail);
+        if (resourceOpt.isEmpty()) {
+            return Result.failure("Resource not found with email: " + resourceEmail);
+        }
+        Resource resource = resourceOpt.get();
+
         Project project = (projectName == null) ? null : projectRepository.findByName(projectName).orElse(null);
         TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);

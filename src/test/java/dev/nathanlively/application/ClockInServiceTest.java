@@ -53,10 +53,15 @@ class ClockInServiceTest {
 
     @Test
     void clockIn_givenNullEmail_returnsResultWithErrorMessage() throws Exception {
-
         Result<TimesheetEntry> actual = service.clockIn(null, clockInTime, projectName);
-
         assertThat(actual).isFailure().failureMessages().contains("Email must not be null or empty.");
+    }
+
+    @Test
+    void clockIn_resourceNotFound_returnResultWithErrorMessage() throws Exception {
+        String resourceEmail = "bademail@gmail.com";
+        Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
+        assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
     }
 
     @Test
