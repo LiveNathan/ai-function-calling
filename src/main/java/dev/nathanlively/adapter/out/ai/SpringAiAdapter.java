@@ -37,7 +37,7 @@ public class SpringAiAdapter implements AiGateway {
                         "message_creation_time", userMessageDto.creationTime().toString(),
                         "user_name", userMessageDto.userName()
                 )))
-                .functions("clockInFunction")
+                .functions("clockInFunction", "updateProjectFunction")
                 .user(userMessageDto.userMessageText())
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))

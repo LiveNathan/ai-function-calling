@@ -49,4 +49,11 @@ public class TimesheetEntry {
         return new WorkPeriod(workPeriod.start(), workPeriod.end());
     }
 
+    @Override
+    public String toString() {
+        return "TimesheetEntry{" +
+                "project=" + project +
+                ", workPeriod=" + workPeriod +
+                '}';
+    }
 }
