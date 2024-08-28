@@ -56,7 +56,7 @@ class ClockInServiceTest {
 
         Result<TimesheetEntry> actual = service.clockIn(null, clockInTime, projectName);
 
-        assertThat(actual).isFailure();
+        assertThat(actual).isFailure().failureMessages().contains("Email must not be null or empty.");
     }
 
     @Test
