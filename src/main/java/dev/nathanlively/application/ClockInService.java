@@ -14,10 +14,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
 import java.util.Objects;
 
+@Validated
 public class ClockInService {
     private final ResourceRepository resourceRepository;
     private final ProjectRepository projectRepository;

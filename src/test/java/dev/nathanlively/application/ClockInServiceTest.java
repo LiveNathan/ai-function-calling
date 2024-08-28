@@ -4,7 +4,6 @@ import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -33,7 +32,7 @@ class ClockInServiceTest {
     }
 
     @Test
-    void clockIn_givenNullProject() {
+    void clockIn() {
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries()).isEmpty();
         assertThat(projectRepository.findAll()).hasSize(1);
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
@@ -42,9 +41,7 @@ class ClockInServiceTest {
 
         assertThat(actual).isSuccess();
         assertThat(actual.failureMessages()).isEmpty();
-        assertThat(actual)
-                .successValues()
-                .contains(expected);
+        assertThat(actual).successValues().contains(expected);
 
         List<Resource> resources = resourceRepository.findAll();
         List<Project> projects = projectRepository.findAll();
@@ -55,11 +52,11 @@ class ClockInServiceTest {
     }
 
     @Test
-    @Disabled("until refactor to Result")
     void clockIn_givenNullEmail_returnsResultWithErrorMessage() throws Exception {
 
-//        assertThat(actual)
-//                .isEqualTo(expected);
+        Result<TimesheetEntry> actual = service.clockIn(null, clockInTime, projectName);
+
+        assertThat(actual).isFailure();
     }
 
     @Test
