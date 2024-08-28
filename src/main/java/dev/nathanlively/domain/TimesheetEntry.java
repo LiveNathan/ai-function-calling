@@ -50,6 +50,19 @@ public class TimesheetEntry {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimesheetEntry that = (TimesheetEntry) o;
+        return Objects.equals(project, that.project) && Objects.equals(workPeriod, that.workPeriod);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(project, workPeriod);
+    }
+
+    @Override
     public String toString() {
         return "TimesheetEntry{" +
                 "project=" + project +

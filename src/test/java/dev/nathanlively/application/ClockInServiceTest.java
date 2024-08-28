@@ -42,6 +42,9 @@ class ClockInServiceTest {
 
         assertThat(actual).isSuccess();
         assertThat(actual.failureMessages()).isEmpty();
+        assertThat(actual)
+                .successValues()
+                .contains(expected);
 
         List<Resource> resources = resourceRepository.findAll();
         List<Project> projects = projectRepository.findAll();
