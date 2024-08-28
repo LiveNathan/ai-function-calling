@@ -44,9 +44,14 @@ public class ClockInService {
         Resource resource = resourceOpt.get();
 
         Project project = (projectName == null) ? null : projectRepository.findByName(projectName).orElse(null);
-        TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
-        resource.appendTimesheetEntry(timesheetEntry);
-        resourceRepository.save(resource);
+        TimesheetEntry timesheetEntry;
+        try {
+            timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
+            resource.appendTimesheetEntry(timesheetEntry);
+            resourceRepository.save(resource);
+        } catch (Exception e) {
+            return Result.failure("Error during clock-in process: " + e.getMessage());
+        }
         return Result.success(timesheetEntry);
     }
 
