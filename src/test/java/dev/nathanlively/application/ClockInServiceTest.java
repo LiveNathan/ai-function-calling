@@ -52,13 +52,13 @@ class ClockInServiceTest {
     }
 
     @Test
-    void clockIn_givenNullEmail_returnsResultWithErrorMessage() throws Exception {
+    void clockIn_givenNullEmail_returnsResultWithErrorMessage() {
         Result<TimesheetEntry> actual = service.clockIn(null, clockInTime, projectName);
         assertThat(actual).isFailure().failureMessages().contains("Email must not be null or empty.");
     }
 
     @Test
-    void clockIn_resourceNotFound_returnResultWithErrorMessage() throws Exception {
+    void clockIn_resourceNotFound_returnResultWithErrorMessage() {
         String resourceEmail = "bademail@gmail.com";
         Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
         assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
@@ -70,11 +70,11 @@ class ClockInServiceTest {
         service.clockIn(resourceEmail, clockInTime, null);
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNull();
 
-        TimesheetEntry actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
+        Result<TimesheetEntry> actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
 
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        assertThat(actual).isSuccess();
+        assertThat(actual.failureMessages()).isEmpty();
+        assertThat(actual).successValues().contains(expected);
 
         List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries();
         assertThat(timesheetEntries).hasSize(1);
