@@ -1,7 +1,6 @@
-package dev.nathanlively.application;
+package dev.nathanlively.application.functions.updateproject;
 
-import dev.nathanlively.application.updateproject.UpdateProjectRequest;
-import dev.nathanlively.application.updateproject.UpdateProjectResponse;
+import dev.nathanlively.application.ClockInService;
 
 import java.util.function.Function;
 

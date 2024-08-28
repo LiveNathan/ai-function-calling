@@ -1,7 +1,6 @@
-package dev.nathanlively.application;
+package dev.nathanlively.application.functions.clockin;
 
-import dev.nathanlively.application.clockin.ClockInRequest;
-import dev.nathanlively.application.clockin.ClockInResponse;
+import dev.nathanlively.application.ClockInService;
 
 import java.util.function.Function;
 

@@ -1,11 +1,11 @@
 package dev.nathanlively.application;
 
-import dev.nathanlively.application.clockin.ClockInRequest;
-import dev.nathanlively.application.clockin.ClockInResponse;
+import dev.nathanlively.application.functions.clockin.ClockInRequest;
+import dev.nathanlively.application.functions.clockin.ClockInResponse;
+import dev.nathanlively.application.functions.updateproject.UpdateProjectRequest;
+import dev.nathanlively.application.functions.updateproject.UpdateProjectResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
-import dev.nathanlively.application.updateproject.UpdateProjectRequest;
-import dev.nathanlively.application.updateproject.UpdateProjectResponse;
 import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
