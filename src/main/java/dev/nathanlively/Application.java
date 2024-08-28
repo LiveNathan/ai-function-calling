@@ -3,8 +3,10 @@ package dev.nathanlively;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.theme.Theme;
+import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.JobTitle;
+import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.ResourceType;
 import org.springframework.boot.CommandLineRunner;
@@ -22,10 +24,11 @@ public class Application implements AppShellConfigurator {
     }
 
     @Bean
-    CommandLineRunner init(ResourceRepository resourceRepository) {
+    CommandLineRunner init(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         return args -> {
             Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", "nathanlively@gmail.com", null);
             resourceRepository.save(resource);
+            projectRepository.save(new Project("Project A (12345)"));
         };
     }
 

@@ -4,5 +4,5 @@ import jakarta.annotation.Nullable;
 
 import java.time.Instant;
 
-public record ClockInRequest(@Nullable String projectName, Instant clockInTime) {
+public record ClockInRequest(@Nullable String projectName, Instant messageCreationTime) {
 }

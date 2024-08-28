@@ -2,15 +2,18 @@ package dev.nathanlively.config;
 
 import dev.nathanlively.application.ClockInFunction;
 import dev.nathanlively.application.ClockInService;
+import dev.nathanlively.application.FindAllProjectNamesFunction;
 import dev.nathanlively.application.UpdateProjectFunction;
 import dev.nathanlively.application.clockin.ClockInRequest;
 import dev.nathanlively.application.clockin.ClockInResponse;
+import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.updateproject.UpdateProjectRequest;
 import dev.nathanlively.application.updateproject.UpdateProjectResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 
+import java.util.List;
 import java.util.function.Function;
 
 @Configuration
@@ -22,8 +25,14 @@ public class FunctionConfig {
     }
 
     @Bean
-    @Description("Update an existing timesheet entry's project.")
+    @Description("Update an existing timesheet entry's project. Use this function in the case when a user clocks in without a project and now wants to add the project to it. The project name must exactly match one of the project names that already exists in the repository. Use findAllProjectNamesFunction to fetch the available names.")
     public Function<UpdateProjectRequest, UpdateProjectResponse> updateProjectFunction(ClockInService clockInService) {
         return new UpdateProjectFunction(clockInService);
+    }
+
+    @Bean
+    @Description("Fetch the list of available project names.")
+    public Function<Void, List<String>> findAllProjectNamesFunction(ProjectRepository repository) {
+        return new FindAllProjectNamesFunction(repository);
     }
 }

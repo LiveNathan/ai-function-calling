@@ -27,6 +27,11 @@ public class ServiceConfig {
     }
 
     @Bean
+    public ProjectRepository projectRepository() {
+        return InMemoryProjectRepository.createEmpty();
+    }
+
+    @Bean
     public ClockInService clockInService(ResourceRepository resourceRepository) {
         ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
         return new ClockInService(resourceRepository, projectRepository);

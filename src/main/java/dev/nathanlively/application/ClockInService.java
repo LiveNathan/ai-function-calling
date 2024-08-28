@@ -28,7 +28,8 @@ public class ClockInService {
         this.projectRepository = projectRepository;
     }
 
-    public TimesheetEntry clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime, @Nullable String projectName) {
+    public TimesheetEntry clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime,
+                                  @Nullable String projectName) {
         Objects.requireNonNull(resourceEmail, "Email must not be null");  // todo: return some message to user instead?
         Resource resource = resourceRepository.findByEmail(resourceEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
@@ -40,7 +41,8 @@ public class ClockInService {
     }
 
     public ClockInResponse clockIn(ClockInRequest request) {
-        TimesheetEntry timesheetEntry = clockIn("nathanlively@gmail.com", request.clockInTime(), request.projectName());
+        TimesheetEntry timesheetEntry = clockIn("nathanlively@gmail.com",
+                request.messageCreationTime(), request.projectName());
         log.info("Created timesheet entry: {}", timesheetEntry);
         return new ClockInResponse("Clock-in successful", timesheetEntry);
     }
