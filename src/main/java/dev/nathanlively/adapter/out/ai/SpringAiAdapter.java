@@ -2,10 +2,14 @@ package dev.nathanlively.adapter.out.ai;
 
 import dev.nathanlively.adapter.in.web.droidcomm.UserMessageDto;
 import dev.nathanlively.application.port.AiGateway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -15,6 +19,7 @@ import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvis
 
 public class SpringAiAdapter implements AiGateway {
     private final ChatClient chatClient;
+    private static final Logger log = LoggerFactory.getLogger(SpringAiAdapter.class);
 
     public SpringAiAdapter(ChatClient.Builder builder, ChatMemory chatMemory) {
         this.chatClient = builder.defaultSystem("""
@@ -42,7 +47,12 @@ public class SpringAiAdapter implements AiGateway {
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
                 .stream()
-                .content();
+                .content()
+                .onErrorResume(WebClientResponseException.class, e -> {
+                    log.error("WebClient request failed with status: {} and response body: {}",
+                            e.getStatusCode(), e.getResponseBodyAsString(), e);
+                    return Mono.error(new RuntimeException("Failed to communicate with AI service", e));
+                });
     }
 
 }

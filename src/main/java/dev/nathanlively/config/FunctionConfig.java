@@ -6,6 +6,8 @@ import dev.nathanlively.application.FindAllProjectNamesFunction;
 import dev.nathanlively.application.UpdateProjectFunction;
 import dev.nathanlively.application.clockin.ClockInRequest;
 import dev.nathanlively.application.clockin.ClockInResponse;
+import dev.nathanlively.application.findallprojectnames.FindAllProjectNamesRequest;
+import dev.nathanlively.application.findallprojectnames.FindAllProjectNamesResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.updateproject.UpdateProjectRequest;
 import dev.nathanlively.application.updateproject.UpdateProjectResponse;
@@ -13,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 
-import java.util.List;
 import java.util.function.Function;
 
 @Configuration
@@ -32,7 +33,7 @@ public class FunctionConfig {
 
     @Bean
     @Description("Fetch the list of available project names.")
-    public Function<Void, List<String>> findAllProjectNamesFunction(ProjectRepository repository) {
+    public Function<FindAllProjectNamesRequest, FindAllProjectNamesResponse> findAllProjectNamesFunction(ProjectRepository repository) {
         return new FindAllProjectNamesFunction(repository);
     }
 }

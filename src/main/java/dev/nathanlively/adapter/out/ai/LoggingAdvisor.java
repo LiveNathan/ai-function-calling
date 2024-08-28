@@ -15,4 +15,5 @@ public class LoggingAdvisor implements RequestResponseAdvisor {
         log.info("Request: {}", request);
         return request;
     }
+
 }

@@ -14,6 +14,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.List;
+
 @SpringBootApplication
 @Theme(value = "ai-function-calling")
 @Push
@@ -29,6 +31,8 @@ public class Application implements AppShellConfigurator {
             Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", "nathanlively@gmail.com", null);
             resourceRepository.save(resource);
             projectRepository.save(new Project("Project A (12345)"));
+            List<String> projectNames = projectRepository.findAll().stream().map(Project::name).toList();
+            System.out.println("Project names:" + projectNames);
         };
     }
 
