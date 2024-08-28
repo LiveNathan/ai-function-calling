@@ -12,6 +12,7 @@ import dev.nathanlively.domain.TimesheetEntry;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
@@ -32,7 +33,9 @@ public class ClockInService {
 
     public Result<TimesheetEntry> clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime,
                                           @Nullable String projectName) {
-        Objects.requireNonNull(resourceEmail, "Email must not be null");  // todo: return some message to user instead?
+        if (Objects.isNull(resourceEmail) || Strings.isEmpty(resourceEmail.trim())) {
+            return Result.failure("Email must not be null or empty.");
+        }
         Resource resource = resourceRepository.findByEmail(resourceEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Resource not found for: " + resourceEmail));
         Project project = (projectName == null) ? null : projectRepository.findByName(projectName).orElse(null);
