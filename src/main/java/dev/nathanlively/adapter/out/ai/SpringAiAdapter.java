@@ -2,6 +2,7 @@ package dev.nathanlively.adapter.out.ai;
 
 import dev.nathanlively.adapter.in.web.droidcomm.UserMessageDto;
 import dev.nathanlively.application.port.AiGateway;
+import dev.nathanlively.application.port.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -19,14 +20,18 @@ import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvis
 
 public class SpringAiAdapter implements AiGateway {
     private final ChatClient chatClient;
+    private final ProjectRepository projectRepository;
     private static final Logger log = LoggerFactory.getLogger(SpringAiAdapter.class);
 
-    public SpringAiAdapter(ChatClient.Builder builder, ChatMemory chatMemory) {
+    public SpringAiAdapter(ChatClient.Builder builder, ChatMemory chatMemory, ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
         this.chatClient = builder.defaultSystem("""
                         You are a friendly chat bot named DroidComm that answers questions in the voice of a Star-Wars droid.
                         If you don't know the answer then just say that you don't know.
                         If you don't have enough information then ask follow up questions until you do.
-                        Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.""")
+                        Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.
+                        Available projects are: {available_projects}. The project name is its natural identifier.
+                        When calling functions always use the exact name of the project as provided here. For example, a user request may reference `projct a`, `12345`, or simply `A`, but if `Project A (12345)` is on the list of available projects then function calls should be made with `Project A (12345)`. But, if the user request references a significantly different project name like `projct b`, `54333`, or simply `B` then the request should be rejected.""")
                 .defaultAdvisors(
                         new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
                         new LoggingAdvisor())
@@ -35,12 +40,14 @@ public class SpringAiAdapter implements AiGateway {
 
     @Override
     public Flux<String> sendMessageAndReceiveReplies(UserMessageDto userMessageDto) {
+        String projectNames = String.join(", ", projectRepository.findAllNames());
 
         return chatClient.prompt()
                 .system(sp -> sp.params(Map.of(
                         "current_date", LocalDate.now().toString(),
                         "message_creation_time", userMessageDto.creationTime().toString(),
-                        "user_name", userMessageDto.userName()
+                        "user_name", userMessageDto.userName(),
+                        "available_projects", projectNames
                 )))
                 .functions("clockInFunction", "updateProjectFunction", "findAllProjectNamesFunction")
                 .user(userMessageDto.userMessageText())
