@@ -30,7 +30,8 @@ public class SpringAiAdapter implements AiGateway {
                         If you don't know the answer then just say that you don't know.
                         If you don't have enough information then ask follow up questions until you do.
                         Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.
-                        Available projects are: {available_projects}.""")
+                        Available projects are: {available_projects}. The project name is its natural identifier.
+                        When calling functions always use the exact name of the project as provided here. For example, a user request may reference `projct a`, `12345`, or simply `A`, but if `Project A (12345)` is on the list of available projects then function calls should be made with `Project A (12345)`. But, if the user request references a significantly different project name like `projct b`, `54333`, or simply `B` then the request should be rejected.""")
                 .defaultAdvisors(
                         new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
                         new LoggingAdvisor())
