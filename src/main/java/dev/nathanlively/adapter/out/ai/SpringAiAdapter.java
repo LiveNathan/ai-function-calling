@@ -22,8 +22,6 @@ public class SpringAiAdapter implements AiGateway {
     private final ChatClient chatClient;
     private final ProjectRepository projectRepository;
     private static final Logger log = LoggerFactory.getLogger(SpringAiAdapter.class);
-    private static final int INITIAL_RETRIEVE_SIZE = 100;
-    private static final int MAX_RETRIEVE_SIZE = 1000;
 
     public SpringAiAdapter(ChatClient.Builder builder, ProjectRepository projectRepository, VectorStore vectorStore) {
         this.projectRepository = projectRepository;
@@ -53,7 +51,7 @@ public class SpringAiAdapter implements AiGateway {
                 .functions("clockInFunction", "updateProjectFunction", "findAllProjectNamesFunction")
                 .user(userMessageDto.userMessageText())
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, INITIAL_RETRIEVE_SIZE))
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
                 .stream()
                 .content()
                 .onErrorResume(WebClientResponseException.class, e -> {
