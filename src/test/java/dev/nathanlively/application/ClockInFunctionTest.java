@@ -1,6 +1,5 @@
 package dev.nathanlively.application;
 
-import dev.nathanlively.config.ChatConfig;
 import dev.nathanlively.config.FunctionConfig;
 import dev.nathanlively.config.ServiceConfig;
 import org.junit.jupiter.api.Disabled;
@@ -31,7 +30,7 @@ class ClockInFunctionTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withPropertyValues("spring.ai.openai.apiKey=" + System.getenv("OPENAI_API_KEY"))
             .withConfiguration(AutoConfigurations.of(OpenAiAutoConfiguration.class))
-            .withUserConfiguration(FunctionConfig.class, ServiceConfig.class, ChatConfig.class, ChatClient.Builder.class);
+            .withUserConfiguration(FunctionConfig.class, ServiceConfig.class, ChatClient.Builder.class);
 
 //    @Autowired
 //    ChatClient.Builder chatClientBuilder;
