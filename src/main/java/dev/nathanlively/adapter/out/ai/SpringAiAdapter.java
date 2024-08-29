@@ -34,6 +34,7 @@ public class SpringAiAdapter implements AiGateway {
                         When calling functions always use the exact name of the project as provided here. For example, a user request may reference `projct a`, `12345`, or simply `A`, but if `Project A (12345)` is on the list of available projects then function calls should be made with `Project A (12345)`. But, if the user request references a significantly different project name like `projct b`, `54333`, or simply `B` then the request should be rejected.""")
                 .defaultAdvisors(
                         new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
+                        // new VectorStoreChatMemoryAdvisor(vectorStore)),
                         new LoggingAdvisor())
                 .build();
     }
