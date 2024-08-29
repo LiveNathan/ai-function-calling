@@ -12,4 +12,5 @@ public class ChatConfig {
     public ChatMemory chatMemory() {
         return new InMemoryChatMemory();
     }
+
 }
