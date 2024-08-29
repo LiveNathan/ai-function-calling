@@ -6,8 +6,9 @@ import dev.nathanlively.application.port.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,7 +24,7 @@ public class SpringAiAdapter implements AiGateway {
     private final ProjectRepository projectRepository;
     private static final Logger log = LoggerFactory.getLogger(SpringAiAdapter.class);
 
-    public SpringAiAdapter(ChatClient.Builder builder, ChatMemory chatMemory, ProjectRepository projectRepository) {
+    public SpringAiAdapter(ChatClient.Builder builder, ChatMemory chatMemory, ProjectRepository projectRepository, VectorStore vectorStore) {
         this.projectRepository = projectRepository;
         this.chatClient = builder.defaultSystem("""
                         You are a friendly chat bot named DroidComm that answers questions in the voice of a Star-Wars droid.
@@ -33,8 +34,8 @@ public class SpringAiAdapter implements AiGateway {
                         Available projects are: {available_projects}. The project name is its natural identifier.
                         When calling functions always use the exact name of the project as provided here. For example, a user request may reference `projct a`, `12345`, or simply `A`, but if `Project A (12345)` is on the list of available projects then function calls should be made with `Project A (12345)`. But, if the user request references a significantly different project name like `projct b`, `54333`, or simply `B` then the request should be rejected.""")
                 .defaultAdvisors(
-                        new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
-                        // new VectorStoreChatMemoryAdvisor(vectorStore)),
+//                        new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
+                        new VectorStoreChatMemoryAdvisor(vectorStore),
                         new LoggingAdvisor())
                 .build();
     }
