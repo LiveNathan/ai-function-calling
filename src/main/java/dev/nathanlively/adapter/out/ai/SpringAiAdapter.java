@@ -6,9 +6,7 @@ import dev.nathanlively.application.port.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.VectorStoreChatMemoryAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
@@ -24,18 +22,20 @@ public class SpringAiAdapter implements AiGateway {
     private final ChatClient chatClient;
     private final ProjectRepository projectRepository;
     private static final Logger log = LoggerFactory.getLogger(SpringAiAdapter.class);
+    private static final int INITIAL_RETRIEVE_SIZE = 100;
+    private static final int MAX_RETRIEVE_SIZE = 1000;
 
-    public SpringAiAdapter(ChatClient.Builder builder, ChatMemory chatMemory, ProjectRepository projectRepository, VectorStore vectorStore) {
+    public SpringAiAdapter(ChatClient.Builder builder, ProjectRepository projectRepository, VectorStore vectorStore) {
         this.projectRepository = projectRepository;
         this.chatClient = builder.defaultSystem("""
                         You are a friendly chat bot named DroidComm that answers questions in the voice of a Star-Wars droid.
                         If you don't know the answer then just say that you don't know.
-                        If you don't have enough information then ask follow up questions until you do.
+                        If you don't have enough information due to unclear user request then ask follow up questions until you do.
+                        If you don't have enough information due to limited chat history then respond `not enough chat history` until you do.
                         Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.
                         Available projects are: {available_projects}. The project name is its natural identifier.
                         When calling functions always use the exact name of the project as provided here. For example, a user request may reference `projct a`, `12345`, or simply `A`, but if `Project A (12345)` is on the list of available projects then function calls should be made with `Project A (12345)`. But, if the user request references a significantly different project name like `projct b`, `54333`, or simply `B` then the request should be rejected.""")
                 .defaultAdvisors(
-                        new PromptChatMemoryAdvisor(chatMemory), // Chat Memory
                         new VectorStoreChatMemoryAdvisor(vectorStore),
                         new LoggingAdvisor())
                 .build();
@@ -44,7 +44,10 @@ public class SpringAiAdapter implements AiGateway {
     @Override
     public Flux<String> sendMessageAndReceiveReplies(UserMessageDto userMessageDto) {
         String projectNames = String.join(", ", projectRepository.findAllNames());
+        return sendMessageWithRetry(userMessageDto, projectNames, INITIAL_RETRIEVE_SIZE);
+    }
 
+    private Flux<String> sendMessageWithRetry(UserMessageDto userMessageDto, String projectNames, int retrieveSize) {
         return chatClient.prompt()
                 .system(sp -> sp.params(Map.of(
                         "current_date", LocalDate.now().toString(),
@@ -55,9 +58,17 @@ public class SpringAiAdapter implements AiGateway {
                 .functions("clockInFunction", "updateProjectFunction", "findAllProjectNamesFunction")
                 .user(userMessageDto.userMessageText())
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, retrieveSize))
                 .stream()
                 .content()
+                .flatMap(response -> {
+                    if (response.contains("not enough chat history") && retrieveSize < MAX_RETRIEVE_SIZE) {
+                        int newRetrieveSize = Math.min(retrieveSize + 100, MAX_RETRIEVE_SIZE);
+                        log.info("Increasing chat memory retrieve size to {} and retrying...", newRetrieveSize);
+                        return sendMessageWithRetry(userMessageDto, projectNames, newRetrieveSize);
+                    }
+                    return Flux.just(response); // Return valid response
+                })
                 .onErrorResume(WebClientResponseException.class, e -> {
                     log.error("WebClient request failed with status: {} and response body: {}",
                             e.getStatusCode(), e.getResponseBodyAsString(), e);
