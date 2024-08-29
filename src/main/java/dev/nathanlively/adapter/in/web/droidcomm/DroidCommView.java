@@ -38,7 +38,7 @@ public class DroidCommView extends VerticalLayout {
 
     public DroidCommView(AiService aiService) {
         this.aiService = aiService;
-        this.chatId = String.valueOf(ID_GENERATOR.incrementAndGet());
+        this.chatId = "1";  // todo: After security is added, update this value to a unique id for the user.
         this.messages = new ArrayList<>();
         this.items = new ArrayList<>();
         this.messageList = new MessageList(items);
@@ -87,7 +87,7 @@ public class DroidCommView extends VerticalLayout {
             addMessagesToUI(userMessage);
 
             MessageListItem reply = new MessageListItem("", Instant.now(), "DroidComm");
-            appendReplyMessages(userMessageText, reply, messageScroller, userMessageDto);
+            appendReplyMessages(reply, messageScroller, userMessageDto);
         }));
     }
 
@@ -97,7 +97,7 @@ public class DroidCommView extends VerticalLayout {
         messages.add(new UserMessage(userMessage.getText()));
     }
 
-    private void appendReplyMessages(String userMessageText, MessageListItem reply, Scroller messageScroller, UserMessageDto userMessageDto) {
+    private void appendReplyMessages(MessageListItem reply, Scroller messageScroller, UserMessageDto userMessageDto) {
         items.add(reply);
         messageList.setItems(items);
 
