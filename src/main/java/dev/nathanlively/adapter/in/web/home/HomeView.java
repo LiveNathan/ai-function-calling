@@ -1,50 +1,66 @@
 package dev.nathanlively.adapter.in.web.home;
 
-import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import dev.nathanlively.adapter.in.web.MainLayout;
 import dev.nathanlively.application.UnfulfilledRequestService;
 import dev.nathanlively.domain.UnfulfilledUserRequest;
 import jakarta.annotation.security.PermitAll;
-
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("Home")
 @Route(value = "", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 @PermitAll
-public class HomeView extends Composite<VerticalLayout> {
-
+public class HomeView extends VerticalLayout {
     private final UnfulfilledRequestService service;
+    private Grid<UnfulfilledUserRequest> basicGrid;
 
+    @Autowired
     public HomeView(UnfulfilledRequestService service) {
         this.service = service;
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        VerticalLayout layoutColumn2 = new VerticalLayout();
-        Grid<UnfulfilledUserRequest> basicGrid = new Grid<>(UnfulfilledUserRequest.class);
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-        layoutRow.addClassName(Gap.MEDIUM);
-        layoutRow.setWidth("100%");
-        layoutRow.getStyle().set("flex-grow", "1");
-        layoutColumn2.setWidth("100%");
-        layoutColumn2.getStyle().set("flex-grow", "1");
-        basicGrid.setWidth("100%");
-        basicGrid.getStyle().set("flex-grow", "0");
-        setGridSampleData(basicGrid);
-        getContent().add(layoutRow);
-        layoutRow.add(layoutColumn2);
-        layoutColumn2.add(basicGrid);
+        createBasicGrid();
+        add(basicGrid);
     }
 
-    private void setGridSampleData(Grid<UnfulfilledUserRequest> grid) {
-        List<UnfulfilledUserRequest> unfulfilledUserRequests = service.findAll();
-        grid.setItems(unfulfilledUserRequests);
+    private void createBasicGrid() {
+        basicGrid = new Grid<>(UnfulfilledUserRequest.class, false);
+
+        basicGrid.addColumn(UnfulfilledUserRequest::unfulfilledRequest).setHeader("Request");
+        basicGrid.addColumn(UnfulfilledUserRequest::conversationId).setHeader("Conversation ID");
+
+        basicGrid.setItemDetailsRenderer(new ComponentRenderer<>(UnfulfilledRequestDetailsFormLayout::new,
+                UnfulfilledRequestDetailsFormLayout::setRequest));
+
+        basicGrid.setItems(service.findAll());
+        basicGrid.setWidth("100%");
+        basicGrid.getStyle().set("flex-grow", "0");
+    }
+
+    private static class UnfulfilledRequestDetailsFormLayout extends FormLayout {
+        private final TextArea request = new TextArea("Request");
+        private final TextField conversationId = new TextField("Conversation ID");
+
+        public UnfulfilledRequestDetailsFormLayout() {
+            request.setReadOnly(true);
+            conversationId.setReadOnly(true);
+
+            add(request, conversationId);
+            setResponsiveSteps(new ResponsiveStep("0", 3));
+            setColspan(request, 3);
+            setColspan(conversationId, 3);
+        }
+
+        public void setRequest(UnfulfilledUserRequest request) {
+            this.request.setValue(request.unfulfilledRequest());
+            this.conversationId.setValue(request.conversationId());
+        }
     }
 }

@@ -2,9 +2,8 @@ package dev.nathanlively.application;
 
 import dev.nathanlively.application.port.RequestRepository;
 import dev.nathanlively.domain.UnfulfilledUserRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class UnfulfilledRequestService {
-    private static final Logger log = LoggerFactory.getLogger(UnfulfilledRequestService.class);
     private final VectorStore vectorStore;
     private final RequestRepository requestRepository;
 
@@ -32,7 +30,7 @@ public class UnfulfilledRequestService {
     }
 
     private List<Document> fetchDocuments() {
-        return vectorStore.similaritySearch("I don't have the capability");
+        return vectorStore.similaritySearch(SearchRequest.query("I don't have the capability").withTopK(10));
     }
 
     private UnfulfilledUserRequest createUserRequest(Document document) {
@@ -43,7 +41,6 @@ public class UnfulfilledRequestService {
 
     private String extractConversationId(Map<String, Object> metadata) {
         for (Map.Entry<String, Object> entry : metadata.entrySet()) {
-            log.info("Metadata - Key: {}, Value: {}", entry.getKey(), entry.getValue());
             if (entry.getKey().equalsIgnoreCase("conversationId")) {
                 return entry.getValue().toString();
             }
