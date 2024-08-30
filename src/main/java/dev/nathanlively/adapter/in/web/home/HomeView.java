@@ -13,6 +13,8 @@ import dev.nathanlively.application.UnfulfilledRequestService;
 import dev.nathanlively.domain.UnfulfilledUserRequest;
 import jakarta.annotation.security.PermitAll;
 
+import java.util.List;
+
 @PageTitle("Home")
 @Route(value = "", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
@@ -42,6 +44,7 @@ public class HomeView extends Composite<VerticalLayout> {
     }
 
     private void setGridSampleData(Grid<UnfulfilledUserRequest> grid) {
-        grid.setItems(query -> service.findAll().stream());
+        List<UnfulfilledUserRequest> unfulfilledUserRequests = service.findAll();
+        grid.setItems(unfulfilledUserRequests);
     }
 }
