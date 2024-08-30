@@ -4,7 +4,6 @@ import dev.nathanlively.adapter.out.ai.SpringAiAdapter;
 import dev.nathanlively.application.*;
 import dev.nathanlively.application.port.AiGateway;
 import dev.nathanlively.application.port.ProjectRepository;
-import dev.nathanlively.application.port.RequestRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -30,17 +29,12 @@ public class ServiceConfig {
     }
 
     @Bean
-    public RequestRepository requestRepository() {
-        return InMemoryRequestRepository.createEmpty();
-    }
-
-    @Bean
     public ClockInService clockInService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         return new ClockInService(resourceRepository, projectRepository);
     }
 
     @Bean
-    public UnfulfilledRequestService unfulfilledRequestService(VectorStore vectorStore, RequestRepository requestRepository) {
+    public UnfulfilledRequestService unfulfilledRequestService(VectorStore vectorStore) {
         return new UnfulfilledRequestService(vectorStore);
     }
 }
