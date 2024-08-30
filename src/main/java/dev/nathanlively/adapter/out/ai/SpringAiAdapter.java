@@ -26,11 +26,12 @@ public class SpringAiAdapter implements AiGateway {
     public SpringAiAdapter(ChatClient.Builder builder, ProjectRepository projectRepository, VectorStore vectorStore) {
         this.projectRepository = projectRepository;
         this.chatClient = builder.defaultSystem("""
-                        You are a friendly chat bot named DroidComm that answers questions in the voice of a Star-Wars droid.
-                        If you don't know the answer or if the unfulfilledRequest cannot be fulfilled with the existing functions, call the 'unfulfilledRequestFunction'.
+                        You are an assistant project manager expert at managing many resources and schedules. Adopt the user's tone to make them feel comfortable with you. If they are playful and silly, so are you. If they are professional and matter-of-fact, so are you.
+                        Keep your responses short and direct because people need your help in a hurry, but for complex tasks, think out loud by writing each step.
+                        For questions about long documents, pull the most relevant quote from the document and consider whether it answers the user's question or whether it lacks sufficient detail.
                         Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.
                         Available projects are: {available_projects}. The project name is its natural identifier.
-                        When calling functions always use the exact name of the project as provided here. For example, a user unfulfilledRequest may reference `projct a`, `12345`, or simply `A`, but if `Project A (12345)` is on the list of available projects then function calls should be made with `Project A (12345)`. But, if the user unfulfilledRequest references a significantly different project name like `projct b`, `54333`, or simply `B` then the unfulfilledRequest should be rejected.""")
+                        When calling functions, always use the exact name of the project as provided here. For example, a user's unfulfilled request may reference `projct a`, `12345`, or simply `A`, but if `Project A (12345)` is on the list of available projects, then function calls should be made with `Project A (12345)`. However, if the user's unfulfilled request references a significantly different project name like `projct b`, `54333`, or simply `B`, then the unfulfilled request should be rejected.""")
                 .defaultAdvisors(
                         new VectorStoreChatMemoryAdvisor(vectorStore),
                         new LoggingAdvisor())
@@ -47,7 +48,7 @@ public class SpringAiAdapter implements AiGateway {
                         "user_name", userMessageDto.userName(),
                         "available_projects", projectNames
                 )))
-                .functions("clockInFunction", "updateProjectFunction", "findAllProjectNamesFunction", "unfulfilledRequestFunction")
+                .functions("clockInFunction", "updateProjectFunction", "findAllProjectNamesFunction")
                 .user(userMessageDto.userMessageText())
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))

@@ -4,7 +4,6 @@ import dev.nathanlively.application.ClockInService;
 import dev.nathanlively.application.functions.clockin.ClockInFunction;
 import dev.nathanlively.application.functions.clockin.ClockInRequest;
 import dev.nathanlively.application.functions.clockin.ClockInResponse;
-import dev.nathanlively.application.functions.failedrequest.FailedUserRequestFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
@@ -12,8 +11,6 @@ import dev.nathanlively.application.functions.updateproject.UpdateProjectFunctio
 import dev.nathanlively.application.functions.updateproject.UpdateProjectRequest;
 import dev.nathanlively.application.functions.updateproject.UpdateProjectResponse;
 import dev.nathanlively.application.port.ProjectRepository;
-import dev.nathanlively.application.port.RequestRepository;
-import dev.nathanlively.domain.UnfulfilledUserRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
@@ -40,9 +37,4 @@ public class FunctionConfig {
         return new FindAllProjectNamesFunction(repository);
     }
 
-    @Bean
-    @Description("The unfulfilledRequestFunction is designed to handle requests or commands that the AI cannot fulfill by logging them as potential feature requests or bug reports, and notifying the system administrator. This function should be called whenever a user request does not match available functions or actions.")
-    public Function<UnfulfilledUserRequest, String> unfulfilledRequestFunction(RequestRepository requestRepository) {
-        return new FailedUserRequestFunction(requestRepository);
-    }
 }
