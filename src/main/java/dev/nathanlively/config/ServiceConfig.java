@@ -38,4 +38,9 @@ public class ServiceConfig {
     public ClockInService clockInService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         return new ClockInService(resourceRepository, projectRepository);
     }
+
+    @Bean
+    public UnfulfilledRequestService unfulfilledRequestService(VectorStore vectorStore, RequestRepository requestRepository) {
+        return new UnfulfilledRequestService(vectorStore, requestRepository);
+    }
 }

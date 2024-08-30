@@ -4,7 +4,7 @@ import dev.nathanlively.application.ClockInService;
 import dev.nathanlively.application.functions.clockin.ClockInFunction;
 import dev.nathanlively.application.functions.clockin.ClockInRequest;
 import dev.nathanlively.application.functions.clockin.ClockInResponse;
-import dev.nathanlively.application.functions.clockin.FailedUserRequestFunction;
+import dev.nathanlively.application.functions.failedrequest.FailedUserRequestFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;

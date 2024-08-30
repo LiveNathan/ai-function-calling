@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -9,6 +10,9 @@ import static dev.nathanlively.common.validation.Validation.validate;
 
 
 public record UnfulfilledUserRequest(
+        @Email(message = "Email must be a valid email address")
+        @NotBlank(message = "Email must not be null or blank")
+        String email,
 
         @NotBlank(message = "Request must not be null or blank")
         String unfulfilledRequest,
@@ -22,7 +26,10 @@ public record UnfulfilledUserRequest(
         @NotNull(message = "Category must not be null")
         RequestCategory category
 ) {
-    public UnfulfilledUserRequest(@NotBlank(message = "Request must not be null or blank")
+    public UnfulfilledUserRequest(@Email(message = "Email must be a valid email address")
+                             @NotBlank(message = "Email must not be null or blank")
+                             String email,
+                                  @NotBlank(message = "Request must not be null or blank")
                              String unfulfilledRequest,
                                   @NotBlank(message = "Reason for failure must not be null or blank")
                              String reasonForFailure,
@@ -30,6 +37,7 @@ public record UnfulfilledUserRequest(
                              Instant timestamp,
                                   @NotNull(message = "Category must not be null")
                              RequestCategory category) {
+        this.email = email;
         this.unfulfilledRequest = unfulfilledRequest;
         this.reasonForFailure = reasonForFailure;
         this.timestamp = timestamp;
