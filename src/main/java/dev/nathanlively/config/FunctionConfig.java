@@ -36,4 +36,5 @@ public class FunctionConfig {
     public Function<FindAllProjectNamesRequest, FindAllProjectNamesResponse> findAllProjectNamesFunction(ProjectRepository repository) {
         return new FindAllProjectNamesFunction(repository);
     }
+
 }

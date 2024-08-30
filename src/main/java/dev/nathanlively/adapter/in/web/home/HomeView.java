@@ -1,40 +1,72 @@
 package dev.nathanlively.adapter.in.web.home;
 
-import com.vaadin.flow.component.Composite;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import dev.nathanlively.adapter.in.web.MainLayout;
+import dev.nathanlively.application.UnfulfilledRequestService;
+import dev.nathanlively.domain.UnfulfilledUserRequest;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("Home")
 @Route(value = "", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 @PermitAll
-public class HomeView extends Composite<VerticalLayout> {
+public class HomeView extends VerticalLayout {
+    private final UnfulfilledRequestService service;
+    private Grid<UnfulfilledUserRequest> grid;
 
-    public HomeView() {
-        HorizontalLayout layoutRow2 = new HorizontalLayout();
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        VerticalLayout layoutColumn2 = new VerticalLayout();
-        VerticalLayout layoutColumn3 = new VerticalLayout();
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-        layoutRow2.addClassName(Gap.MEDIUM);
-        layoutRow2.setWidth("100%");
-        layoutRow2.setHeight("min-content");
-        layoutRow.addClassName(Gap.MEDIUM);
-        layoutRow.setWidth("100%");
-        layoutRow.getStyle().set("flex-grow", "1");
-        layoutColumn2.getStyle().set("flex-grow", "1");
-        layoutColumn3.setWidth("100%");
-        layoutColumn3.getStyle().set("flex-grow", "1");
-        getContent().add(layoutRow2);
-        getContent().add(layoutRow);
-        layoutRow.add(layoutColumn2);
-        layoutRow.add(layoutColumn3);
+    @Autowired
+    public HomeView(UnfulfilledRequestService service) {
+        this.service = service;
+        H1 h1 = new H1("Unfulfilled Requests");
+        createBasicGrid();
+        add(h1, grid);
+    }
+
+    private void createBasicGrid() {
+        grid = new Grid<>(UnfulfilledUserRequest.class, false);
+
+        grid.addColumn(UnfulfilledUserRequest::unfulfilledRequest).setHeader("Request");
+        grid.addColumn(UnfulfilledUserRequest::conversationId).setHeader("Conversation ID");
+
+        grid.setItemDetailsRenderer(new ComponentRenderer<>(UnfulfilledRequestDetailsFormLayout::new,
+                UnfulfilledRequestDetailsFormLayout::setRequest));
+
+        grid.setItems(service.findAll());
+        grid.setWidth("100%");
+        grid.getStyle().set("flex-grow", "0");
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER);
+        grid.setAllRowsVisible(true);
+    }
+
+    private static class UnfulfilledRequestDetailsFormLayout extends FormLayout {
+        private final TextArea request = new TextArea("Request");
+        private final TextField conversationId = new TextField("Conversation ID");
+
+        public UnfulfilledRequestDetailsFormLayout() {
+            request.setReadOnly(true);
+            conversationId.setReadOnly(true);
+
+            add(request, conversationId);
+            setResponsiveSteps(new ResponsiveStep("0", 3));
+            setColspan(request, 3);
+            setColspan(conversationId, 3);
+        }
+
+        public void setRequest(UnfulfilledUserRequest request) {
+            this.request.setValue(request.unfulfilledRequest());
+            this.conversationId.setValue(request.conversationId());
+        }
     }
 }

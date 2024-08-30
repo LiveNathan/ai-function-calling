@@ -5,5 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 
-public record UserMessageDto(@NotNull Instant creationTime, @NotBlank String userName,@NotBlank String userMessageText, @NotBlank String chatId) {
+public record UserMessageDto(@NotNull Instant creationTime, @NotBlank String userName, @NotBlank String userMessageText,
+                             @NotBlank String chatId) {
 }

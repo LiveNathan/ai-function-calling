@@ -1,10 +1,7 @@
 package dev.nathanlively.config;
 
 import dev.nathanlively.adapter.out.ai.SpringAiAdapter;
-import dev.nathanlively.application.AiService;
-import dev.nathanlively.application.ClockInService;
-import dev.nathanlively.application.InMemoryProjectRepository;
-import dev.nathanlively.application.InMemoryResourceRepository;
+import dev.nathanlively.application.*;
 import dev.nathanlively.application.port.AiGateway;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
@@ -34,5 +31,10 @@ public class ServiceConfig {
     @Bean
     public ClockInService clockInService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         return new ClockInService(resourceRepository, projectRepository);
+    }
+
+    @Bean
+    public UnfulfilledRequestService unfulfilledRequestService(VectorStore vectorStore) {
+        return new UnfulfilledRequestService(vectorStore);
     }
 }
