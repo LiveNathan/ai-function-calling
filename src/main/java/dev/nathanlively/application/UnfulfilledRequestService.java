@@ -1,6 +1,5 @@
 package dev.nathanlively.application;
 
-import dev.nathanlively.application.port.RequestRepository;
 import dev.nathanlively.domain.UnfulfilledUserRequest;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
@@ -8,25 +7,22 @@ import org.springframework.ai.vectorstore.VectorStore;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UnfulfilledRequestService {
     private final VectorStore vectorStore;
-    private final RequestRepository requestRepository;
 
-    public UnfulfilledRequestService(VectorStore vectorStore, RequestRepository requestRepository) {
+    public UnfulfilledRequestService(VectorStore vectorStore) {
         this.vectorStore = vectorStore;
-        this.requestRepository = requestRepository;
     }
 
-    public List<UnfulfilledUserRequest> findAll() {
+    public Set<UnfulfilledUserRequest> findAll() {
         List<Document> documents = fetchDocuments();
-        List<UnfulfilledUserRequest> unfulfilledUserRequests = documents.stream()
+        return documents.stream()
                 .map(this::createUserRequest)
                 .filter(request -> request.conversationId() != null)
-                .collect(Collectors.toList());
-        saveRequests(unfulfilledUserRequests);
-        return unfulfilledUserRequests;
+                .collect(Collectors.toSet());
     }
 
     private List<Document> fetchDocuments() {
@@ -48,7 +44,4 @@ public class UnfulfilledRequestService {
         return null;
     }
 
-    private void saveRequests(List<UnfulfilledUserRequest> unfulfilledUserRequests) {
-        requestRepository.saveAll(unfulfilledUserRequests);
-    }
 }

@@ -2,6 +2,8 @@ package dev.nathanlively.adapter.in.web.home;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -21,27 +23,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 @PermitAll
 public class HomeView extends VerticalLayout {
     private final UnfulfilledRequestService service;
-    private Grid<UnfulfilledUserRequest> basicGrid;
+    private Grid<UnfulfilledUserRequest> grid;
 
     @Autowired
     public HomeView(UnfulfilledRequestService service) {
         this.service = service;
+        H1 h1 = new H1("Unfulfilled Requests");
         createBasicGrid();
-        add(basicGrid);
+        add(h1, grid);
     }
 
     private void createBasicGrid() {
-        basicGrid = new Grid<>(UnfulfilledUserRequest.class, false);
+        grid = new Grid<>(UnfulfilledUserRequest.class, false);
 
-        basicGrid.addColumn(UnfulfilledUserRequest::unfulfilledRequest).setHeader("Request");
-        basicGrid.addColumn(UnfulfilledUserRequest::conversationId).setHeader("Conversation ID");
+        grid.addColumn(UnfulfilledUserRequest::unfulfilledRequest).setHeader("Request");
+        grid.addColumn(UnfulfilledUserRequest::conversationId).setHeader("Conversation ID");
 
-        basicGrid.setItemDetailsRenderer(new ComponentRenderer<>(UnfulfilledRequestDetailsFormLayout::new,
+        grid.setItemDetailsRenderer(new ComponentRenderer<>(UnfulfilledRequestDetailsFormLayout::new,
                 UnfulfilledRequestDetailsFormLayout::setRequest));
 
-        basicGrid.setItems(service.findAll());
-        basicGrid.setWidth("100%");
-        basicGrid.getStyle().set("flex-grow", "0");
+        grid.setItems(service.findAll());
+        grid.setWidth("100%");
+        grid.getStyle().set("flex-grow", "0");
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_NO_BORDER);
+        grid.setAllRowsVisible(true);
     }
 
     private static class UnfulfilledRequestDetailsFormLayout extends FormLayout {

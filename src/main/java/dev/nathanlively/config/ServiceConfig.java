@@ -41,6 +41,6 @@ public class ServiceConfig {
 
     @Bean
     public UnfulfilledRequestService unfulfilledRequestService(VectorStore vectorStore, RequestRepository requestRepository) {
-        return new UnfulfilledRequestService(vectorStore, requestRepository);
+        return new UnfulfilledRequestService(vectorStore);
     }
 }
