@@ -12,10 +12,10 @@ public class CustomVectorStoreChatMemoryAdvisor extends VectorStoreChatMemoryAdv
     }
 
 //    @Override
-//    public AdvisedRequest adviseRequest(AdvisedRequest request, Map<String, Object> context) {
-//        String advisedSystemText = request.systemText() + System.lineSeparator() + getSystemTextAdvise();
+//    public AdvisedRequest adviseRequest(AdvisedRequest unfulfilledRequest, Map<String, Object> context) {
+//        String advisedSystemText = unfulfilledRequest.systemText() + System.lineSeparator() + getSystemTextAdvise();
 //
-//        var searchRequest = SearchRequest.query(request.userText())
+//        var searchRequest = SearchRequest.query(unfulfilledRequest.userText())
 //                .withTopK(this.doGetChatMemoryRetrieveSize(context))
 //                .withFilterExpression(
 //                        getDocumentMetadataConversationId() + "=='" + this.doGetConversationId(context) + "'");
@@ -26,15 +26,15 @@ public class CustomVectorStoreChatMemoryAdvisor extends VectorStoreChatMemoryAdv
 //                .map(Content::getContent)
 //                .collect(Collectors.joining(System.lineSeparator()));
 //
-//        Map<String, Object> advisedSystemParams = new HashMap<>(request.systemParams());
+//        Map<String, Object> advisedSystemParams = new HashMap<>(unfulfilledRequest.systemParams());
 //        advisedSystemParams.put("long_term_memory", longTermMemory);
 //
-//        AdvisedRequest advisedRequest = AdvisedRequest.from(request)
+//        AdvisedRequest advisedRequest = AdvisedRequest.from(unfulfilledRequest)
 //                .withSystemText(advisedSystemText)
 //                .withSystemParams(advisedSystemParams)
 //                .build();
 //
-//        UserMessage userMessage = new UserMessage(request.userText(), request.media());
+//        UserMessage userMessage = new UserMessage(unfulfilledRequest.userText(), unfulfilledRequest.media());
 //        this.getChatMemoryStore().write(toDocuments(List.of(userMessage), this.doGetConversationId(context)));
 //
 //        return advisedRequest;

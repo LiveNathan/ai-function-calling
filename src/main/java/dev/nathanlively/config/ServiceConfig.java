@@ -1,12 +1,10 @@
 package dev.nathanlively.config;
 
 import dev.nathanlively.adapter.out.ai.SpringAiAdapter;
-import dev.nathanlively.application.AiService;
-import dev.nathanlively.application.ClockInService;
-import dev.nathanlively.application.InMemoryProjectRepository;
-import dev.nathanlively.application.InMemoryResourceRepository;
+import dev.nathanlively.application.*;
 import dev.nathanlively.application.port.AiGateway;
 import dev.nathanlively.application.port.ProjectRepository;
+import dev.nathanlively.application.port.RequestRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -29,6 +27,11 @@ public class ServiceConfig {
     @Bean
     public ProjectRepository projectRepository() {
         return InMemoryProjectRepository.createEmpty();
+    }
+
+    @Bean
+    public RequestRepository requestRepository() {
+        return InMemoryRequestRepository.createEmpty();
     }
 
     @Bean
