@@ -18,20 +18,18 @@ class UpdateTimesheetEntryServiceTest {
     private final String resourceEmail = "nathanlively@gmail.com";
     private UpdateTimesheetEntryService service;
     private ResourceRepository resourceRepository;
-    private ProjectRepository projectRepository;
-    private Resource resource;
     private TimesheetEntry timesheetEntry;
 
     @BeforeEach
     void setUp() {
         resourceRepository = InMemoryResourceRepository.createEmpty();
-        projectRepository = InMemoryProjectRepository.createEmpty();
-        resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
+        service = new UpdateTimesheetEntryService(resourceRepository, projectRepository);
+        Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         timesheetEntry = TimesheetEntry.clockIn(null, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
         resourceRepository.save(resource);
         projectRepository.save(project);
-        service = new UpdateTimesheetEntryService(resourceRepository, projectRepository);
     }
 
     @Test
