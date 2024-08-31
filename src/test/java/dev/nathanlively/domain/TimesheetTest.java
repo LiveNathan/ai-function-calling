@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.IncompleteEntryException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import org.junit.jupiter.api.Test;
@@ -61,6 +62,17 @@ class TimesheetTest {
         timesheet.clockOut(Instant.now().plusSeconds(60 * 2));
 
         assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNotNull();
+    }
+
+    @Test
+    void clockOutThrowsAlreadyClockedOutException() throws Exception {
+        Timesheet timesheet = new Timesheet(null);
+        timesheet.clockIn(Instant.now());
+        timesheet.clockOut(Instant.now().plusSeconds(60 * 2));
+
+        assertThatThrownBy(() -> timesheet.clockOut(Instant.now().plusSeconds(60 * 3)))
+                .isInstanceOf(AlreadyClockedOutException.class)
+                .hasMessage("Cannot clock out. The most recent entry is already clocked out.");
     }
 
     // clock in given no clock out, clock out automatically

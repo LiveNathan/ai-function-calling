@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.IncompleteEntryException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import jakarta.validation.constraints.NotNull;
@@ -59,7 +60,7 @@ public final class Timesheet {
     public void clockOut(Instant clockOutTime) {
         TimesheetEntry recentEntry = mostRecentEntry();
         if (recentEntry.workPeriod().end() != null) {
-            throw new IllegalStateException("Cannot clock out. The most recent entry is already clocked out.");
+            throw new AlreadyClockedOutException();
         }
         recentEntry.clockOut(clockOutTime);
     }
