@@ -2,14 +2,14 @@ package dev.nathanlively.domain;
 
 import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class Timesheet {
-    private List<TimesheetEntry> timeSheetEntries;
+    private final List<TimesheetEntry> timeSheetEntries;
 
     public Timesheet(List<TimesheetEntry> timeSheetEntries) {
         if (timeSheetEntries == null) {
@@ -18,7 +18,8 @@ public final class Timesheet {
         this.timeSheetEntries = timeSheetEntries;
     }
 
-    public void appendEntry(@NotNull TimesheetEntry timesheetEntry) {
+    public void appendEntry(TimesheetEntry timesheetEntry) {
+        Objects.requireNonNull(timesheetEntry, "TimesheetEntry cannot be null");
         timeSheetEntries.add(timesheetEntry);
     }
 
@@ -33,19 +34,14 @@ public final class Timesheet {
         return timeSheetEntries.getLast();
     }
 
-    private void clockIn(Instant clockInTime, Project projectA) {
+    private void clockIn(Instant clockInTime, Project project) {
         if (!timeSheetEntries.isEmpty()) {
             TimesheetEntry recentEntry = mostRecentEntry();
             if (recentEntry.workPeriod().end() == null) {
                 recentEntry.clockOut(clockInTime);
             }
         }
-        TimesheetEntry newEntry = null;
-        if (projectA == null) {
-            newEntry = TimesheetEntry.clockIn(clockInTime);
-        } else {
-            newEntry = TimesheetEntry.clockIn(projectA, clockInTime);
-        }
+        TimesheetEntry newEntry = (project == null) ? TimesheetEntry.clockIn(clockInTime) : TimesheetEntry.clockIn(project, clockInTime);
         appendEntry(newEntry);
     }
 
@@ -53,8 +49,9 @@ public final class Timesheet {
         clockIn(clockInTime, null);
     }
 
-    public void clockInWithProject(Project projectA, Instant clockInTime) {
-        clockIn(clockInTime, projectA);
+    public void clockInWithProject(Project project, Instant clockInTime) {
+        Objects.requireNonNull(project, "Project cannot be null");
+        clockIn(clockInTime, project);
     }
 
     public void clockOut(Instant clockOutTime) {
