@@ -33,13 +33,12 @@ public class SpringAiAdapter implements AiGateway {
                         Keep your responses short and direct because people need your help in a hurry, but for complex tasks, think out loud by writing each step.
                         For questions about long documents, pull the most relevant quote from the document and consider whether it answers the user's question or whether it lacks sufficient detail.
                         Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.
-                        Available projects are: {available_projects}. The project name is its natural identifier.
-                        When calling functions, always use the exact name of the project as provided here. For example, a user's request may reference `projct a`, `12345`, or simply `A`, but if `Project A (12345)` is on the list of available projects, then function calls should be made with `Project A (12345)`. However, if the user's request references a significantly different project name like `projct b`, `54333`, or simply `B`, then the request should be rejected.""")
+                        Available projects are: {available_projects}. The project name is its natural identifier.""")
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(chatMemory),
                         new VectorStoreChatMemoryAdvisor(vectorStore),
                         new LoggingAdvisor())
-                .defaultFunctions("clockInFunction", "clockOutFunction", "findAllProjectNamesFunction", "updateProjectFunction")
+                .defaultFunctions("clockInFunction", "clockOutFunction", "findAllProjectNamesFunction", "updateProjectFunction", "createProjectFunction")
                 .build();
     }
 
