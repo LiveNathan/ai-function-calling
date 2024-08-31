@@ -2,6 +2,7 @@ package dev.nathanlively.config;
 
 import dev.nathanlively.application.ClockInService;
 import dev.nathanlively.application.ClockOutService;
+import dev.nathanlively.application.CreateProjectService;
 import dev.nathanlively.application.UpdateTimesheetEntryService;
 import dev.nathanlively.application.functions.clockin.ClockInFunction;
 import dev.nathanlively.application.functions.clockin.ClockInRequest;
@@ -9,6 +10,9 @@ import dev.nathanlively.application.functions.clockin.ClockInResponse;
 import dev.nathanlively.application.functions.clockout.ClockOutFunction;
 import dev.nathanlively.application.functions.clockout.ClockOutRequest;
 import dev.nathanlively.application.functions.clockout.ClockOutResponse;
+import dev.nathanlively.application.functions.createproject.CreateProjectFunction;
+import dev.nathanlively.application.functions.createproject.CreateProjectRequest;
+import dev.nathanlively.application.functions.createproject.CreateProjectResponse;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
@@ -24,6 +28,12 @@ import java.util.function.Function;
 
 @Configuration
 public class FunctionConfig {
+    @Bean
+    @Description("Create a new project.")
+    public Function<CreateProjectRequest, CreateProjectResponse> createProjectFunction(CreateProjectService createProjectService) {
+        return new CreateProjectFunction(createProjectService);
+    }
+
     @Bean
     @Description("Create a new timesheet entry for a resource. The project name is important, but optional. If the project name is known, include it. Otherwise, it can be set to null, and the project can be updated later using the updateProjectFunction.")
     public Function<ClockInRequest, ClockInResponse> clockInFunction(ClockInService clockInService) {
