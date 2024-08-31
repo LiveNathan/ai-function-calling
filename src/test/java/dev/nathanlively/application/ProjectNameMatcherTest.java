@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -28,15 +29,19 @@ class ProjectNameMatcherTest {
 
     @ParameterizedTest
     @MethodSource("provideProjectNames")
-    void from(String userSubmittedProjectName, String expected) throws Exception {
+    void from(String userSubmittedProjectName, String expected) {
         ProjectRepository repository = InMemoryProjectRepository.createEmpty();
-        Project project1 = new Project("Pella Fall Planning Conference");
-        Project project2 = new Project("MSF Fall History & Heritage Meeting");
+        String pellaFallPlanningConference = "Pella Fall Planning Conference";
+        String msfMeetingName = "MSF Fall History & Heritage Meeting";
+        List<String> allNamesFromRepo = List.of(pellaFallPlanningConference, msfMeetingName);
+        Project project1 = new Project(pellaFallPlanningConference);
+        Project project2 = new Project(msfMeetingName);
         repository.save(project1);
         repository.save(project2);
         assertThat(repository.findAll().size()).isEqualTo(2);
         ProjectNameMatcher service = new ProjectNameMatcher(repository);
-        Optional<String> actual = service.from(userSubmittedProjectName);
+
+        Optional<String> actual = ProjectNameMatcher.from(userSubmittedProjectName, allNamesFromRepo);
 
         if (expected.isEmpty()) {
             assertThat(actual).isEmpty();
@@ -44,4 +49,5 @@ class ProjectNameMatcherTest {
             assertThat(actual).isEqualTo(Optional.of(expected));
         }
     }
+
 }

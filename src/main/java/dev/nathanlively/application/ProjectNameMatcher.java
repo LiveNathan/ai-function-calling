@@ -14,23 +14,22 @@ public class ProjectNameMatcher {
         this.projectRepository = projectRepository;
     }
 
-    public Optional<String> from(String userInput) {
+    public static Optional<String> from(String userInput, List<String> allNamesFromRepo) {
         String normalizedUserInput = normalize(userInput);
-        List<String> allNames = fetchAllProjectNames();
 
-        return findExactMatch(allNames, normalizedUserInput).or(() -> findBestFuzzyMatch(allNames, normalizedUserInput));
+        return findExactMatch(allNamesFromRepo, normalizedUserInput).or(() -> findBestFuzzyMatch(allNamesFromRepo, normalizedUserInput));
     }
 
-    private Optional<String> findExactMatch(List<String> allNames, String normalizedUserInput) {
+    private static Optional<String> findExactMatch(List<String> allNames, String normalizedUserInput) {
         if (allNames.contains(normalizedUserInput)) {
-            return projectRepository.findAllNames().stream()
+            return allNames.stream()
                     .filter(name -> name.equalsIgnoreCase(normalizedUserInput))
                     .findFirst();
         }
         return Optional.empty();
     }
 
-    private Optional<String> findBestFuzzyMatch(List<String> allNames, String normalizedUserInput) {
+    private static Optional<String> findBestFuzzyMatch(List<String> allNames, String normalizedUserInput) {
         FuzzyScore fuzzyScore = new FuzzyScore(Locale.ENGLISH);
         String bestMatch = null;
         int highestScore = 0;
@@ -46,7 +45,7 @@ public class ProjectNameMatcher {
         int lengthBasedThreshold = calculateDynamicThreshold(normalizedUserInput);
         if (highestScore >= lengthBasedThreshold && bestMatch != null) {
             String finalBestMatch = bestMatch;
-            return projectRepository.findAllNames().stream()
+            return allNames.stream()
                     .filter(name -> name.equalsIgnoreCase(finalBestMatch))
                     .findFirst();
         }
@@ -54,17 +53,11 @@ public class ProjectNameMatcher {
         return Optional.empty();
     }
 
-    private String normalize(String input) {
+    private static String normalize(String input) {
         return input.trim().toLowerCase();
     }
 
-    private List<String> fetchAllProjectNames() {
-        return projectRepository.findAllNames().stream()
-                .map(String::toLowerCase)
-                .toList();
-    }
-
-    private int calculateDynamicThreshold(String userInput) {
+    private static int calculateDynamicThreshold(String userInput) {
         int wordCount = userInput.split("\\s+").length;
         int upperThreshold = 17;
         int lowerThreshold = 11 + wordCount * 2;
