@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import dev.nathanlively.domain.exceptions.IncompleteEntryException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,16 @@ class TimesheetTest {
         assertThatThrownBy(timesheet::mostRecentEntry)
                 .isInstanceOf(NoTimesheetEntriesException.class)
                 .hasMessage("No timesheet entries found.");
+    }
+
+    @Test
+    void clockInThrowsIncompleteEntryException() {
+        Timesheet timesheet = new Timesheet(null);
+        timesheet.clockIn(Instant.now());
+
+        assertThatThrownBy(() -> timesheet.clockIn(Instant.now()))
+                .isInstanceOf(IncompleteEntryException.class)
+                .hasMessage("Cannot clock in. The previous entry has not been clocked out.");
     }
 
     // clock out
