@@ -33,7 +33,9 @@ public class InMemoryProjectRepository implements ProjectRepository {
 
     @Override
     public Optional<Project> findByName(String name) {
-        return Optional.ofNullable(projects.get(name));
+        List<String> allNames = findAllNames();
+        return ProjectNameMatcher.from(name, allNames)
+                .flatMap(cleanedName -> Optional.ofNullable(projects.get(cleanedName)));
     }
 
     @Override
