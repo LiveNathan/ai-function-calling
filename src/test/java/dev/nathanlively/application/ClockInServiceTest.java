@@ -64,21 +64,6 @@ class ClockInServiceTest {
         assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
     }
 
-    @Test
-    void appendProject() {
-        TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
-        service.clockIn(resourceEmail, clockInTime, null);
-        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNull();
 
-        Result<TimesheetEntry> actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
-
-        assertThat(actual).isSuccess();
-        assertThat(actual.failureMessages()).isEmpty();
-        assertThat(actual).successValues().contains(expected);
-
-        List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries();
-        assertThat(timesheetEntries).hasSize(1);
-        assertThat(timesheetEntries.getFirst().project()).isNotNull();
-    }
 
 }

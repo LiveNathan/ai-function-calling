@@ -2,8 +2,6 @@ package dev.nathanlively.application;
 
 import dev.nathanlively.application.functions.clockin.ClockInRequest;
 import dev.nathanlively.application.functions.clockin.ClockInResponse;
-import dev.nathanlively.application.functions.updateproject.UpdateProjectRequest;
-import dev.nathanlively.application.functions.updateproject.UpdateProjectResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Project;
@@ -14,11 +12,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
 
-@Validated
 public class ClockInService {
     private final ResourceRepository resourceRepository;
     private final ProjectRepository projectRepository;
@@ -63,38 +59,5 @@ public class ClockInService {
         }
     }
 
-    public Result<TimesheetEntry> updateProjectOfMostRecentTimesheetEntry(String resourceEmail, String projectName) {
-        if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
-            return Result.failure("Email must not be null or empty.");
-        }
-        if (projectName == null || projectName.trim().isEmpty()) {
-            return Result.failure("Project name must not be null or empty.");
-        }
 
-        Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
-        if (resource == null) {
-            return Result.failure("Resource not found with email: " + resourceEmail);
-        }
-
-        Project project = projectRepository.findByName(projectName).orElse(null);
-        if (project == null) {
-            return Result.failure("Project not found with name: " + projectName);
-        }
-
-        TimesheetEntry mostRecentEntry = resource.timeSheet().mostRecentEntry();
-        mostRecentEntry.setProject(project);
-        resourceRepository.save(resource);
-        return Result.success(mostRecentEntry);
-    }
-
-    public UpdateProjectResponse updateProjectOfMostRecentTimesheetEntry(UpdateProjectRequest request) {
-        Result<TimesheetEntry> result = updateProjectOfMostRecentTimesheetEntry("nathanlively@gmail.com", request.projectName());
-        if (result.isSuccess()) {
-            TimesheetEntry timesheetEntry = result.values().getFirst();
-            return new UpdateProjectResponse("Timesheet update successful: " + timesheetEntry.toString(), timesheetEntry);
-        } else {
-            log.error("Timesheet update failed: {}", result.failureMessages().getFirst());
-            return new UpdateProjectResponse("Timesheet update with these errors: " + result.failureMessages().getFirst(), null);
-        }
-    }
 }

@@ -1,6 +1,7 @@
 package dev.nathanlively.config;
 
 import dev.nathanlively.application.ClockInService;
+import dev.nathanlively.application.UpdateTimesheetEntryService;
 import dev.nathanlively.application.functions.clockin.ClockInFunction;
 import dev.nathanlively.application.functions.clockin.ClockInRequest;
 import dev.nathanlively.application.functions.clockin.ClockInResponse;
@@ -27,8 +28,8 @@ public class FunctionConfig {
 
     @Bean
     @Description("Update an existing timesheet entry's project. Use this function in the case when a user clocks in without a project and now wants to add the project to it. The project name must exactly match one of the project names that already exists in the repository. Use findAllProjectNamesFunction to fetch the available names.")
-    public Function<UpdateProjectRequest, UpdateProjectResponse> updateProjectFunction(ClockInService clockInService) {
-        return new UpdateProjectFunction(clockInService);
+    public Function<UpdateProjectRequest, UpdateProjectResponse> updateProjectFunction(UpdateTimesheetEntryService updateTimesheetEntryService) {
+        return new UpdateProjectFunction(updateTimesheetEntryService);
     }
 
     @Bean

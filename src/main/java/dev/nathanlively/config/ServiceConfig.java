@@ -37,4 +37,8 @@ public class ServiceConfig {
     public UnfulfilledRequestService unfulfilledRequestService(VectorStore vectorStore) {
         return new UnfulfilledRequestService(vectorStore);
     }
+    @Bean
+    public UpdateTimesheetEntryService updateTimesheetEntryService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
+        return new UpdateTimesheetEntryService(resourceRepository, projectRepository);
+    }
 }
