@@ -52,6 +52,16 @@ class TimesheetTest {
     }
 
     // clock out
+    @Test
+    void clockOut() throws Exception {
+        Timesheet timesheet = new Timesheet(null);
+        assertThat(timesheet.timeSheetEntries()).isEmpty();
+        timesheet.clockIn(Instant.now());
+
+        timesheet.clockOut(Instant.now().plusSeconds(60 * 2));
+
+        assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNotNull();
+    }
 
     // clock in given no clock out, clock out automatically
 }

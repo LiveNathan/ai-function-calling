@@ -56,4 +56,11 @@ public final class Timesheet {
         clockIn(clockInTime, projectA);
     }
 
+    public void clockOut(Instant clockOutTime) {
+        TimesheetEntry recentEntry = mostRecentEntry();
+        if (recentEntry.workPeriod().end() != null) {
+            throw new IllegalStateException("Cannot clock out. The most recent entry is already clocked out.");
+        }
+        recentEntry.clockOut(clockOutTime);
+    }
 }
