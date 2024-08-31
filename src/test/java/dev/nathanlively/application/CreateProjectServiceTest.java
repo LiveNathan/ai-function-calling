@@ -2,7 +2,7 @@ package dev.nathanlively.application;
 
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.domain.Project;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,20 +10,39 @@ import java.util.List;
 import static dev.nathanlively.application.ResultAssertions.assertThat;
 
 class CreateProjectServiceTest {
+
+    private final String projectNameA = "Project A";
+    private ProjectRepository repository;
+    private CreateProjectService service;
+
+    @BeforeEach
+    void setUp() {
+        repository = InMemoryProjectRepository.createEmpty();
+        service = new CreateProjectService(repository);
+    }
+
     @Test
     void withName() throws Exception {
-        ProjectRepository repository = InMemoryProjectRepository.createEmpty();
-        CreateProjectService service = new CreateProjectService(repository);
-        String projectName = "Project A (12345)";
-        Project expected = new Project(projectName);
+        Project expected = new Project(projectNameA);
 
-        Result<Project> actual = service.withName(projectName);
+        Result<Project> actual = service.withName(projectNameA);
 
         assertThat(actual).isSuccess();
         assertThat(actual.failureMessages()).isEmpty();
         assertThat(actual).successValues().contains(expected);
 
         List<Project> projects = repository.findAll();
-        Assertions.assertThat(projects).hasSize(1);
+        assertThat(projects).hasSize(1);
+    }
+
+    @Test
+    void withName_givenSimilarNames() throws Exception {
+        Project projectA = new Project(projectNameA);
+        repository.save(projectA);
+        String projectNameB = "Project Aa";
+
+        Result<Project> actual = service.withName(projectNameB);
+
+        assertThat(actual).isFailure();
     }
 }
