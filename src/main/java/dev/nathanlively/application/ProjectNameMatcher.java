@@ -4,44 +4,42 @@ import org.apache.commons.text.similarity.FuzzyScore;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ProjectNameMatcher {
 
     public static Optional<String> from(String userInput, List<String> allNamesFromRepo) {
         String normalizedUserInput = normalize(userInput);
+        Map<String, String> normalizedNamesMap = allNamesFromRepo.stream()
+                .collect(Collectors.toMap(ProjectNameMatcher::normalize, Function.identity()));
 
-        return findExactMatch(allNamesFromRepo, normalizedUserInput).or(() -> findBestFuzzyMatch(allNamesFromRepo, normalizedUserInput));
+        return findExactMatch(normalizedNamesMap, normalizedUserInput)
+                .or(() -> findBestFuzzyMatch(normalizedNamesMap, normalizedUserInput));
     }
 
-    private static Optional<String> findExactMatch(List<String> allNames, String normalizedUserInput) {
-        if (allNames.contains(normalizedUserInput)) {
-            return allNames.stream()
-                    .filter(name -> name.equalsIgnoreCase(normalizedUserInput))
-                    .findFirst();
-        }
-        return Optional.empty();
+    private static Optional<String> findExactMatch(Map<String, String> normalizedNamesMap, String normalizedUserInput) {
+        return Optional.ofNullable(normalizedNamesMap.get(normalizedUserInput));
     }
 
-    private static Optional<String> findBestFuzzyMatch(List<String> allNames, String normalizedUserInput) {
+    private static Optional<String> findBestFuzzyMatch(Map<String, String> normalizedNamesMap, String normalizedUserInput) {
         FuzzyScore fuzzyScore = new FuzzyScore(Locale.ENGLISH);
         String bestMatch = null;
         int highestScore = 0;
 
-        for (String project : allNames) {
-            int score = fuzzyScore.fuzzyScore(project, normalizedUserInput);
+        for (String normalizedProject : normalizedNamesMap.keySet()) {
+            int score = fuzzyScore.fuzzyScore(normalizedProject, normalizedUserInput);
             if (score > highestScore) {
                 highestScore = score;
-                bestMatch = project;
+                bestMatch = normalizedProject;
             }
         }
 
         int lengthBasedThreshold = calculateDynamicThreshold(normalizedUserInput);
         if (highestScore >= lengthBasedThreshold && bestMatch != null) {
-            String finalBestMatch = bestMatch;
-            return allNames.stream()
-                    .filter(name -> name.equalsIgnoreCase(finalBestMatch))
-                    .findFirst();
+            return Optional.ofNullable(normalizedNamesMap.get(bestMatch));
         }
 
         return Optional.empty();
