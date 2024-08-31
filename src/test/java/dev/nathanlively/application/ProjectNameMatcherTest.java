@@ -1,18 +1,43 @@
 package dev.nathanlively.application;
 
-import org.junit.jupiter.api.Test;
+import dev.nathanlively.application.port.ProjectRepository;
+import dev.nathanlively.domain.Project;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ProjectNameMatcherTest {
-    @Test
-    void from() throws Exception {
-        ProjectNameMatcher service = new ProjectNameMatcher();
-        String expected = "Project A (12345)";
+    static Stream<Arguments> provideProjectNames() {
+        return Stream.of(
+                Arguments.of("Pella Fall Planning Conference", "Pella Fall Planning Conference"),
+                Arguments.of("pella", "Pella Fall Planning Conference"),
+                Arguments.of("fall planin conf", "Pella Fall Planning Conference"),
+                Arguments.of("MSF Fall", "MSF Fall History & Heritage Meeting"),
+                Arguments.of("Deloitte", "")  // no match returns empty optional
+        );
+    }
 
-        String actual = service.from("projct a");
+    @ParameterizedTest
+    @MethodSource("provideProjectNames")
+    void from(String userSubmittedProjectName, String expected) throws Exception {
+        ProjectRepository repository = InMemoryProjectRepository.createEmpty();
+        Project project1 = new Project("Pella Fall Planning Conference");
+        Project project2 = new Project("MSF Fall History & Heritage Meeting");
+        repository.save(project1);
+        repository.save(project2);
+        assertThat(repository.findAll().size()).isEqualTo(2);
+        ProjectNameMatcher service = new ProjectNameMatcher(repository);
+        Optional<String> actual = service.from(userSubmittedProjectName);
 
-        assertThat(actual)
-                .isEqualTo(expected);
+        if (expected.isEmpty()) {
+            assertThat(actual).isEmpty();
+        } else {
+            assertThat(actual).isEqualTo(Optional.of(expected));
+        }
     }
 }
