@@ -31,6 +31,12 @@ public class FunctionConfig {
     }
 
     @Bean
+    @Description("Update an existing timesheet entry for a resource. If the resource is found, it updates the most recent timesheet entry with the clock-out time and saves the resource. If there are any issues, appropriate error messages are returned.")
+    public Function<ClockOutRequest, ClockOutResponse> clockOutFunction(ClockOutService clockOutService) {
+        return new ClockOutFunction(clockOutService);
+    }
+
+    @Bean
     @Description("Update an existing timesheet entry's project. Use this function in the case when a user clocks in without a project and now wants to add the project to it. The project name must exactly match one of the project names that already exists in the repository. Use findAllProjectNamesFunction to fetch the available names.")
     public Function<UpdateProjectRequest, UpdateProjectResponse> updateProjectFunction(UpdateTimesheetEntryService updateTimesheetEntryService) {
         return new UpdateProjectFunction(updateTimesheetEntryService);
@@ -40,12 +46,6 @@ public class FunctionConfig {
     @Description("Fetch the list of available project names.")
     public Function<FindAllProjectNamesRequest, FindAllProjectNamesResponse> findAllProjectNamesFunction(ProjectRepository repository) {
         return new FindAllProjectNamesFunction(repository);
-    }
-
-    @Bean
-    @Description("Update an existing timesheet entry for a resource. If the resource is found, it updates the most recent timesheet entry with the clock-out time and saves the resource. If there are any issues, appropriate error messages are returned.")
-    public Function<ClockOutRequest, ClockOutResponse> clockOutFunction(ClockOutService clockOutService) {
-        return new ClockOutFunction(clockOutService);
     }
 
 }
