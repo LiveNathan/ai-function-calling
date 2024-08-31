@@ -31,14 +31,27 @@ public final class Timesheet {
         return timeSheetEntries.getLast();
     }
 
-    public void clockIn(Instant clockInTime) {
+    private void clockIn(Instant clockInTime, Project projectA) {
         if (!timeSheetEntries.isEmpty()) {
-            TimesheetEntry mostRecentEntry = mostRecentEntry();
-            if (mostRecentEntry.workPeriod().end() == null) {
+            if (mostRecentEntry().workPeriod().end() == null) {
                 throw new IllegalStateException("Cannot clock in. The previous entry has not been clocked out.");
             }
         }
-        TimesheetEntry newEntry = TimesheetEntry.clockIn(clockInTime);
+        TimesheetEntry newEntry = null;
+        if (projectA == null) {
+            newEntry = TimesheetEntry.clockIn(clockInTime);
+        } else {
+            newEntry = TimesheetEntry.clockIn(projectA, clockInTime);
+        }
         appendEntry(newEntry);
     }
+
+    public void clockIn(Instant clockInTime) {
+        clockIn(clockInTime, null);
+    }
+
+    public void clockInWithProject(Project projectA, Instant clockInTime) {
+        clockIn(clockInTime, projectA);
+    }
+
 }
