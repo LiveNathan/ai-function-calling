@@ -31,18 +31,6 @@ public final class Resource {
         timeSheet.appendEntry(timesheetEntry);
     }
 
-//    public ResourceType resourceType() {
-//        return resourceType;
-//    }
-
-//    public JobTitle jobTitle() {
-//        return jobTitle;
-//    }
-
-//    public String name() {
-//        return name;
-//    }
-
     public String email() {
         return email;
     }
