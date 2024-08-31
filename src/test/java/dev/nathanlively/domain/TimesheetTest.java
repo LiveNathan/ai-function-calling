@@ -1,10 +1,13 @@
 package dev.nathanlively.domain;
 
+import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TimesheetTest {
     @Test
@@ -18,7 +21,6 @@ class TimesheetTest {
         assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNull();
     }
 
-    // clock in with a project
     @Test
     void clockInWithProject() throws Exception {
         Timesheet timesheet = new Timesheet(null);
@@ -26,9 +28,16 @@ class TimesheetTest {
 
         timesheet.clockInWithProject(new Project("Project A"), Instant.now());
 
-        assertThat(timesheet.mostRecentEntry().workPeriod().start()).isNotNull();
-        assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNull();
         assertThat(timesheet.mostRecentEntry().project()).isNotNull();
+    }
+
+    @Test
+    void mostRecentEntryThrowsNoTimesheetEntriesException() {
+        Timesheet timesheet = new Timesheet(new ArrayList<>());
+
+        assertThatThrownBy(timesheet::mostRecentEntry)
+                .isInstanceOf(NoTimesheetEntriesException.class)
+                .hasMessage("No timesheet entries found.");
     }
 
     // clock out

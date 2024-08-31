@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
@@ -26,7 +27,7 @@ public final class Timesheet {
 
     public TimesheetEntry mostRecentEntry() {
         if (timeSheetEntries.isEmpty()) {
-            throw new IllegalStateException("No timesheet entries found");
+            throw new NoTimesheetEntriesException();
         }
         return timeSheetEntries.getLast();
     }
