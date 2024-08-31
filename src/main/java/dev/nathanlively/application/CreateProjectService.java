@@ -1,5 +1,7 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.functions.createproject.CreateProjectRequest;
+import dev.nathanlively.application.functions.createproject.CreateProjectResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.domain.Project;
 
@@ -25,5 +27,16 @@ public class CreateProjectService {
         Project project = new Project(projectName);
         projectRepository.save(project);
         return Result.success(project);
+    }
+
+    public CreateProjectResponse withName(CreateProjectRequest request) {
+        Result<Project> result = withName(request.projectName());
+        if (result.isSuccess()) {
+            Project project = result.values().getFirst();
+            return new CreateProjectResponse("Project creation successful: " + project, project);
+        } else {
+            String allFailureMessages = String.join(", ", result.failureMessages());
+            return new CreateProjectResponse("Project creation failed with these errors: " + allFailureMessages, null);
+        }
     }
 }

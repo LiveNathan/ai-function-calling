@@ -51,13 +51,13 @@ public class ClockInService {
         Result<TimesheetEntry> result = clockIn("nathanlively@gmail.com",
                 request.messageCreationTime(), request.projectName());
         if (result.isSuccess()) {
-            log.info("Prove to me that you received this message by printing the new timesheet entry to the screen for the user. Created timesheet entry: {}", result.values().getFirst());
-            return new ClockInResponse("Clock-in successful. New timesheet entry created: " + result.values().getFirst().toString(), result.values().getFirst());
+            log.info("Prove to me that you received this message by printing the new timesheet entry to the screen for the user. Created timesheet entry: {}", result.values().get(0));
+            return new ClockInResponse("Clock-in successful. New timesheet entry created: " + result.values().get(0).toString(), result.values().get(0));
         } else {
-            log.error("Clock-in failed: {}", result.failureMessages().getFirst());
-            return new ClockInResponse("Clock-in failed with these errors: " + result.failureMessages().getFirst(), null);
+            String allFailureMessages = String.join(", ", result.failureMessages());
+            log.error("Clock-in failed: {}", allFailureMessages);
+            return new ClockInResponse("Clock-in failed with these errors: " + allFailureMessages, null);
         }
     }
-
 
 }
