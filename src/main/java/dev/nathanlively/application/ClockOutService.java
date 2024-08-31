@@ -3,12 +3,12 @@ package dev.nathanlively.application;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
+import dev.nathanlively.domain.Timesheet;
 import dev.nathanlively.domain.TimesheetEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.Collections;
 
 public class ClockOutService {
     private static final Logger log = LoggerFactory.getLogger(ClockOutService.class);
@@ -29,15 +29,15 @@ public class ClockOutService {
             return Result.failure("Resource not found with email: " + resourceEmail);
         }
 
-        TimesheetEntry timesheetEntry;
+        Timesheet timesheet = resource.timeSheet();
         try {
-//            timesheetEntry = TimesheetEntry.clockIn(project, clockOutTime);
+            timesheet.clockOut(clockOutTime);
 //            resource.appendTimesheetEntry(timesheetEntry);
-            resourceRepository.save(resource);
+//            resourceRepository.save(resource);
         } catch (Exception e) {
             return Result.failure("Error during clock-out process: " + e.getMessage());
         }
-        return Result.success(Collections.emptyList());
+        return Result.success(resource.timeSheet().mostRecentEntry());
 //        return null;
     }
 

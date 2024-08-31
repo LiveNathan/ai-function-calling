@@ -37,12 +37,14 @@ class ClockOutServiceTest {
     @Test
     void clockOut() {
         assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().workPeriod().end()).isNull();
+        TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
+        expected.clockOut(clockOutTime);
 
         Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockOutTime);
 
         assertThat(actual).isSuccess();
-//        assertThat(actual.failureMessages()).isEmpty();
-//        assertThat(actual).successValues().contains(expected);
+        assertThat(actual.failureMessages()).isEmpty();
+        assertThat(actual).successValues().contains(expected);
 
 //        List<Resource> resources = resourceRepository.findAll();
 //        List<Project> projects = projectRepository.findAll();
