@@ -3,6 +3,7 @@ package dev.nathanlively.application;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.*;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,59 +12,61 @@ import java.util.List;
 
 import static dev.nathanlively.application.ResultAssertions.assertThat;
 
-class ClockInServiceTest {
+class ClockOutServiceTest {
 
     private final String resourceEmail = "nathanlively@gmail.com";
-    private final String projectName = "Project A (12345)";
-    private final Project project = new Project(projectName);
     private final Instant clockInTime = Instant.now();
+    private final Instant clockOutTime = clockInTime.plusSeconds(60*60);
     private ResourceRepository resourceRepository;
     private ProjectRepository projectRepository;
-    private ClockInService service;
+    private ClockOutService service;
+    private TimesheetEntry timesheetEntry;
+    private Project project;
 
     @BeforeEach
     void setUp() {
         resourceRepository = InMemoryResourceRepository.createEmpty();
         projectRepository = InMemoryProjectRepository.createEmpty();
-        service = new ClockInService(resourceRepository, projectRepository);
-        Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
-        resourceRepository.save(resource);
+        project = new Project("Project A (12345)");
         projectRepository.save(project);
+        service = new ClockOutService(resourceRepository);
+        Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
+        resource.appendTimesheetEntry(timesheetEntry);
+        resourceRepository.save(resource);
     }
 
     @Test
-    void clockIn() {
-        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries()).isEmpty();
-        assertThat(projectRepository.findAll()).hasSize(1);
+    void clockOut() {
+        List<Resource> allResources = resourceRepository.findAll();
+        Assertions.assertThat(allResources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
+        assertThat(allResources.getFirst().timeSheet().mostRecentEntry().workPeriod().end()).isNull();
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
+        expected.clockOut(clockOutTime);
 
-        Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
+        Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockOutTime);
 
         assertThat(actual).isSuccess();
         assertThat(actual.failureMessages()).isEmpty();
         assertThat(actual).successValues().contains(expected);
 
         List<Resource> resources = resourceRepository.findAll();
-        List<Project> projects = projectRepository.findAll();
         assertThat(resources).hasSize(1);
-        assertThat(projects).hasSize(1);
         assertThat(resources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
-        assertThat(resources.getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNotNull();
+        assertThat(resources.getFirst().timeSheet().mostRecentEntry().workPeriod().end()).isNotNull();
     }
 
     @Test
-    void clockIn_givenNullEmail_returnsResultWithErrorMessage() {
-        Result<TimesheetEntry> actual = service.clockIn(null, clockInTime, projectName);
+    void clockOut_givenNullEmail_returnsResultWithErrorMessage() {
+        Result<TimesheetEntry> actual = service.clockOut(null, clockInTime);
         assertThat(actual).isFailure().failureMessages().contains("Email must not be null or empty.");
     }
 
     @Test
-    void clockIn_resourceNotFound_returnResultWithErrorMessage() {
+    void clockOut_resourceNotFound_returnResultWithErrorMessage() {
         String resourceEmail = "bademail@gmail.com";
-        Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
+        Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockInTime);
         assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
     }
-
-
 
 }

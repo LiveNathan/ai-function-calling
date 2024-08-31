@@ -6,6 +6,8 @@ import dev.nathanlively.application.port.AiGateway;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +15,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ServiceConfig {
     @Bean
-    public AiService aiService(ChatClient.Builder chatClientBuilder, ProjectRepository projectRepository, VectorStore vectorStore) {
-        AiGateway gateway = new SpringAiAdapter(chatClientBuilder, projectRepository, vectorStore);
+    public ChatMemory chatMemory() {
+        return new InMemoryChatMemory();
+    }
+
+    @Bean
+    public AiService aiService(ChatClient.Builder chatClientBuilder, ProjectRepository projectRepository, VectorStore vectorStore, ChatMemory chatMemory) {
+        AiGateway gateway = new SpringAiAdapter(chatClientBuilder, projectRepository, vectorStore, chatMemory);
         return new AiService(gateway);
     }
 
@@ -34,7 +41,17 @@ public class ServiceConfig {
     }
 
     @Bean
+    public ClockOutService clockOutService(ResourceRepository resourceRepository) {
+        return new ClockOutService(resourceRepository);
+    }
+
+    @Bean
     public UnfulfilledRequestService unfulfilledRequestService(VectorStore vectorStore) {
         return new UnfulfilledRequestService(vectorStore);
+    }
+
+    @Bean
+    public UpdateTimesheetEntryService updateTimesheetEntryService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
+        return new UpdateTimesheetEntryService(resourceRepository, projectRepository);
     }
 }

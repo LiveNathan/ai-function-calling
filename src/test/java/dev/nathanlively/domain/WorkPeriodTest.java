@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import dev.nathanlively.domain.exceptions.InvalidClockOutTimeException;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

@@ -15,7 +15,7 @@ public class LoggingAdvisor implements RequestResponseAdvisor {
 
     @Override
     public AdvisedRequest adviseRequest(AdvisedRequest request, Map<String, Object> context) {
-//        log.info("Request: {}", unfulfilledRequest);
+        log.info("Request: {}", request);
         return request;
     }
 
