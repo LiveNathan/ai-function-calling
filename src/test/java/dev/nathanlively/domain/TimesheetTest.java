@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TimesheetTest {
     @Test
-    void clockIn() throws Exception {
+    void clockIn() {
         Timesheet timesheet = new Timesheet(null);
         assertThat(timesheet.timeSheetEntries()).isEmpty();
 
@@ -23,7 +23,7 @@ class TimesheetTest {
     }
 
     @Test
-    void clockInWithProject() throws Exception {
+    void clockInWithProject() {
         Timesheet timesheet = new Timesheet(null);
         assertThat(timesheet.timeSheetEntries()).isEmpty();
 
@@ -42,7 +42,7 @@ class TimesheetTest {
     }
 
     @Test
-    void clockOut() throws Exception {
+    void clockOut() {
         Timesheet timesheet = new Timesheet(null);
         assertThat(timesheet.timeSheetEntries()).isEmpty();
         timesheet.clockIn(Instant.now());
@@ -53,7 +53,7 @@ class TimesheetTest {
     }
 
     @Test
-    void clockOutThrowsAlreadyClockedOutException() throws Exception {
+    void clockOutThrowsAlreadyClockedOutException() {
         Timesheet timesheet = new Timesheet(null);
         timesheet.clockIn(Instant.now());
         timesheet.clockOut(Instant.now().plusSeconds(60 * 2));
@@ -63,9 +63,8 @@ class TimesheetTest {
                 .hasMessage("Cannot clock out. The most recent entry is already clocked out.");
     }
 
-    // clock in given no clock out, clock out automatically
     @Test
-    void clockIn_givenNullClockOut_clockOutAutomaticallyThenIn() throws Exception {
+    void clockIn_givenNullClockOut_clockOutAutomaticallyThenIn() {
         Timesheet timesheet = new Timesheet(null);
         timesheet.clockIn(Instant.now());
 

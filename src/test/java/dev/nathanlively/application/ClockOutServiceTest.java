@@ -4,8 +4,11 @@ import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+
+import static dev.nathanlively.application.ResultAssertions.assertThat;
 
 class ClockOutServiceTest {
 
@@ -31,23 +34,23 @@ class ClockOutServiceTest {
         resourceRepository.save(resource);
     }
 
-//    @Test
-//    void clockOut() {
-//        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().workPeriod().end()).isNull();
-//
-//        Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockInTime);
-//
-//        assertThat(actual).isSuccess();
+    @Test
+    void clockOut() {
+        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().workPeriod().end()).isNull();
+
+        Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockOutTime);
+
+        assertThat(actual).isSuccess();
 //        assertThat(actual.failureMessages()).isEmpty();
 //        assertThat(actual).successValues().contains(expected);
-//
+
 //        List<Resource> resources = resourceRepository.findAll();
 //        List<Project> projects = projectRepository.findAll();
 //        assertThat(resources).hasSize(1);
 //        assertThat(projects).hasSize(1);
 //        assertThat(resources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
 //        assertThat(resources.getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNotNull();
-//    }
+    }
 
 //    @Test
 //    void clockOut_givenNullEmail_returnsResultWithErrorMessage() {
