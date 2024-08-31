@@ -3,10 +3,12 @@ package dev.nathanlively.application;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.*;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.List;
 
 import static dev.nathanlively.application.ResultAssertions.assertThat;
 
@@ -27,7 +29,7 @@ class ClockOutServiceTest {
         projectRepository = InMemoryProjectRepository.createEmpty();
         project = new Project("Project A (12345)");
         projectRepository.save(project);
-        service = new ClockOutService(resourceRepository, projectRepository);
+        service = new ClockOutService(resourceRepository);
         Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
@@ -36,7 +38,9 @@ class ClockOutServiceTest {
 
     @Test
     void clockOut() {
-        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().workPeriod().end()).isNull();
+        List<Resource> allResources = resourceRepository.findAll();
+        Assertions.assertThat(allResources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
+        assertThat(allResources.getFirst().timeSheet().mostRecentEntry().workPeriod().end()).isNull();
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
         expected.clockOut(clockOutTime);
 
@@ -46,27 +50,23 @@ class ClockOutServiceTest {
         assertThat(actual.failureMessages()).isEmpty();
         assertThat(actual).successValues().contains(expected);
 
-//        List<Resource> resources = resourceRepository.findAll();
-//        List<Project> projects = projectRepository.findAll();
-//        assertThat(resources).hasSize(1);
-//        assertThat(projects).hasSize(1);
-//        assertThat(resources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
-//        assertThat(resources.getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNotNull();
+        List<Resource> resources = resourceRepository.findAll();
+        assertThat(resources).hasSize(1);
+        assertThat(resources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
+        assertThat(resources.getFirst().timeSheet().mostRecentEntry().workPeriod().end()).isNotNull();
     }
 
-//    @Test
-//    void clockOut_givenNullEmail_returnsResultWithErrorMessage() {
-//        Result<TimesheetEntry> actual = service.clockIn(null, clockInTime, projectName);
-//        assertThat(actual).isFailure().failureMessages().contains("Email must not be null or empty.");
-//    }
+    @Test
+    void clockOut_givenNullEmail_returnsResultWithErrorMessage() {
+        Result<TimesheetEntry> actual = service.clockOut(null, clockInTime);
+        assertThat(actual).isFailure().failureMessages().contains("Email must not be null or empty.");
+    }
 
-//    @Test
-//    void clockOut_resourceNotFound_returnResultWithErrorMessage() {
-//        String resourceEmail = "bademail@gmail.com";
-//        Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
-//        assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
-//    }
-
-
+    @Test
+    void clockOut_resourceNotFound_returnResultWithErrorMessage() {
+        String resourceEmail = "bademail@gmail.com";
+        Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockInTime);
+        assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
+    }
 
 }

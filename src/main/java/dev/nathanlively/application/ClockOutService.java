@@ -1,6 +1,5 @@
 package dev.nathanlively.application;
 
-import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.Timesheet;
@@ -13,11 +12,9 @@ import java.time.Instant;
 public class ClockOutService {
     private static final Logger log = LoggerFactory.getLogger(ClockOutService.class);
     private final ResourceRepository resourceRepository;
-    private final ProjectRepository projectRepository;
 
-    public ClockOutService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
+    public ClockOutService(ResourceRepository resourceRepository) {
         this.resourceRepository = resourceRepository;
-        this.projectRepository = projectRepository;
     }
 
     public Result<TimesheetEntry> clockOut(String resourceEmail, Instant clockOutTime) {
@@ -32,13 +29,11 @@ public class ClockOutService {
         Timesheet timesheet = resource.timeSheet();
         try {
             timesheet.clockOut(clockOutTime);
-//            resource.appendTimesheetEntry(timesheetEntry);
-//            resourceRepository.save(resource);
+            resourceRepository.save(resource);
         } catch (Exception e) {
             return Result.failure("Error during clock-out process: " + e.getMessage());
         }
         return Result.success(resource.timeSheet().mostRecentEntry());
-//        return null;
     }
 
 //    public ClockInResponse clockOut(ClockInRequest request) {
