@@ -15,6 +15,7 @@ public class CreateProjectService {
             return Result.failure("Project name must not be null or empty.");
         }
         Project project = new Project(projectName);
+        projectRepository.save(project);
         return Result.success(project);
     }
 }
