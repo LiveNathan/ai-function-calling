@@ -54,4 +54,9 @@ public class ServiceConfig {
     public UpdateTimesheetEntryService updateTimesheetEntryService(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         return new UpdateTimesheetEntryService(resourceRepository, projectRepository);
     }
+
+    @Bean
+    public CreateProjectService createProjectService(ProjectRepository projectRepository) {
+        return new CreateProjectService(projectRepository);
+    }
 }
