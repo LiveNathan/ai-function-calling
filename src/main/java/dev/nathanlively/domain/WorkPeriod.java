@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import dev.nathanlively.domain.exceptions.InvalidClockOutTimeException;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Duration;

@@ -26,7 +26,8 @@ public class SpringAiAdapter implements AiGateway {
     public SpringAiAdapter(ChatClient.Builder builder, ProjectRepository projectRepository, VectorStore vectorStore) {
         this.projectRepository = projectRepository;
         this.chatClient = builder.defaultSystem("""
-                        You are an assistant project manager expert at managing many resources and schedules. Adopt the user's tone to make them feel comfortable with you. If they are playful and silly, so are you. If they are professional and matter-of-fact, so are you.
+                        You are an assistant project manager expert at managing many resources and schedules.
+                        Adopt the user's tone to make them feel comfortable with you. If they are playful and silly, so are you. If they are professional and matter-of-fact, so are you.
                         Keep your responses short and direct because people need your help in a hurry, but for complex tasks, think out loud by writing each step.
                         For questions about long documents, pull the most relevant quote from the document and consider whether it answers the user's question or whether it lacks sufficient detail.
                         Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.
@@ -48,7 +49,7 @@ public class SpringAiAdapter implements AiGateway {
                         "user_name", userMessageDto.userName(),
                         "available_projects", projectNames
                 )))
-                .functions("clockInFunction", "updateProjectFunction", "findAllProjectNamesFunction")
+                .functions("clockInFunction", "updateProjectFunction", "findAllProjectNamesFunction", "clockOutFunction")
                 .user(userMessageDto.userMessageText())
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))

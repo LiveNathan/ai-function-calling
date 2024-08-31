@@ -1,5 +1,7 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.functions.clockout.ClockOutRequest;
+import dev.nathanlively.application.functions.clockout.ClockOutResponse;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.Timesheet;
@@ -36,17 +38,14 @@ public class ClockOutService {
         return Result.success(resource.timeSheet().mostRecentEntry());
     }
 
-//    public ClockInResponse clockOut(ClockInRequest request) {
-//        Result<TimesheetEntry> result = clockOut("nathanlively@gmail.com",
-//                request.messageCreationTime());
-//        if (result.isSuccess()) {
-//            log.info("Prove to me that you received this message by printing the new timesheet entry to the screen for the user. Created timesheet entry: {}", result.values().getFirst());
-//            return new ClockInResponse("Clock-in successful. New timesheet entry created: " + result.values().getFirst().toString(), result.values().getFirst());
-//        } else {
-//            log.error("Clock-in failed: {}", result.failureMessages().getFirst());
-//            return new ClockInResponse("Clock-in failed with these errors: " + result.failureMessages().getFirst(), null);
-//        }
-//    }
-
+    public ClockOutResponse clockOut(ClockOutRequest request) {
+        Result<TimesheetEntry> result = clockOut("nathanlively@gmail.com", request.messageCreationTime());
+        if (result.isSuccess()) {
+            return new ClockOutResponse("Clock-out successful. New timesheet entry created: " + result.values().getFirst().toString(), result.values().getFirst());
+        } else {
+            log.error("Clock-out failed: {}", result.failureMessages().getFirst());
+            return new ClockOutResponse("Clock-out failed with these errors: " + result.failureMessages().getFirst(), null);
+        }
+    }
 
 }
