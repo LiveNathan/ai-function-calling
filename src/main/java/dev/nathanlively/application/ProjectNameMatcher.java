@@ -1,6 +1,5 @@
 package dev.nathanlively.application;
 
-import dev.nathanlively.application.port.ProjectRepository;
 import org.apache.commons.text.similarity.FuzzyScore;
 
 import java.util.List;
@@ -8,11 +7,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 public class ProjectNameMatcher {
-    private final ProjectRepository projectRepository;
-
-    public ProjectNameMatcher(ProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
-    }
 
     public static Optional<String> from(String userInput, List<String> allNamesFromRepo) {
         String normalizedUserInput = normalize(userInput);
