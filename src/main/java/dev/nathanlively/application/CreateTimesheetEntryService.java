@@ -1,5 +1,7 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.functions.createtimesheetentry.CreateTimesheetEntryRequest;
+import dev.nathanlively.application.functions.createtimesheetentry.CreateTimesheetEntryResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Project;
@@ -53,5 +55,16 @@ public class CreateTimesheetEntryService {
         TimesheetEntry entry = TimesheetEntry.from(project, start, end, ZoneId.of(zone));
         resource.appendTimesheetEntry(entry);
         return Result.success(entry);
+    }
+
+    public CreateTimesheetEntryResponse from(CreateTimesheetEntryRequest request) {
+        Result<TimesheetEntry> result = from("nathanlively@gmail.com", request.projectName(),
+                request.timesheetEntryStart(), request.timesheetEntryEnd(), request.zoneId());
+        if (result.isSuccess()) {
+            return new CreateTimesheetEntryResponse("New timesheet entry created.", result.values().getFirst());
+        } else {
+            String allFailureMessages = String.join(", ", result.failureMessages());
+            return new CreateTimesheetEntryResponse("Failed to create timesheet entry because: " + allFailureMessages, null);
+        }
     }
 }
