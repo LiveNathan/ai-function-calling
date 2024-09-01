@@ -2,8 +2,7 @@ package dev.nathanlively.domain;
 
 import jakarta.validation.constraints.NotNull;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.time.*;
 import java.util.Objects;
 
 public class TimesheetEntry {
@@ -26,6 +25,17 @@ public class TimesheetEntry {
 
     public static TimesheetEntry clockIn(Project project, Instant clockInTime) {
         return new TimesheetEntry(project, WorkPeriod.startAt(clockInTime));
+    }
+
+    public static TimesheetEntry from(Project project, LocalDateTime start, LocalDateTime end,
+                                      ZoneId zone) {
+        ZonedDateTime zonedStart = start.atZone(zone);
+        ZonedDateTime zonedEnd = end.atZone(zone);
+        Instant startInstant = zonedStart.toInstant();
+        Instant endInstant = zonedEnd.toInstant();
+        TimesheetEntry entry = clockIn(project, startInstant);
+        entry.clockOut(endInstant);
+        return entry;
     }
 
     public void clockOut(Instant clockOutTime) {

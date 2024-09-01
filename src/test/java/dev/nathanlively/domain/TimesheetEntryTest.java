@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +35,22 @@ class TimesheetEntryTest {
 
         assertThat(entry.workPeriod().end()).isNotNull();
         assertThat(entry.duration()).isNotNull();
+    }
+
+    @Test
+    void from() throws Exception {
+        LocalDateTime start = LocalDateTime.of(2024, 3, 15, 8, 0);
+        LocalDateTime end = LocalDateTime.of(2024, 3, 15, 9, 0);
+        ZoneId zone = ZoneId.of("America/Chicago");
+        Instant expectedStartInstant = start.atZone(zone).toInstant();
+        Instant expectedEndInstant = end.atZone(zone).toInstant();
+        TimesheetEntry expected = TimesheetEntry.clockIn(project, expectedStartInstant);
+        expected.clockOut(expectedEndInstant);
+
+        TimesheetEntry actual = TimesheetEntry.from(project, start, end, zone);
+
+        assertThat(actual)
+                .isEqualTo(expected);
     }
 
 }
