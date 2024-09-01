@@ -15,8 +15,8 @@ import static dev.nathanlively.application.ResultAssertions.assertThat;
 class ClockOutServiceTest {
 
     private final String resourceEmail = "nathanlively@gmail.com";
-    private final Instant clockInTime = Instant.now();
-    private final Instant clockOutTime = clockInTime.plusSeconds(60*60);
+    private final Instant clockInTime = Instant.now().minusSeconds(60*60);
+    private final Instant clockOutTime = Instant.now();
     private ResourceRepository resourceRepository;
     private ProjectRepository projectRepository;
     private ClockOutService service;

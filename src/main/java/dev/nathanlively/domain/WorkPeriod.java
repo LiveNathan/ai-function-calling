@@ -28,12 +28,6 @@ public class WorkPeriod {
         return new WorkPeriod(startTime);
     }
 
-    private static void validateEndTime(Instant start, Instant end) {
-        if (end != null && end.isBefore(start)) {
-            throw new InvalidClockOutTimeException("End time cannot be before start time.");
-        }
-    }
-
     public Instant start() {
         return start;
     }
@@ -57,6 +51,15 @@ public class WorkPeriod {
     private static void validateFutureTime(Instant time, String message) {
         if (time.isAfter(Instant.now())) {
             throw new InvalidWorkPeriodException(message);
+        }
+    }
+
+    private static void validateEndTime(Instant start, Instant end) {
+        if (end != null) {
+            validateFutureTime(end, "End time cannot be in the future.");
+            if (end.isBefore(start)) {
+                throw new InvalidClockOutTimeException("End time cannot be before start time.");
+            }
         }
     }
 
