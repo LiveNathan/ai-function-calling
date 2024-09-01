@@ -66,7 +66,8 @@ public class DroidCommView extends VerticalLayout {
         MessageInput messageInput = new MessageInput();
         messageInput.setWidthFull();
         messageInput.getElement().executeJs(
-                "this.addEventListener('submit', () => {this.setAttribute('timestamp', new Date().toISOString());});");
+                "this.addEventListener('submit', () => {this.setAttribute('timestamp', new Date().toISOString());" +
+                        "this.setAttribute('creationTimezone', Intl.DateTimeFormat().resolvedOptions().timeZone);});");
         messageInput.addSubmitListener(event -> handleMessageSubmit(event, messageScroller));
         return messageInput;
     }
@@ -74,11 +75,12 @@ public class DroidCommView extends VerticalLayout {
     private void handleMessageSubmit(MessageInput.SubmitEvent event, Scroller messageScroller) {
         String userMessageText = event.getValue();
         String timestamp = event.getSource().getElement().getAttribute("timestamp"); // Read the timestamp attribute
+        String timezone = event.getSource().getElement().getAttribute("creationTimezone");   // Read the creationTimezone attribute
         Instant creationTime = timestamp != null ? Instant.parse(timestamp) : Instant.now(); // Default to now if timestamp isn't set
-        log.info("Messaged created at {}", creationTime);
+        log.info("Messaged created at {} with creationTimezone {}", creationTime, timezone);
         String userName = "Nathan";
         MessageListItem userMessage = new MessageListItem(userMessageText, creationTime, userName);
-        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId);
+        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId, timezone);
         appendMessageAndReply(userMessage, messageScroller, userMessageText, userMessageDto);
     }
 

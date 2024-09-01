@@ -21,7 +21,7 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_commCheck() {
-        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "comm check", "chatId1");
+        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "comm check", "chatId1", timezone);
         Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);
 
         StepVerifier.create(actual)
@@ -31,7 +31,7 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_clockIn_returnsJson() {
-        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "clock in to project A", "chatId1");
+        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "clock in to project A", "chatId1", timezone);
         String jsonResponse = "{\"function_call\": {\"name\": \"clockOut\", \"arguments\": {\"projectId\": \"A\"}}}";
 
         Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);
