@@ -50,8 +50,7 @@ public class CreateTimesheetEntryService {
 
     private Result<TimesheetEntry> createAndAppendEntry(Resource resource, Project project, LocalDateTime start,
                                                         LocalDateTime end, String zone) {
-        ZoneId zoneId = ZoneId.of(zone);
-        TimesheetEntry entry = TimesheetEntry.from(project, start, end, zoneId);
+        TimesheetEntry entry = TimesheetEntry.from(project, start, end, ZoneId.of(zone));
         resource.appendTimesheetEntry(entry);
         return Result.success(entry);
     }

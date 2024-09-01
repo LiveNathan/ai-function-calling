@@ -33,7 +33,8 @@ class CreateTimesheetEntryServiceTest {
 
         Result<TimesheetEntry> actual = service.from(resourceEmail, projectName, start, end, zone.toString());
 
-        assertThat(actual)
-               .isSuccess();
+        assertThat(actual).isSuccess();
+        assertThat(actual.failureMessages()).isEmpty();
+        assertThat(actual).successValues().contains(expected);
     }
 }
