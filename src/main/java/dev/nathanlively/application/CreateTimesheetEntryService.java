@@ -7,6 +7,8 @@ import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Optional;
 
 public class CreateTimesheetEntryService {
     private final ResourceRepository resourceRepository;
@@ -19,34 +21,38 @@ public class CreateTimesheetEntryService {
 
     public Result<TimesheetEntry> from(String resourceEmail, String projectName, LocalDateTime start,
                                        LocalDateTime end, String zone) {
+        Optional<String> validationError = validateInputs(resourceEmail, projectName, zone);
+        return validationError.<Result<TimesheetEntry>>map(Result::failure).orElseGet(() -> resourceRepository.findByEmail(resourceEmail)
+                .map(resource -> createEntryForResource(resource, projectName, start, end, zone))
+                .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail)));
+
+    }
+
+    private Optional<String> validateInputs(String resourceEmail, String projectName, String zone) {
         if (projectName == null || projectName.trim().isEmpty()) {
-            return Result.failure("Project name must not be null or empty.");
+            return Optional.of("Project name must not be null or empty.");
         }
         if (zone == null || zone.trim().isEmpty()) {
-            return Result.failure("Zone must not be null or empty.");
+            return Optional.of("Zone must not be null or empty.");
         }
         if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
-            return Result.failure("Email must not be null or empty.");
+            return Optional.of("Email must not be null or empty.");
         }
-        Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
-        if (resource == null) {
-            return Result.failure("Resource not found with email: " + resourceEmail);
-        }
+        return Optional.empty();
+    }
 
-        Project project = projectRepository.findByName(projectName).orElse(null);
-        if (project == null) {
-            return Result.failure("Project not found with name: " + projectName);
-        }
+    private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, LocalDateTime start,
+                                                          LocalDateTime end, String zone) {
+        return projectRepository.findByName(projectName)
+                .map(project -> createAndAppendEntry(resource, project, start, end, zone))
+                .orElseGet(() -> Result.failure("Project not found with name: " + projectName));
+    }
 
-
-
-//        ZoneId zoneId = ZoneId.of(zone);
-//        ZonedDateTime zonedStart = start.atZone(zoneId);
-//        ZonedDateTime zonedEnd = end.atZone(zoneId);
-//        Instant startInstant = zonedStart.toInstant();
-//        Instant endInstant = zonedEnd.toInstant();
-
-
-        return null;
+    private Result<TimesheetEntry> createAndAppendEntry(Resource resource, Project project, LocalDateTime start,
+                                                        LocalDateTime end, String zone) {
+        ZoneId zoneId = ZoneId.of(zone);
+        TimesheetEntry entry = TimesheetEntry.from(project, start, end, zoneId);
+        resource.appendTimesheetEntry(entry);
+        return Result.success(entry);
     }
 }
