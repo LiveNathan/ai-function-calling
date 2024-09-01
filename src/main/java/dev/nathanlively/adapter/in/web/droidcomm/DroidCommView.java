@@ -1,5 +1,7 @@
 package dev.nathanlively.adapter.in.web.droidcomm;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageList;
 import com.vaadin.flow.component.messages.MessageListItem;
@@ -19,6 +21,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import reactor.core.publisher.Flux;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -65,23 +68,43 @@ public class DroidCommView extends VerticalLayout {
     private MessageInput createMessageInput(Scroller messageScroller) {
         MessageInput messageInput = new MessageInput();
         messageInput.setWidthFull();
-        messageInput.getElement().executeJs(
-                "this.addEventListener('submit', () => {this.setAttribute('timestamp', new Date().toISOString());" +
-                        "this.setAttribute('creationTimezone', Intl.DateTimeFormat().resolvedOptions().timeZone);});");
+        messageInput.addSubmitListener(submitEvent -> {submitEvent.getSource().getElement().setAttribute("timestamp", Instant.now().toString());});
+        messageInput.addSubmitListener(submitEvent -> {submitEvent.getSource().getElement().setAttribute("timezone", ZoneId.systemDefault().getId());});
         messageInput.addSubmitListener(event -> handleMessageSubmit(event, messageScroller));
         return messageInput;
     }
 
     private void handleMessageSubmit(MessageInput.SubmitEvent event, Scroller messageScroller) {
-        String userMessageText = event.getValue();
-        String timestamp = event.getSource().getElement().getAttribute("timestamp"); // Read the timestamp attribute
-        String timezone = event.getSource().getElement().getAttribute("creationTimezone");   // Read the creationTimezone attribute
-        Instant creationTime = timestamp != null ? Instant.parse(timestamp) : Instant.now(); // Default to now if timestamp isn't set
-        log.info("Messaged created at {} with creationTimezone {}", creationTime, timezone);
+        // JavaScript to capture client-side timestamp and timezone
+        String jsCode = "const now = new Date();"
+                + "const timestamp = now.toISOString();"
+                + "const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;"
+                + "return { timestamp, timezone };";
+
+        event.getSource().getElement().executeJs(jsCode).then(jsonString -> {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(jsonString.toJson());
+
+                String timestamp = jsonNode.get("timestamp").asText();
+                String timezone = jsonNode.get("timezone").asText();
+
+                processSubmission(event.getValue(), timestamp, timezone, messageScroller);
+            } catch (Exception e) {
+                log.error("Failed to parse timestamp and timezone from JSON: {}", e.getMessage());
+            }
+        });
+    }
+
+    private void processSubmission(String messageText, String timestamp, String timezone, Scroller messageScroller) {
+        Instant creationTime = Instant.parse(timestamp);
         String userName = "Nathan";
-        MessageListItem userMessage = new MessageListItem(userMessageText, creationTime, userName);
-        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId, timezone);
-        appendMessageAndReply(userMessage, messageScroller, userMessageText, userMessageDto);
+        MessageListItem userMessage = new MessageListItem(messageText, creationTime, userName);
+
+        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, messageText, chatId, timezone);
+        appendMessageAndReply(userMessage, messageScroller, messageText, userMessageDto);
+
+        log.info("Message submitted: {}, Timestamp: {}, Timezone: {}", messageText, timestamp, timezone);
     }
 
     private void appendMessageAndReply(MessageListItem userMessage, Scroller messageScroller, String userMessageText, UserMessageDto userMessageDto) {
