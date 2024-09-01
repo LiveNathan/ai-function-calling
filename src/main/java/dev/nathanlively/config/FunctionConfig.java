@@ -1,9 +1,6 @@
 package dev.nathanlively.config;
 
-import dev.nathanlively.application.ClockInService;
-import dev.nathanlively.application.ClockOutService;
-import dev.nathanlively.application.CreateProjectService;
-import dev.nathanlively.application.UpdateTimesheetEntryService;
+import dev.nathanlively.application.*;
 import dev.nathanlively.application.functions.clockin.ClockInFunction;
 import dev.nathanlively.application.functions.clockin.ClockInRequest;
 import dev.nathanlively.application.functions.clockin.ClockInResponse;
@@ -13,6 +10,9 @@ import dev.nathanlively.application.functions.clockout.ClockOutResponse;
 import dev.nathanlively.application.functions.createproject.CreateProjectFunction;
 import dev.nathanlively.application.functions.createproject.CreateProjectRequest;
 import dev.nathanlively.application.functions.createproject.CreateProjectResponse;
+import dev.nathanlively.application.functions.createtimesheetentry.CreateTimesheetEntryFunction;
+import dev.nathanlively.application.functions.createtimesheetentry.CreateTimesheetEntryRequest;
+import dev.nathanlively.application.functions.createtimesheetentry.CreateTimesheetEntryResponse;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
@@ -44,6 +44,12 @@ public class FunctionConfig {
     @Description("Update an existing timesheet entry for a resource. If the resource is found, it updates the most recent timesheet entry with the clock-out time and saves the resource. If there are any issues, appropriate error messages are returned.")
     public Function<ClockOutRequest, ClockOutResponse> clockOutFunction(ClockOutService clockOutService) {
         return new ClockOutFunction(clockOutService);
+    }
+
+    @Bean
+    @Description("Create a new timesheet entry for a resource. Use this when the start and end time are already known.")
+    public Function<CreateTimesheetEntryRequest, CreateTimesheetEntryResponse> createTimesheetEntryFunction(CreateTimesheetEntryService service) {
+        return new CreateTimesheetEntryFunction(service);
     }
 
     @Bean

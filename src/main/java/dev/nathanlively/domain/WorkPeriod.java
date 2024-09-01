@@ -1,6 +1,7 @@
 package dev.nathanlively.domain;
 
 import dev.nathanlively.domain.exceptions.InvalidClockOutTimeException;
+import dev.nathanlively.domain.exceptions.InvalidWorkPeriodException;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Duration;
@@ -13,6 +14,7 @@ public class WorkPeriod {
 
     public WorkPeriod(Instant start, Instant end) {
         Objects.requireNonNull(start, "Start time cannot be null.");
+        validateFutureTime(start, "Start time cannot be in the future.");
         validateEndTime(start, end);
         this.start = start;
         this.end = end;
@@ -50,6 +52,12 @@ public class WorkPeriod {
             throw new InvalidClockOutTimeException("Cannot calculate duration without end time.");
         }
         return Duration.between(start, end);
+    }
+
+    private static void validateFutureTime(Instant time, String message) {
+        if (time.isAfter(Instant.now())) {
+            throw new InvalidWorkPeriodException(message);
+        }
     }
 
     @Override
