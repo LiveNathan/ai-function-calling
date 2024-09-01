@@ -37,4 +37,12 @@ class WorkPeriodTest {
                 .isInstanceOf(InvalidWorkPeriodException.class)
                 .hasMessage("End time cannot be in the future.");
     }
+
+    @Test
+    void setEnd_givenEndTimeInFuture_throws() {
+        WorkPeriod workPeriod = WorkPeriod.startAt(Instant.now());
+        assertThatThrownBy(() -> workPeriod.setEnd(Instant.now().plusSeconds(3600)))
+                .isInstanceOf(InvalidWorkPeriodException.class)
+                .hasMessage("End time cannot be in the future.");
+    }
 }

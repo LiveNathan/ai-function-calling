@@ -30,37 +30,37 @@ import java.util.function.Function;
 public class FunctionConfig {
     @Bean
     @Description("Create a new project.")
-    public Function<CreateProjectRequest, CreateProjectResponse> createProjectFunction(CreateProjectService createProjectService) {
+    public Function<CreateProjectRequest, CreateProjectResponse> createProject(CreateProjectService createProjectService) {
         return new CreateProjectFunction(createProjectService);
     }
 
     @Bean
-    @Description("Create a new timesheet entry for a resource. The project name is important, but optional. If the project name is known, include it. Otherwise, it can be set to null, and the project can be updated later using the updateProjectFunction.")
-    public Function<ClockInRequest, ClockInResponse> clockInFunction(ClockInService clockInService) {
+    @Description("Create a new timesheet entry for a resource when the end time is unknown. The project name is important, but optional. If the project name is known, include it. Otherwise, it can be set to null, and the project can be updated later using the updateProjectFunction. (eg. 'I'm starting work on Project A now.')")
+    public Function<ClockInRequest, ClockInResponse> clockIn(ClockInService clockInService) {
         return new ClockInFunction(clockInService);
     }
 
     @Bean
-    @Description("Update an existing timesheet entry for a resource. If the resource is found, it updates the most recent timesheet entry with the clock-out time and saves the resource. If there are any issues, appropriate error messages are returned.")
-    public Function<ClockOutRequest, ClockOutResponse> clockOutFunction(ClockOutService clockOutService) {
+    @Description("Update the end time of an existing timesheet entry for a resource. (eg. 'Stop work on Project A.')")
+    public Function<ClockOutRequest, ClockOutResponse> clockOut(ClockOutService clockOutService) {
         return new ClockOutFunction(clockOutService);
     }
 
     @Bean
-    @Description("Create a new timesheet entry for a resource. Use this when the start and end time are already known.")
-    public Function<CreateTimesheetEntryRequest, CreateTimesheetEntryResponse> createTimesheetEntryFunction(CreateTimesheetEntryService service) {
+    @Description("Create a new timesheet entry for a resource. Use this when the start and end time are already known. (eg. 'I worked on Project A 8-9am.')")
+    public Function<CreateTimesheetEntryRequest, CreateTimesheetEntryResponse> createTimesheetEntry(CreateTimesheetEntryService service) {
         return new CreateTimesheetEntryFunction(service);
     }
 
     @Bean
-    @Description("Update an existing timesheet entry's project. Use this function in the case when a user clocks in without a project and now wants to add the project to it. The project name must exactly match one of the project names that already exists in the repository. Use findAllProjectNamesFunction to fetch the available names.")
-    public Function<UpdateProjectRequest, UpdateProjectResponse> updateProjectFunction(UpdateTimesheetEntryService updateTimesheetEntryService) {
+    @Description("Update an existing timesheet entry's project. Use this function in the case when a user clocks in without a project and now wants to add the project to it. (eg. 'Never mind. I'm actually working on Project B.')")
+    public Function<UpdateProjectRequest, UpdateProjectResponse> updateProject(UpdateTimesheetEntryService updateTimesheetEntryService) {
         return new UpdateProjectFunction(updateTimesheetEntryService);
     }
 
     @Bean
     @Description("Fetch the list of available project names.")
-    public Function<FindAllProjectNamesRequest, FindAllProjectNamesResponse> findAllProjectNamesFunction(ProjectRepository repository) {
+    public Function<FindAllProjectNamesRequest, FindAllProjectNamesResponse> findAllProjectNames(ProjectRepository repository) {
         return new FindAllProjectNamesFunction(repository);
     }
 
