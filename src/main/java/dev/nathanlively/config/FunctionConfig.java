@@ -1,6 +1,9 @@
 package dev.nathanlively.config;
 
-import dev.nathanlively.application.*;
+import dev.nathanlively.application.ClockInService;
+import dev.nathanlively.application.ClockOutService;
+import dev.nathanlively.application.CreateProjectService;
+import dev.nathanlively.application.CreateTimesheetEntryService;
 import dev.nathanlively.application.functions.clockin.ClockInFunction;
 import dev.nathanlively.application.functions.clockin.ClockInRequest;
 import dev.nathanlively.application.functions.clockin.ClockInResponse;
@@ -16,9 +19,6 @@ import dev.nathanlively.application.functions.createtimesheetentry.CreateTimeshe
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
-import dev.nathanlively.application.functions.updateproject.UpdateProjectFunction;
-import dev.nathanlively.application.functions.updateproject.UpdateProjectRequest;
-import dev.nathanlively.application.functions.updateproject.UpdateProjectResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +35,7 @@ public class FunctionConfig {
     }
 
     @Bean
-    @Description("Create a new timesheet entry for a resource when the end time is unknown. The project name is important, but optional. If the project name is known, include it. Otherwise, it can be set to null, and the project can be updated later using the updateProjectFunction. (eg. 'I'm starting work on Project A now.')")
+    @Description("Create a new timesheet entry for a resource when the end time is unknown. (eg. 'I'm starting work on Project A now.')")
     public Function<ClockInRequest, ClockInResponse> clockIn(ClockInService clockInService) {
         return new ClockInFunction(clockInService);
     }
@@ -52,11 +52,11 @@ public class FunctionConfig {
         return new CreateTimesheetEntryFunction(service);
     }
 
-    @Bean
-    @Description("Update an existing timesheet entry's project. Use this function in the case when a user clocks in without a project and now wants to add the project to it. (eg. 'Never mind. I'm actually working on Project B.')")
-    public Function<UpdateProjectRequest, UpdateProjectResponse> updateProject(UpdateTimesheetEntryService updateTimesheetEntryService) {
-        return new UpdateProjectFunction(updateTimesheetEntryService);
-    }
+//    @Bean
+//    @Description("Update an existing timesheet entry's project. Use this function in the case when a user clocks in without a project and now wants to add the project to it. (eg. 'Never mind. I'm actually working on Project B.')")
+//    public Function<UpdateProjectRequest, UpdateProjectResponse> updateProject(UpdateTimesheetEntryService updateTimesheetEntryService) {
+//        return new UpdateProjectFunction(updateTimesheetEntryService);
+//    }
 
     @Bean
     @Description("Fetch the list of available project names.")
