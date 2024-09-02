@@ -3,7 +3,6 @@ package dev.nathanlively.domain;
 import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -68,7 +67,6 @@ class TimesheetTest {
     }
 
     @Test
-    @Disabled("until overlap test finished")
     void clockIn_givenNullClockOut_clockOutAutomaticallyThenIn() {
         Timesheet timesheet = new Timesheet(null);
         timesheet.clockIn(Instant.now().minusSeconds(60*2));
@@ -80,7 +78,6 @@ class TimesheetTest {
     }
 
     @Test
-    @Disabled("until workperiod overlaps")
     void noOverlappingEntries() {
         Timesheet timesheet = new Timesheet(null);
         timesheet.appendEntry(TimesheetEntry.from(new Project("Project A"),
