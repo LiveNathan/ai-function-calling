@@ -78,7 +78,7 @@ class TimesheetTest {
     }
 
     @Test
-    void noOverlappingEntries() {
+    void appendEntry_givenOverlap_throwsException() {
         Timesheet timesheet = new Timesheet(null);
         timesheet.appendEntry(TimesheetEntry.from(new Project("Project A"),
                 LocalDateTime.of(2023, 1, 1, 9, 0), LocalDateTime.of(2023, 1, 1, 12, 0), ZoneId.systemDefault()));

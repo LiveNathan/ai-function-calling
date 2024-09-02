@@ -28,12 +28,8 @@ public final class Timesheet {
     }
 
     private boolean hasOverlappingPeriod(TimesheetEntry newEntry) {
-        for (TimesheetEntry entry : timeSheetEntries) {
-            if (entry.workPeriod().overlaps(newEntry.workPeriod())) {
-                return true;
-            }
-        }
-        return false;
+        return timeSheetEntries.stream()
+                .anyMatch(entry -> entry.workPeriod().overlaps(newEntry.workPeriod()));
     }
 
     public List<TimesheetEntry> timeSheetEntries() {
