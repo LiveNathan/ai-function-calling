@@ -30,7 +30,8 @@ class ProjectNameMatcherTest {
     void from(String userSubmittedProjectName, String expected) {
         String pellaFallPlanningConference = "Pella Fall Planning Conference";
         String msfMeetingName = "MSF Fall History & Heritage Meeting";
-        List<String> allNamesFromRepo = List.of(pellaFallPlanningConference, msfMeetingName);
+        String projectA = "Project A (12345)";
+        List<String> allNamesFromRepo = List.of(pellaFallPlanningConference, msfMeetingName, projectA);
 
         Optional<String> actual = ProjectNameMatcher.from(userSubmittedProjectName, allNamesFromRepo);
 

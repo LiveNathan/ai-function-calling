@@ -1,6 +1,14 @@
 package dev.nathanlively.application.functions.createtimesheetentry;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import java.time.LocalDateTime;
 
-public record CreateTimesheetEntryRequest(String projectName, LocalDateTime timesheetEntryStart, LocalDateTime timesheetEntryEnd, String zoneId) {
+public record CreateTimesheetEntryRequest(
+        @JsonProperty(required = true) String projectName,
+        @JsonProperty(required = true) @JsonPropertyDescription("A date-time without a time-zone in the ISO-8601 calendar system, such as 2007-12-03T10:15:30.") LocalDateTime timesheetEntryStart,
+        @JsonProperty(required = true) @JsonPropertyDescription("A date-time without a time-zone in the ISO-8601 calendar system, such as 2007-12-03T10:15:30.") LocalDateTime timesheetEntryEnd,
+        @JsonProperty(required = true) @JsonPropertyDescription("A time-zone ID, such as America/Chicago.") String zoneId
+) {
 }

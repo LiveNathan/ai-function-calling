@@ -54,6 +54,7 @@ public class CreateTimesheetEntryService {
                                                         LocalDateTime end, String zone) {
         TimesheetEntry entry = TimesheetEntry.from(project, start, end, ZoneId.of(zone));
         resource.appendTimesheetEntry(entry);
+        resourceRepository.save(resource);
         return Result.success(entry);
     }
 

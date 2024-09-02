@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -37,7 +36,7 @@ public class SpringAiAdapter implements AiGateway {
                 .defaultFunctions("clockIn", "clockOut", "findAllProjectNames", "updateProject", "createProject", "createTimesheetEntry")
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(chatMemory),
-                        new VectorStoreChatMemoryAdvisor(vectorStore),
+//                        new VectorStoreChatMemoryAdvisor(vectorStore),
                         new LoggingAdvisor())
                 .build();
     }

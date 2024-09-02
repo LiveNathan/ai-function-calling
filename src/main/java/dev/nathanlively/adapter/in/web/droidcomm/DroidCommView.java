@@ -21,16 +21,13 @@ import org.springframework.ai.chat.messages.UserMessage;
 import reactor.core.publisher.Flux;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @PageTitle("DroidComm")
 @Route(value = "DroidComm", layout = MainLayout.class)
 @PermitAll
 public class DroidCommView extends VerticalLayout {
-    private static final AtomicLong ID_GENERATOR = new AtomicLong();
     private static final Logger log = LoggerFactory.getLogger(DroidCommView.class);
 
     private final List<Message> messages;
@@ -68,14 +65,11 @@ public class DroidCommView extends VerticalLayout {
     private MessageInput createMessageInput(Scroller messageScroller) {
         MessageInput messageInput = new MessageInput();
         messageInput.setWidthFull();
-        messageInput.addSubmitListener(submitEvent -> {submitEvent.getSource().getElement().setAttribute("timestamp", Instant.now().toString());});
-        messageInput.addSubmitListener(submitEvent -> {submitEvent.getSource().getElement().setAttribute("timezone", ZoneId.systemDefault().getId());});
         messageInput.addSubmitListener(event -> handleMessageSubmit(event, messageScroller));
         return messageInput;
     }
 
     private void handleMessageSubmit(MessageInput.SubmitEvent event, Scroller messageScroller) {
-        // JavaScript to capture client-side timestamp and timezone
         String jsCode = "const now = new Date();"
                 + "const timestamp = now.toISOString();"
                 + "const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;"
@@ -97,17 +91,18 @@ public class DroidCommView extends VerticalLayout {
     }
 
     private void processSubmission(String messageText, String timestamp, String timezone, Scroller messageScroller) {
+        log.info("Timestamp: {}, Timezone: {}", timestamp, timezone);
         Instant creationTime = Instant.parse(timestamp);
         String userName = "Nathan";
         MessageListItem userMessage = new MessageListItem(messageText, creationTime, userName);
 
         UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, messageText, chatId, timezone);
-        appendMessageAndReply(userMessage, messageScroller, messageText, userMessageDto);
+        appendMessageAndReply(userMessage, messageScroller, userMessageDto);
 
         log.info("Message submitted: {}, Timestamp: {}, Timezone: {}", messageText, timestamp, timezone);
     }
 
-    private void appendMessageAndReply(MessageListItem userMessage, Scroller messageScroller, String userMessageText, UserMessageDto userMessageDto) {
+    private void appendMessageAndReply(MessageListItem userMessage, Scroller messageScroller, UserMessageDto userMessageDto) {
         getUI().ifPresent(ui -> ui.access(() -> {
             addMessagesToUI(userMessage);
 
