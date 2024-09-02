@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 
 public class TimesheetEntry {
@@ -26,6 +28,15 @@ public class TimesheetEntry {
 
     public static TimesheetEntry clockIn(Project project, Instant clockInTime) {
         return new TimesheetEntry(project, WorkPeriod.startAt(clockInTime));
+    }
+
+    public static TimesheetEntry from(Project project, LocalDateTime start, LocalDateTime end,
+                                      ZoneId zone) {
+        Instant startInstant = start.atZone(zone).toInstant();
+        Instant endInstant = end.atZone(zone).toInstant();
+        TimesheetEntry entry = clockIn(project, startInstant);
+        entry.clockOut(endInstant);
+        return entry;
     }
 
     public void clockOut(Instant clockOutTime) {

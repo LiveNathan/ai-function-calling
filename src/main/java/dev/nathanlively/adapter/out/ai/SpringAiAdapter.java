@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -32,13 +31,13 @@ public class SpringAiAdapter implements AiGateway {
                         Adopt the user's tone to make them feel comfortable with you. If they are playful and silly, so are you. If they are professional and matter-of-fact, so are you.
                         Keep your responses short and direct because people need your help in a hurry, but for complex tasks, think out loud by writing each step.
                         For questions about long documents, pull the most relevant quote from the document and consider whether it answers the user's question or whether it lacks sufficient detail.
-                        Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time}.
+                        Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time} instant with {message_creation_timezone} timezone.
                         Available projects are: {available_projects}. The project name is its natural identifier.""")
+                .defaultFunctions("clockIn", "clockOut", "findAllProjectNames", "updateProject", "createProject", "createTimesheetEntry")
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(chatMemory),
-                        new VectorStoreChatMemoryAdvisor(vectorStore),
+//                        new VectorStoreChatMemoryAdvisor(vectorStore),
                         new LoggingAdvisor())
-                .defaultFunctions("clockInFunction", "clockOutFunction", "findAllProjectNamesFunction", "updateProjectFunction", "createProjectFunction")
                 .build();
     }
 
@@ -49,6 +48,7 @@ public class SpringAiAdapter implements AiGateway {
                 .system(sp -> sp.params(Map.of(
                         "current_date", LocalDate.now().toString(),
                         "message_creation_time", userMessageDto.creationTime().toString(),
+                        "message_creation_timezone", userMessageDto.creationTimezone(),
                         "user_name", userMessageDto.userName(),
                         "available_projects", projectNames
                 )))

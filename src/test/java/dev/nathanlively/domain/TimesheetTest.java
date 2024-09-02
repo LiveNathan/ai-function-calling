@@ -45,9 +45,9 @@ class TimesheetTest {
     void clockOut() {
         Timesheet timesheet = new Timesheet(null);
         assertThat(timesheet.timeSheetEntries()).isEmpty();
-        timesheet.clockIn(Instant.now());
+        timesheet.clockIn(Instant.now().minusSeconds(60*2));
 
-        timesheet.clockOut(Instant.now().plusSeconds(60 * 2));
+        timesheet.clockOut(Instant.now());
 
         assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNotNull();
     }
@@ -55,8 +55,8 @@ class TimesheetTest {
     @Test
     void clockOutThrowsAlreadyClockedOutException() {
         Timesheet timesheet = new Timesheet(null);
-        timesheet.clockIn(Instant.now());
-        timesheet.clockOut(Instant.now().plusSeconds(60 * 2));
+        timesheet.clockIn(Instant.now().minusSeconds(60*2));
+        timesheet.clockOut(Instant.now());
 
         assertThatThrownBy(() -> timesheet.clockOut(Instant.now().plusSeconds(60 * 3)))
                 .isInstanceOf(AlreadyClockedOutException.class)
@@ -66,9 +66,9 @@ class TimesheetTest {
     @Test
     void clockIn_givenNullClockOut_clockOutAutomaticallyThenIn() {
         Timesheet timesheet = new Timesheet(null);
-        timesheet.clockIn(Instant.now());
+        timesheet.clockIn(Instant.now().minusSeconds(60*2));
 
-        timesheet.clockIn(Instant.now().plusSeconds(60 * 2));
+        timesheet.clockIn(Instant.now());
 
         assertThat(timesheet.timeSheetEntries().size()).isEqualTo(2);
         assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNull();

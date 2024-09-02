@@ -1,10 +1,15 @@
 package dev.nathanlively.application;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public sealed abstract class Result<SUCCESS> {
+
+    private static final Logger log = LoggerFactory.getLogger(Result.class);
 
     static <SUCCESS> Result<SUCCESS> success(SUCCESS value) {
         return new SuccessResult<>(List.of(value));
@@ -15,10 +20,12 @@ public sealed abstract class Result<SUCCESS> {
     }
 
     static <SUCCESS> Result<SUCCESS> failure(String message) {
+        log.error(message);
         return new FailureResult<>(Collections.singletonList(message));
     }
 
     static <SUCCESS> Result<SUCCESS> failure(List<String> failureMessages) {
+        failureMessages.forEach(log::error);
         return new FailureResult<>(failureMessages);
     }
 
@@ -31,7 +38,6 @@ public sealed abstract class Result<SUCCESS> {
     }
 
     public abstract List<String> failureMessages();
-
 
     private static final class SuccessResult<SUCCESS> extends Result<SUCCESS> {
         private final List<SUCCESS> values = new ArrayList<>();

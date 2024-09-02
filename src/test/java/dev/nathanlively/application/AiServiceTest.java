@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
+import java.time.ZoneId;
 
 class AiServiceTest {
     AiGateway gateway;
@@ -21,7 +22,7 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_commCheck() {
-        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "comm check", "chatId1");
+        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "comm check", "chatId1", ZoneId.of("America/Chicago").toString());
         Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);
 
         StepVerifier.create(actual)
@@ -31,7 +32,7 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_clockIn_returnsJson() {
-        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "clock in to project A", "chatId1");
+        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "clock in to project A", "chatId1", ZoneId.of("America/Chicago").toString());
         String jsonResponse = "{\"function_call\": {\"name\": \"clockOut\", \"arguments\": {\"projectId\": \"A\"}}}";
 
         Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);
