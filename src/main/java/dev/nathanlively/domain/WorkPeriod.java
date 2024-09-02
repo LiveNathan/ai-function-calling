@@ -63,6 +63,16 @@ public class WorkPeriod {
         }
     }
 
+    public boolean overlaps(WorkPeriod newPeriod) {
+        Objects.requireNonNull(newPeriod, "New work period cannot be null");
+
+        if (newPeriod.start().isBefore(this.start)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -2,6 +2,7 @@ package dev.nathanlively.domain;
 
 import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
+import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -20,7 +21,19 @@ public final class Timesheet {
 
     public void appendEntry(TimesheetEntry timesheetEntry) {
         Objects.requireNonNull(timesheetEntry, "TimesheetEntry cannot be null");
+        if (hasOverlappingPeriod(timesheetEntry)) {
+            throw new OverlappingWorkPeriodException("Work periods cannot overlap.");
+        }
         timeSheetEntries.add(timesheetEntry);
+    }
+
+    private boolean hasOverlappingPeriod(TimesheetEntry newEntry) {
+        for (TimesheetEntry entry : timeSheetEntries) {
+            if (entry.workPeriod().overlaps(newEntry.workPeriod())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<TimesheetEntry> timeSheetEntries() {

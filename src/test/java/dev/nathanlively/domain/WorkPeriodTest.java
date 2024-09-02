@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class WorkPeriodTest {
@@ -44,5 +45,19 @@ class WorkPeriodTest {
         assertThatThrownBy(() -> workPeriod.setEnd(Instant.now().plusSeconds(3600)))
                 .isInstanceOf(InvalidWorkPeriodException.class)
                 .hasMessage("End time cannot be in the future.");
+    }
+
+    @Test
+    void overlaps_givenNoOverlap_returnsFalse() throws Exception {
+        WorkPeriod workPeriod1 = new WorkPeriod(
+                Instant.now().minusSeconds(60 * 60),
+                Instant.now().minusSeconds(60 * 30));
+        WorkPeriod workPeriod2 = new WorkPeriod(
+                Instant.now().minusSeconds(60 * 29),
+                Instant.now());
+
+        boolean actual = workPeriod1.overlaps(workPeriod2);
+
+        assertThat(actual).isFalse();
     }
 }
