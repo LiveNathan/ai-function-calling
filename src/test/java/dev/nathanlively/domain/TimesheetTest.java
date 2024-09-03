@@ -134,4 +134,23 @@ class TimesheetTest {
         assertThat(actual)
                 .isEqualTo(expected);
     }
+
+    @Test
+    void calculateNextAvailableSlot_givenNonEmptyTimesheet_startAt10am() throws Exception {
+        ZoneId zone = ZoneId.of("America/Chicago");
+        Instant fixedInstant = LocalDate.of(2024, 9, 2).atStartOfDay(zone).toInstant();
+        Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
+        Project project = new Project("Project A");
+        LocalDateTime start = LocalDateTime.of(2024, 9, 2, 9, 0);
+        LocalDateTime end = LocalDateTime.of(2024, 9, 2, 10, 0);
+        TimesheetEntry timesheetEntry = TimesheetEntry.from(project, start, end, zone);
+        timesheet.appendEntry(timesheetEntry);
+        LocalDateTime today = LocalDateTime.of(2024, 9, 2, 10, 0);
+        Instant expected = today.atZone(zone).toInstant();
+
+        Instant actual = timesheet.calculateNextAvailableSlot(zone);
+
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
 }
