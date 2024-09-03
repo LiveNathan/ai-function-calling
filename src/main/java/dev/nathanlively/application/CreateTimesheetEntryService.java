@@ -6,13 +6,11 @@ import dev.nathanlively.application.functions.createtimesheetentrywithduration.C
 import dev.nathanlively.application.functions.createtimesheetentrywithduration.CreateTimesheetEntryWithDurationResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
-import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 public class CreateTimesheetEntryService {
@@ -50,30 +48,22 @@ public class CreateTimesheetEntryService {
     private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, LocalDateTime start,
                                                           LocalDateTime end, String zone) {
         return projectRepository.findByName(projectName)
-                .map(project -> createAndAppendEntry(resource, project, start, end, zone))
+                .map(project -> {
+                    Result<TimesheetEntry> entryResult = TimesheetEntryCreator.createAndAppendEntry(resource, project, start, end, zone);
+                    resourceRepository.save(resource);
+                    return entryResult;
+                })
                 .orElseGet(() -> Result.failure("Project not found with name: " + projectName));
     }
 
-    private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName,
-                                                          Duration duration, String zone) {
+    private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, Duration duration, String zone) {
         return projectRepository.findByName(projectName)
-                .map(project -> createAndAppendEntry(resource, project, duration, zone))
+                .map(project -> {
+                    Result<TimesheetEntry> entryResult = TimesheetEntryCreator.createAndAppendEntry(resource, project, duration, zone);
+                    resourceRepository.save(resource);
+                    return entryResult;
+                })
                 .orElseGet(() -> Result.failure("Project not found with name: " + projectName));
-    }
-
-    private Result<TimesheetEntry> createAndAppendEntry(Resource resource, Project project, LocalDateTime start,
-                                                        LocalDateTime end, String zone) {
-        TimesheetEntry entry = TimesheetEntry.from(project, start, end, ZoneId.of(zone));
-        resource.appendTimesheetEntry(entry);
-        resourceRepository.save(resource);
-        return Result.success(entry);
-    }
-
-    private Result<TimesheetEntry> createAndAppendEntry(Resource resource, Project project,
-                                                        Duration duration, String zone) {
-        resource.appendTimesheetEntry(project, duration, ZoneId.of(zone));
-        resourceRepository.save(resource);
-        return Result.success(resource.timesheet().mostRecentEntry());
     }
 
     public CreateTimesheetEntryResponse from(CreateTimesheetEntryRequest request) {
