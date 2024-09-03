@@ -4,7 +4,6 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageList;
 import com.vaadin.flow.component.messages.MessageListItem;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -65,13 +64,7 @@ public class DroidCommView extends VerticalLayout {
     private MessageInput createMessageInput(Scroller messageScroller) {
         MessageInput messageInput = new MessageInput();
         messageInput.setWidthFull();
-        ComponentUtil.addListener(messageInput, TimestampedSubmitEvent.class, event -> {
-            Notification.show(event.getValue() + " @ " + event.getTimestamp() + " (Time Zone: " + event.getTimezone() + ")");
-        });
-        messageInput.addSubmitListener(event -> {
-            TimestampedSubmitEvent timestampedEvent = (TimestampedSubmitEvent) event;
-            handleMessageSubmit(timestampedEvent, messageScroller);
-        });
+        ComponentUtil.addListener(messageInput, TimestampedSubmitEvent.class, event -> handleMessageSubmit(event, messageScroller));
         return messageInput;
     }
 
@@ -79,8 +72,8 @@ public class DroidCommView extends VerticalLayout {
         String userMessageText = event.getValue();
         String timestamp = event.getTimestamp();
         String timezone = event.getTimezone();  // Leaving this as a string for now since it's only used by the AI
+        log.info("Timestamp : {}, Timezone : {}", timestamp, timezone);
         Instant creationTime = timestamp != null ? Instant.parse(timestamp) : Instant.now();
-        log.info("Messaged created at {}", creationTime);
         String userName = "Nathan";
         MessageListItem userMessage = new MessageListItem(userMessageText, creationTime, userName);
         UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId, timezone);
