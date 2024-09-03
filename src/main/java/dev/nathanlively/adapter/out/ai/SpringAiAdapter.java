@@ -33,7 +33,7 @@ public class SpringAiAdapter implements AiGateway {
                         For questions about long documents, pull the most relevant quote from the document and consider whether it answers the user's question or whether it lacks sufficient detail.
                         Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time} instant with {message_creation_timezone} timezone.
                         Available projects are: {available_projects}. The project name is its natural identifier.""")
-                .defaultFunctions("clockIn", "clockOut", "findAllProjectNames", "createProject", "createTimesheetEntry")
+                .defaultFunctions("clockIn", "clockOut", "findAllProjectNames", "createProject", "createTimesheetEntry", "createTimesheetEntryWithDuration")
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(chatMemory),
 //                        new VectorStoreChatMemoryAdvisor(vectorStore),
