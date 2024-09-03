@@ -11,12 +11,22 @@ import java.util.Objects;
 
 public final class Timesheet {
     private final List<TimesheetEntry> timeSheetEntries;
+    private final MyClock clock;
 
-    public Timesheet(List<TimesheetEntry> timeSheetEntries) {
+    private Timesheet(List<TimesheetEntry> timeSheetEntries, MyClock clock) {
         if (timeSheetEntries == null) {
             timeSheetEntries = new ArrayList<>();
         }
         this.timeSheetEntries = timeSheetEntries;
+        this.clock = Objects.requireNonNull(clock);
+    }
+
+    public static Timesheet withSystemClock(List<TimesheetEntry> timeSheetEntries) {
+        return new Timesheet(timeSheetEntries, new MySystemClock());
+    }
+
+    public static Timesheet withFixedClock(List<TimesheetEntry> timeSheetEntries, Instant fixedInstant) {
+        return new Timesheet(timeSheetEntries, new FixedClock(fixedInstant));
     }
 
     public void appendEntry(TimesheetEntry timesheetEntry) {
@@ -27,22 +37,23 @@ public final class Timesheet {
         timeSheetEntries.add(timesheetEntry);
     }
 
-    public void appendEntryWithDuration(Project project, Duration duration) {
+    public void appendEntryWithDuration(Project project, Duration duration, ZoneId zone) {
         Objects.requireNonNull(project, "Project cannot be null");
         Objects.requireNonNull(duration, "Duration cannot be null");
 
-        Instant start = calculateNextAvailableSlot();
+        Instant start = calculateNextAvailableSlot(zone);
         Instant end = start.plus(duration);
 
         TimesheetEntry newEntry = TimesheetEntry.from(project, start, end);
         appendEntry(newEntry);
     }
 
-    Instant calculateNextAvailableSlot() {
+    Instant calculateNextAvailableSlot(ZoneId zone) {
         if (timeSheetEntries.isEmpty()) {
-            LocalDateTime start = LocalDate.of(2024, 3, 15).atTime(9, 0);
-            ZoneId zone = ZoneId.of("America/Chicago");
-            return start.atZone(zone).toInstant();
+            Instant now = clock.now();
+            LocalDate today = LocalDate.ofInstant(now, zone);
+            LocalDateTime todayAt9 = today.atTime(9, 0);
+            return todayAt9.atZone(zone).toInstant();
         } else {
             TimesheetEntry lastEntry = mostRecentEntry();
             Instant lastEnd = lastEntry.workPeriod().end();

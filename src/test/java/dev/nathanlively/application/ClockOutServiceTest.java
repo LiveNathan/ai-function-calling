@@ -30,7 +30,7 @@ class ClockOutServiceTest {
         project = new Project("Project A (12345)");
         projectRepository.save(project);
         service = new ClockOutService(resourceRepository);
-        Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
         resourceRepository.save(resource);

@@ -1,30 +1,44 @@
 package dev.nathanlively.domain;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.Instant;
 import java.util.Objects;
 
 public final class Resource {
-    private @NotNull ResourceType resourceType;
-    private @NotNull JobTitle jobTitle;
-    private @NotBlank String name;
-    private @NotBlank String email;
+    private ResourceType resourceType;
+    private JobTitle jobTitle;
+    private String name;
+    private String email;
     private Timesheet timeSheet;
 
-    public Resource(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet) {
+    private Resource(ResourceType resourceType, JobTitle jobTitle, String name, String email,
+                     Timesheet timeSheet, MyClock clock) {
         Objects.requireNonNull(resourceType, "ResourceType cannot be null");
         Objects.requireNonNull(jobTitle, "JobTitle cannot be null");
         Objects.requireNonNull(name, "Name cannot be null");
         Objects.requireNonNull(email, "Email cannot be null");
         if (timeSheet == null) {
-            timeSheet = new Timesheet(null);
+            switch (clock) {
+                case MySystemClock systemClock -> this.timeSheet = Timesheet.withSystemClock(null);
+                case FixedClock fixedClock -> this.timeSheet = Timesheet.withFixedClock(null, clock.now());
+                case null, default -> throw new IllegalArgumentException("Unsupported clock type");
+            }
+        } else {
+            this.timeSheet = timeSheet;
         }
         this.resourceType = resourceType;
         this.jobTitle = jobTitle;
         this.name = name;
         this.email = email;
-        this.timeSheet = timeSheet;
+    }
+
+    public static Resource withSystemClock(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet) {
+        return new Resource(resourceType, jobTitle, name, email, timeSheet, new MySystemClock());
+    }
+
+    public static Resource createWithFixedClock(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet, Instant fixedInstant) {
+        return new Resource(resourceType, jobTitle, name, email, timeSheet, new FixedClock(fixedInstant));
     }
 
     public void appendTimesheetEntry(@NotNull TimesheetEntry timesheetEntry) {

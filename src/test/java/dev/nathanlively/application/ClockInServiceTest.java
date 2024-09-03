@@ -26,7 +26,7 @@ class ClockInServiceTest {
         resourceRepository = InMemoryResourceRepository.createEmpty();
         projectRepository = InMemoryProjectRepository.createEmpty();
         service = new ClockInService(resourceRepository, projectRepository);
-        Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         resourceRepository.save(resource);
         projectRepository.save(project);
     }

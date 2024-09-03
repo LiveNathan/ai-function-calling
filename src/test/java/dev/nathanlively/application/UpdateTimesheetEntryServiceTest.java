@@ -25,7 +25,7 @@ class UpdateTimesheetEntryServiceTest {
         resourceRepository = InMemoryResourceRepository.createEmpty();
         ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
         service = new UpdateTimesheetEntryService(resourceRepository, projectRepository);
-        Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         timesheetEntry = TimesheetEntry.clockIn(null, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
         resourceRepository.save(resource);

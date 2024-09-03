@@ -17,7 +17,7 @@ class CreateTimesheetEntryServiceTest {
         ResourceRepository resourceRepository = InMemoryResourceRepository.createEmpty();
         ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
         String resourceEmail = "nathanlively@gmail.com";
-        Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         String projectName = "Project A";
         Project project = new Project(projectName);
         resourceRepository.save(resource);
