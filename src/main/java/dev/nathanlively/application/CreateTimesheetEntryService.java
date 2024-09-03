@@ -13,7 +13,6 @@ import dev.nathanlively.domain.TimesheetEntry;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CreateTimesheetEntryService {
@@ -27,7 +26,7 @@ public class CreateTimesheetEntryService {
 
     public Result<TimesheetEntry> from(String resourceEmail, String projectName, LocalDateTime start,
                                        LocalDateTime end, String zone) {
-        List<String> validationErrors = validateInputs(resourceEmail, projectName, zone);
+        List<String> validationErrors = InputValidator.validateInputs(resourceEmail, projectName, zone);
         if (!validationErrors.isEmpty()) {
             return Result.failure(validationErrors);
         }
@@ -38,7 +37,7 @@ public class CreateTimesheetEntryService {
     }
 
     public Result<TimesheetEntry> from(String resourceEmail, String projectName, Duration duration, String zone) {
-        List<String> validationErrors = validateInputs(resourceEmail, projectName, zone, duration);
+        List<String> validationErrors = InputValidator.validateInputs(resourceEmail, projectName, zone, duration);
         if (!validationErrors.isEmpty()) {
             return Result.failure(validationErrors);
         }
@@ -46,28 +45,6 @@ public class CreateTimesheetEntryService {
         return resourceRepository.findByEmail(resourceEmail)
                 .map(resource -> createEntryForResource(resource, projectName, duration, zone))
                 .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail));
-    }
-
-    private List<String> validateInputs(String resourceEmail, String projectName, String zone) {
-        List<String> errors = new ArrayList<>();
-        if (projectName == null || projectName.trim().isEmpty()) {
-            errors.add("Project name must not be null or empty.");
-        }
-        if (zone == null || zone.trim().isEmpty()) {
-            errors.add("Zone must not be null or empty.");
-        }
-        if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
-            errors.add("Email must not be null or empty.");
-        }
-        return errors;
-    }
-
-    private List<String> validateInputs(String resourceEmail, String projectName, String zone, Duration duration) {
-        List<String> errors = validateInputs(resourceEmail, projectName, zone);
-        if (duration == null || duration.isZero()) {
-            errors.add("Duration must not be null or zero.");
-        }
-        return errors;
     }
 
     private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, LocalDateTime start,
