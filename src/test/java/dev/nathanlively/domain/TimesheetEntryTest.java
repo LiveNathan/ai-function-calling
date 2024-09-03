@@ -16,7 +16,7 @@ class TimesheetEntryTest {
 
     @BeforeEach
     void setUp() {
-        project = new Project("Project A");
+        project = Project.create("Project A");
         entry =  TimesheetEntry.clockIn(project, Instant.now());
     }
 

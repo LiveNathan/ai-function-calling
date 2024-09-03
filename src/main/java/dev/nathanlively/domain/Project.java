@@ -1,4 +1,51 @@
 package dev.nathanlively.domain;
 
-public record Project(String name) {
+import java.util.Objects;
+
+public class Project {
+    private String name;
+    private int estimatedHours;
+
+    public Project(String name, int estimatedHours) {
+        this.name = name;
+        this.estimatedHours = estimatedHours;
+    }
+
+    public static Project create(String name) {
+        return new Project(name, 0);
+    }
+
+    public void updateEstimatedHours(int estimatedHours) {
+        this.estimatedHours = estimatedHours;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public int estimatedHours() {
+        return estimatedHours;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (Project) obj;
+        return Objects.equals(this.name, that.name) &&
+                this.estimatedHours == that.estimatedHours;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, estimatedHours);
+    }
+
+    @Override
+    public String toString() {
+        return "Project[" +
+                "name=" + name + ", " +
+                "estimatedHours=" + estimatedHours + ']';
+    }
+
 }

@@ -27,7 +27,7 @@ class ClockOutServiceTest {
     void setUp() {
         resourceRepository = InMemoryResourceRepository.createEmpty();
         projectRepository = InMemoryProjectRepository.createEmpty();
-        project = new Project("Project A (12345)");
+        project = Project.create("Project A (12345)");
         projectRepository.save(project);
         service = new ClockOutService(resourceRepository);
         Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);

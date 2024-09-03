@@ -24,7 +24,7 @@ public class CreateProjectService {
             return Result.failure("There's already a project called " + similarProject.get().name() + ". Please create a more unique name.");
         }
 
-        Project project = new Project(projectName);
+        Project project = Project.create(projectName);
         projectRepository.save(project);
         return Result.success(project);
     }
