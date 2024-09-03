@@ -5,9 +5,13 @@ import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -108,49 +112,41 @@ class TimesheetTest {
                 .isEqualTo(expected);
     }
 
-    @Test
-    void calculateNextAvailableSlot_givenEmptyTimesheet_startAt9am() throws Exception {
-        ZoneId zone = ZoneId.of("America/Chicago");
-        Instant fixedInstant = LocalDate.of(2024, 9, 3).atStartOfDay(zone).toInstant();
+    private static final ZoneId ZONE_ID = ZoneId.of("America/Chicago");
+
+    // Method to provide arguments for the parameterized test
+    private static Stream<Arguments> timesheetParameters() {
+        return Stream.of(
+                // Arguments: fixedInstant, startDateTime, entries, expected
+                Arguments.of(
+                        LocalDate.of(2024, 9, 3).atStartOfDay(ZONE_ID).toInstant(),
+                        LocalDateTime.of(2024, 9, 3, 9, 0),
+                        new TimesheetEntry[]{},
+                        LocalDateTime.of(2024, 9, 3, 9, 0).atZone(ZONE_ID).toInstant()
+                ),
+                Arguments.of(
+                        LocalDate.of(2024, 9, 2).atStartOfDay(ZONE_ID).toInstant(),
+                        LocalDateTime.of(2024, 9, 2, 9, 0),
+                        new TimesheetEntry[]{},
+                        LocalDateTime.of(2024, 9, 2, 9, 0).atZone(ZONE_ID).toInstant()
+                ),
+                Arguments.of(
+                        LocalDate.of(2024, 9, 2).atStartOfDay(ZONE_ID).toInstant(),
+                        LocalDateTime.of(2024, 9, 2, 10, 0),
+                        new TimesheetEntry[]{TimesheetEntry.from(new Project("Project A"), LocalDateTime.of(2024, 9, 2, 9, 0), LocalDateTime.of(2024, 9, 2, 10, 0), ZONE_ID)},
+                        LocalDateTime.of(2024, 9, 2, 10, 0).atZone(ZONE_ID).toInstant()
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("timesheetParameters")
+    void calculateNextAvailableSlot(Instant fixedInstant, LocalDateTime startDateTime, TimesheetEntry[] entries, Instant expected) {
         Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
-        LocalDateTime todayAt9am = LocalDateTime.of(2024, 9, 3, 9, 0);
-        Instant expected = todayAt9am.atZone(zone).toInstant();
-
-        Instant actual = timesheet.calculateNextAvailableSlot(zone);
-
+        for (TimesheetEntry entry : entries) {
+            timesheet.appendEntry(entry);
+        }
+        Instant actual = timesheet.calculateNextAvailableSlot(ZONE_ID);
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void calculateNextAvailableSlot_givenEmptyTimesheetAndDifferentDate_startAt9am() throws Exception {
-        ZoneId zone = ZoneId.of("America/Chicago");
-        Instant fixedInstant = LocalDate.of(2024, 9, 2).atStartOfDay(zone).toInstant();
-        Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
-        LocalDateTime today = LocalDateTime.of(2024, 9, 2, 9, 0);
-        Instant expected = today.atZone(zone).toInstant();
-
-        Instant actual = timesheet.calculateNextAvailableSlot(zone);
-
-        assertThat(actual)
-                .isEqualTo(expected);
-    }
-
-    @Test
-    void calculateNextAvailableSlot_givenNonEmptyTimesheet_startAt10am() throws Exception {
-        ZoneId zone = ZoneId.of("America/Chicago");
-        Instant fixedInstant = LocalDate.of(2024, 9, 2).atStartOfDay(zone).toInstant();
-        Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
-        Project project = new Project("Project A");
-        LocalDateTime start = LocalDateTime.of(2024, 9, 2, 9, 0);
-        LocalDateTime end = LocalDateTime.of(2024, 9, 2, 10, 0);
-        TimesheetEntry timesheetEntry = TimesheetEntry.from(project, start, end, zone);
-        timesheet.appendEntry(timesheetEntry);
-        LocalDateTime today = LocalDateTime.of(2024, 9, 2, 10, 0);
-        Instant expected = today.atZone(zone).toInstant();
-
-        Instant actual = timesheet.calculateNextAvailableSlot(zone);
-
-        assertThat(actual)
-                .isEqualTo(expected);
     }
 }
