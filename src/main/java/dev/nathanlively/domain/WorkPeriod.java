@@ -63,6 +63,19 @@ public class WorkPeriod {
         }
     }
 
+    public boolean overlaps(WorkPeriod newPeriod) {
+        Objects.requireNonNull(newPeriod, "New work period cannot be null");
+
+        if (this.end == null || newPeriod.end == null) {  // If either period has no end time, they do not overlap
+            return false;
+        }
+
+        boolean endsAfterStartOfNew = !this.end.isBefore(newPeriod.start);
+        boolean startsBeforeEndOfNew = !this.start.isAfter(newPeriod.end);
+
+        return endsAfterStartOfNew && startsBeforeEndOfNew;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

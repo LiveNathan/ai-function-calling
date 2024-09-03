@@ -28,7 +28,7 @@ public class Application implements AppShellConfigurator {
     @Bean
     CommandLineRunner init(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
         return args -> {
-            Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", "nathanlively@gmail.com", null);
+            Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", "nathanlively@gmail.com", null);
             resourceRepository.save(resource);
             projectRepository.save(new Project("Project A (12345)"));
             List<String> projectNames = projectRepository.findAll().stream().map(Project::name).toList();

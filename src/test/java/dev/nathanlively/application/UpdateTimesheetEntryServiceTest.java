@@ -25,7 +25,7 @@ class UpdateTimesheetEntryServiceTest {
         resourceRepository = InMemoryResourceRepository.createEmpty();
         ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
         service = new UpdateTimesheetEntryService(resourceRepository, projectRepository);
-        Resource resource = new Resource(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         timesheetEntry = TimesheetEntry.clockIn(null, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
         resourceRepository.save(resource);
@@ -34,7 +34,7 @@ class UpdateTimesheetEntryServiceTest {
 
     @Test
     void appendProject() {
-        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNull();
+        assertThat(resourceRepository.findAll().getFirst().timesheet().timeSheetEntries().getFirst().project()).isNull();
 
         Result<TimesheetEntry> actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
 
@@ -42,7 +42,7 @@ class UpdateTimesheetEntryServiceTest {
         assertThat(actual.failureMessages()).isEmpty();
         ResultAssertions.assertThat(actual).successValues().contains(timesheetEntry);
 
-        List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries();
+        List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timesheet().timeSheetEntries();
         assertThat(timesheetEntries).hasSize(1);
         assertThat(timesheetEntries.getFirst().project()).isNotNull();
     }

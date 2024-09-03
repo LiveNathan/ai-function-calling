@@ -28,14 +28,14 @@ public class ClockOutService {
             return Result.failure("Resource not found with email: " + resourceEmail);
         }
 
-        Timesheet timesheet = resource.timeSheet();
+        Timesheet timesheet = resource.timesheet();
         try {
             timesheet.clockOut(clockOutTime);
             resourceRepository.save(resource);
         } catch (Exception e) {
             return Result.failure("Error during clock-out process: " + e.getMessage());
         }
-        return Result.success(resource.timeSheet().mostRecentEntry());
+        return Result.success(resource.timesheet().mostRecentEntry());
     }
 
     public ClockOutResponse clockOut(ClockOutRequest request) {

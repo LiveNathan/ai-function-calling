@@ -38,7 +38,7 @@ public class UpdateTimesheetEntryService {
             return Result.failure("Project not found with name: " + projectName);
         }
 
-        TimesheetEntry mostRecentEntry = resource.timeSheet().mostRecentEntry();
+        TimesheetEntry mostRecentEntry = resource.timesheet().mostRecentEntry();
         mostRecentEntry.setProject(project);
         resourceRepository.save(resource);
         return Result.success(mostRecentEntry);
