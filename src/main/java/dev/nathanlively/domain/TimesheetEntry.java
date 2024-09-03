@@ -34,8 +34,12 @@ public class TimesheetEntry {
                                       ZoneId zone) {
         Instant startInstant = start.atZone(zone).toInstant();
         Instant endInstant = end.atZone(zone).toInstant();
-        TimesheetEntry entry = clockIn(project, startInstant);
-        entry.clockOut(endInstant);
+        return TimesheetEntry.from(project, startInstant, endInstant);
+    }
+
+    public static TimesheetEntry from(Project project, Instant start, Instant end) {
+        TimesheetEntry entry = clockIn(project, start);
+        entry.clockOut(end);
         return entry;
     }
 

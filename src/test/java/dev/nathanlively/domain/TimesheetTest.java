@@ -3,8 +3,10 @@ package dev.nathanlively.domain;
 import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -87,5 +89,38 @@ class TimesheetTest {
                 LocalDateTime.of(2023, 1, 1, 11, 0), LocalDateTime.of(2023, 1, 1, 14, 0), ZoneId.systemDefault())))
                 .isInstanceOf(OverlappingWorkPeriodException.class)
                 .hasMessage("Work periods cannot overlap.");
+    }
+
+    @Test
+    @Disabled("until next available slot")
+    void appendEntry_givenProjectAndDuration() throws Exception {
+        Timesheet timesheet = new Timesheet(null);
+        Project project = new Project("Project A");
+        Duration duration = Duration.ofHours(1);
+        LocalDateTime start = LocalDateTime.of(2024, 3, 15, 8, 0);
+        LocalDateTime end = LocalDateTime.of(2024, 3, 15, 9, 0);
+        ZoneId zone = ZoneId.of("America/Chicago");
+        Instant expectedStartInstant = start.atZone(zone).toInstant();
+        Instant expectedEndInstant = end.atZone(zone).toInstant();
+        TimesheetEntry expected = TimesheetEntry.clockIn(project, expectedStartInstant);
+        expected.clockOut(expectedEndInstant);
+
+        timesheet.appendEntryWithDuration(project, duration);
+
+        assertThat(timesheet.timeSheetEntries().getLast())
+                .isEqualTo(expected);
+    }
+
+    @Test
+    void calculateNextAvailableSlot_givenEmptyTimesheet_startAt9am() throws Exception {
+        Timesheet timesheet = new Timesheet(null);
+        LocalDateTime start = LocalDateTime.of(2024, 3, 15, 9, 0);
+        ZoneId zone = ZoneId.of("America/Chicago");
+        Instant expected = start.atZone(zone).toInstant();
+
+        Instant actual = timesheet.calculateNextAvailableSlot();
+
+        assertThat(actual)
+                .isEqualTo(expected);
     }
 }

@@ -4,7 +4,7 @@ import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
 
-import java.time.Instant;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +25,29 @@ public final class Timesheet {
             throw new OverlappingWorkPeriodException("Work periods cannot overlap.");
         }
         timeSheetEntries.add(timesheetEntry);
+    }
+
+    public void appendEntryWithDuration(Project project, Duration duration) {
+        Objects.requireNonNull(project, "Project cannot be null");
+        Objects.requireNonNull(duration, "Duration cannot be null");
+
+        Instant start = calculateNextAvailableSlot();
+        Instant end = start.plus(duration);
+
+        TimesheetEntry newEntry = TimesheetEntry.from(project, start, end);
+        appendEntry(newEntry);
+    }
+
+    Instant calculateNextAvailableSlot() {
+        if (timeSheetEntries.isEmpty()) {
+            LocalDateTime start = LocalDate.of(2024, 3, 15).atTime(9, 0);
+            ZoneId zone = ZoneId.of("America/Chicago");
+            return start.atZone(zone).toInstant();
+        } else {
+            TimesheetEntry lastEntry = mostRecentEntry();
+            Instant lastEnd = lastEntry.workPeriod().end();
+            return (lastEnd != null) ? lastEnd : lastEntry.workPeriod().start();
+        }
     }
 
     private boolean hasOverlappingPeriod(TimesheetEntry newEntry) {

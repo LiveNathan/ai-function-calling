@@ -1,10 +1,10 @@
 package dev.nathanlively.adapter.in.web.droidcomm;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageList;
 import com.vaadin.flow.component.messages.MessageListItem;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -65,41 +65,26 @@ public class DroidCommView extends VerticalLayout {
     private MessageInput createMessageInput(Scroller messageScroller) {
         MessageInput messageInput = new MessageInput();
         messageInput.setWidthFull();
-        messageInput.addSubmitListener(event -> handleMessageSubmit(event, messageScroller));
+        ComponentUtil.addListener(messageInput, TimestampedSubmitEvent.class, event -> {
+            Notification.show(event.getValue() + " @ " + event.getTimestamp() + " (Time Zone: " + event.getTimezone() + ")");
+        });
+        messageInput.addSubmitListener(event -> {
+            TimestampedSubmitEvent timestampedEvent = (TimestampedSubmitEvent) event;
+            handleMessageSubmit(timestampedEvent, messageScroller);
+        });
         return messageInput;
     }
 
-    private void handleMessageSubmit(MessageInput.SubmitEvent event, Scroller messageScroller) {
-        String jsCode = "const now = new Date();"
-                + "const timestamp = now.toISOString();"
-                + "const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;"
-                + "return { timestamp, timezone };";
-
-        event.getSource().getElement().executeJs(jsCode).then(jsonString -> {
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode jsonNode = objectMapper.readTree(jsonString.toJson());
-
-                String timestamp = jsonNode.get("timestamp").asText();
-                String timezone = jsonNode.get("timezone").asText();
-
-                processSubmission(event.getValue(), timestamp, timezone, messageScroller);
-            } catch (Exception e) {
-                log.error("Failed to parse timestamp and timezone from JSON: {}", e.getMessage());
-            }
-        });
-    }
-
-    private void processSubmission(String messageText, String timestamp, String timezone, Scroller messageScroller) {
-        log.info("Timestamp: {}, Timezone: {}", timestamp, timezone);
-        Instant creationTime = Instant.parse(timestamp);
+    private void handleMessageSubmit(TimestampedSubmitEvent event, Scroller messageScroller) {
+        String userMessageText = event.getValue();
+        String timestamp = event.getTimestamp();
+        String timezone = event.getTimezone();  // Leaving this as a string for now since it's only used by the AI
+        Instant creationTime = timestamp != null ? Instant.parse(timestamp) : Instant.now();
+        log.info("Messaged created at {}", creationTime);
         String userName = "Nathan";
-        MessageListItem userMessage = new MessageListItem(messageText, creationTime, userName);
-
-        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, messageText, chatId, timezone);
+        MessageListItem userMessage = new MessageListItem(userMessageText, creationTime, userName);
+        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId, timezone);
         appendMessageAndReply(userMessage, messageScroller, userMessageDto);
-
-        log.info("Message submitted: {}, Timestamp: {}, Timezone: {}", messageText, timestamp, timezone);
     }
 
     private void appendMessageAndReply(MessageListItem userMessage, Scroller messageScroller, UserMessageDto userMessageDto) {
