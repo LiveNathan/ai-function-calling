@@ -16,6 +16,9 @@ import dev.nathanlively.application.functions.createproject.CreateProjectRespons
 import dev.nathanlively.application.functions.createtimesheetentry.CreateTimesheetEntryFunction;
 import dev.nathanlively.application.functions.createtimesheetentry.CreateTimesheetEntryRequest;
 import dev.nathanlively.application.functions.createtimesheetentry.CreateTimesheetEntryResponse;
+import dev.nathanlively.application.functions.createtimesheetentrywithduration.CreateTimesheetEntryWithDurationFunction;
+import dev.nathanlively.application.functions.createtimesheetentrywithduration.CreateTimesheetEntryWithDurationRequest;
+import dev.nathanlively.application.functions.createtimesheetentrywithduration.CreateTimesheetEntryWithDurationResponse;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
@@ -30,26 +33,32 @@ import java.util.function.Function;
 public class FunctionConfig {
     @Bean
     @Description("Create a new project.")
-    public Function<CreateProjectRequest, CreateProjectResponse> createProject(CreateProjectService createProjectService) {
-        return new CreateProjectFunction(createProjectService);
+    public Function<CreateProjectRequest, CreateProjectResponse> createProject(CreateProjectService service) {
+        return new CreateProjectFunction(service);
     }
 
     @Bean
     @Description("Create a new timesheet entry for a resource when the end time is unknown. (eg. 'I'm starting work on Project A now.')")
-    public Function<ClockInRequest, ClockInResponse> clockIn(ClockInService clockInService) {
-        return new ClockInFunction(clockInService);
+    public Function<ClockInRequest, ClockInResponse> clockIn(ClockInService service) {
+        return new ClockInFunction(service);
     }
 
     @Bean
     @Description("Update the end time of an existing timesheet entry for a resource. (eg. 'Stop work on Project A.')")
-    public Function<ClockOutRequest, ClockOutResponse> clockOut(ClockOutService clockOutService) {
-        return new ClockOutFunction(clockOutService);
+    public Function<ClockOutRequest, ClockOutResponse> clockOut(ClockOutService service) {
+        return new ClockOutFunction(service);
     }
 
     @Bean
-    @Description("Create a new timesheet entry for a resource. Use this when the start and end time are already known. (eg. 'I worked on Project A 8-9am.')")
+    @Description("Create a new timesheet entry for a resource. Use this when the start and end time are known. (eg. 'I worked on Project A 8-9am.')")
     public Function<CreateTimesheetEntryRequest, CreateTimesheetEntryResponse> createTimesheetEntry(CreateTimesheetEntryService service) {
         return new CreateTimesheetEntryFunction(service);
+    }
+
+    @Bean
+    @Description("Create a new timesheet entry for a resource. Use this when the duration is known. (eg. 'I worked on Project A for 30 minutes.')")
+    public Function<CreateTimesheetEntryWithDurationRequest, CreateTimesheetEntryWithDurationResponse> createTimesheetEntryWithDuration(CreateTimesheetEntryService service) {
+        return new CreateTimesheetEntryWithDurationFunction(service);
     }
 
 //    @Bean
