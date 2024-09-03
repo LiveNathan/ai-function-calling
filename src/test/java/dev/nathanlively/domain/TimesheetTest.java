@@ -92,7 +92,7 @@ class TimesheetTest {
     }
 
     @Test
-    void appendEntry_givenProjectAndDuration() throws Exception {
+    void appendEntry_givenProjectAndDuration() {
         Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
         Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
         Project project = new Project("Project A");

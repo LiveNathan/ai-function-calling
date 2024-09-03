@@ -39,8 +39,8 @@ class ClockOutServiceTest {
     @Test
     void clockOut() {
         List<Resource> allResources = resourceRepository.findAll();
-        Assertions.assertThat(allResources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
-        assertThat(allResources.getFirst().timeSheet().mostRecentEntry().workPeriod().end()).isNull();
+        Assertions.assertThat(allResources.getFirst().timesheet().timeSheetEntries()).hasSize(1);
+        assertThat(allResources.getFirst().timesheet().mostRecentEntry().workPeriod().end()).isNull();
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
         expected.clockOut(clockOutTime);
 
@@ -52,8 +52,8 @@ class ClockOutServiceTest {
 
         List<Resource> resources = resourceRepository.findAll();
         assertThat(resources).hasSize(1);
-        assertThat(resources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
-        assertThat(resources.getFirst().timeSheet().mostRecentEntry().workPeriod().end()).isNotNull();
+        assertThat(resources.getFirst().timesheet().timeSheetEntries()).hasSize(1);
+        assertThat(resources.getFirst().timesheet().mostRecentEntry().workPeriod().end()).isNotNull();
     }
 
     @Test

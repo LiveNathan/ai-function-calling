@@ -12,7 +12,6 @@ import java.util.Objects;
 public final class Timesheet {
     private final List<TimesheetEntry> timeSheetEntries;
     private final MyClock clock;
-    private final int defaultStartHour = 9;
 
     private Timesheet(List<TimesheetEntry> timeSheetEntries, MyClock clock) {
         if (timeSheetEntries == null) {
@@ -53,6 +52,7 @@ public final class Timesheet {
         if (timeSheetEntries.isEmpty()) {
             Instant now = clock.now();
             LocalDate today = LocalDate.ofInstant(now, zone);
+            int defaultStartHour = 9;
             LocalDateTime todayAt9 = today.atTime(defaultStartHour, 0);
             return todayAt9.atZone(zone).toInstant();
         } else {

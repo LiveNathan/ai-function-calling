@@ -34,7 +34,7 @@ class UpdateTimesheetEntryServiceTest {
 
     @Test
     void appendProject() {
-        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNull();
+        assertThat(resourceRepository.findAll().getFirst().timesheet().timeSheetEntries().getFirst().project()).isNull();
 
         Result<TimesheetEntry> actual = service.updateProjectOfMostRecentTimesheetEntry(resourceEmail, projectName);
 
@@ -42,7 +42,7 @@ class UpdateTimesheetEntryServiceTest {
         assertThat(actual.failureMessages()).isEmpty();
         ResultAssertions.assertThat(actual).successValues().contains(timesheetEntry);
 
-        List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries();
+        List<TimesheetEntry> timesheetEntries = resourceRepository.findAll().getFirst().timesheet().timeSheetEntries();
         assertThat(timesheetEntries).hasSize(1);
         assertThat(timesheetEntries.getFirst().project()).isNotNull();
     }

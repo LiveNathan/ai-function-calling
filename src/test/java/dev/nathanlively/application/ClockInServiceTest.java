@@ -33,7 +33,7 @@ class ClockInServiceTest {
 
     @Test
     void clockIn() {
-        assertThat(resourceRepository.findAll().getFirst().timeSheet().timeSheetEntries()).isEmpty();
+        assertThat(resourceRepository.findAll().getFirst().timesheet().timeSheetEntries()).isEmpty();
         assertThat(projectRepository.findAll()).hasSize(1);
         TimesheetEntry expected = TimesheetEntry.clockIn(project, clockInTime);
 
@@ -47,8 +47,8 @@ class ClockInServiceTest {
         List<Project> projects = projectRepository.findAll();
         assertThat(resources).hasSize(1);
         assertThat(projects).hasSize(1);
-        assertThat(resources.getFirst().timeSheet().timeSheetEntries()).hasSize(1);
-        assertThat(resources.getFirst().timeSheet().timeSheetEntries().getFirst().project()).isNotNull();
+        assertThat(resources.getFirst().timesheet().timeSheetEntries()).hasSize(1);
+        assertThat(resources.getFirst().timesheet().timeSheetEntries().getFirst().project()).isNotNull();
     }
 
     @Test

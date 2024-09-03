@@ -2,7 +2,9 @@ package dev.nathanlively.domain;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Objects;
 
 public final class Resource {
@@ -37,7 +39,7 @@ public final class Resource {
         return new Resource(resourceType, jobTitle, name, email, timeSheet, new MySystemClock());
     }
 
-    public static Resource createWithFixedClock(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet, Instant fixedInstant) {
+    public static Resource withFixedClock(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet, Instant fixedInstant) {
         return new Resource(resourceType, jobTitle, name, email, timeSheet, new FixedClock(fixedInstant));
     }
 
@@ -45,11 +47,15 @@ public final class Resource {
         timeSheet.appendEntry(timesheetEntry);
     }
 
+    public void appendTimesheetEntry(Project project, Duration duration, ZoneId zone) {
+        timeSheet.appendEntryWithDuration(project, duration, zone);
+    }
+
     public String email() {
         return email;
     }
 
-    public Timesheet timeSheet() {
+    public Timesheet timesheet() {
         return timeSheet;
     }
 

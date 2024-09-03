@@ -8,6 +8,7 @@ import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -30,6 +31,13 @@ public class CreateTimesheetEntryService {
 
     }
 
+    public Result<TimesheetEntry> from(String resourceEmail, String projectName, Duration duration, String zone) {
+        Optional<String> validationError = validateInputs(resourceEmail, projectName, zone, duration);
+        return validationError.<Result<TimesheetEntry>>map(Result::failure).orElseGet(() -> resourceRepository.findByEmail(resourceEmail)
+                .map(resource -> createEntryForResource(resource, projectName, duration, zone))
+                .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail)));
+    }
+
     private Optional<String> validateInputs(String resourceEmail, String projectName, String zone) {
         if (projectName == null || projectName.trim().isEmpty()) {
             return Optional.of("Project name must not be null or empty.");
@@ -43,6 +51,17 @@ public class CreateTimesheetEntryService {
         return Optional.empty();
     }
 
+    private Optional<String> validateInputs(String resourceEmail, String projectName, String zone, Duration duration) {
+        Optional<String> validationError = validateInputs(resourceEmail, projectName, zone);
+        if (validationError.isPresent()) {
+            return validationError;
+        }
+        if (duration == null || duration.isZero()) {
+            return Optional.of("Duration must not be null or zero.");
+        }
+        return Optional.empty();
+    }
+
     private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, LocalDateTime start,
                                                           LocalDateTime end, String zone) {
         return projectRepository.findByName(projectName)
@@ -50,12 +69,25 @@ public class CreateTimesheetEntryService {
                 .orElseGet(() -> Result.failure("Project not found with name: " + projectName));
     }
 
+    private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName,
+                                                          Duration duration, String zone) {
+        return projectRepository.findByName(projectName)
+                .map(project -> createAndAppendEntry(resource, project, duration, zone))
+                .orElseGet(() -> Result.failure("Project not found with name: " + projectName));    }
+
     private Result<TimesheetEntry> createAndAppendEntry(Resource resource, Project project, LocalDateTime start,
                                                         LocalDateTime end, String zone) {
         TimesheetEntry entry = TimesheetEntry.from(project, start, end, ZoneId.of(zone));
         resource.appendTimesheetEntry(entry);
         resourceRepository.save(resource);
         return Result.success(entry);
+    }
+
+    private Result<TimesheetEntry> createAndAppendEntry(Resource resource, Project project,
+                                                        Duration duration, String zone) {
+        resource.appendTimesheetEntry(project, duration, ZoneId.of(zone));
+        resourceRepository.save(resource);
+        return Result.success(resource.timesheet().mostRecentEntry());
     }
 
     public CreateTimesheetEntryResponse from(CreateTimesheetEntryRequest request) {
@@ -68,4 +100,6 @@ public class CreateTimesheetEntryService {
             return new CreateTimesheetEntryResponse("Failed to create timesheet entry because: " + allFailureMessages, null);
         }
     }
+
+
 }
