@@ -3,7 +3,6 @@ package dev.nathanlively.domain;
 import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -93,13 +92,13 @@ class TimesheetTest {
     }
 
     @Test
-    @Disabled("until next available slot")
     void appendEntry_givenProjectAndDuration() throws Exception {
-        Timesheet timesheet = Timesheet.withSystemClock(null);
+        Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
+        Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
         Project project = new Project("Project A");
         Duration duration = Duration.ofHours(1);
-        LocalDateTime start = LocalDateTime.of(2024, 3, 15, 8, 0);
-        LocalDateTime end = LocalDateTime.of(2024, 3, 15, 9, 0);
+        LocalDateTime start = LocalDateTime.of(2024, 3, 15, 9, 0);
+        LocalDateTime end = LocalDateTime.of(2024, 3, 15, 10, 0);
         ZoneId zone = ZoneId.of("America/Chicago");
         Instant expectedStartInstant = start.atZone(zone).toInstant();
         Instant expectedEndInstant = end.atZone(zone).toInstant();
@@ -114,7 +113,6 @@ class TimesheetTest {
 
     private static final ZoneId ZONE_ID = ZoneId.of("America/Chicago");
 
-    // Method to provide arguments for the parameterized test
     private static Stream<Arguments> timesheetParameters() {
         return Stream.of(
                 // Arguments: fixedInstant, entries, expected
