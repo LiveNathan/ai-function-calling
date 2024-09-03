@@ -7,6 +7,9 @@ public class Project {
     private int estimatedHours;
 
     public Project(String name, int estimatedHours) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Project name cannot be null or blank.");
+        }
         this.name = name;
         this.estimatedHours = estimatedHours;
     }
