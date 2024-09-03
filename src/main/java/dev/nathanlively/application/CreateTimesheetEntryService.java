@@ -13,7 +13,8 @@ import dev.nathanlively.domain.TimesheetEntry;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateTimesheetEntryService {
     private final ResourceRepository resourceRepository;
@@ -26,42 +27,47 @@ public class CreateTimesheetEntryService {
 
     public Result<TimesheetEntry> from(String resourceEmail, String projectName, LocalDateTime start,
                                        LocalDateTime end, String zone) {
-        Optional<String> validationError = validateInputs(resourceEmail, projectName, zone);
-        return validationError.<Result<TimesheetEntry>>map(Result::failure).orElseGet(() -> resourceRepository.findByEmail(resourceEmail)
-                .map(resource -> createEntryForResource(resource, projectName, start, end, zone))
-                .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail)));
+        List<String> validationErrors = validateInputs(resourceEmail, projectName, zone);
+        if (!validationErrors.isEmpty()) {
+            return Result.failure(validationErrors);
+        }
 
+        return resourceRepository.findByEmail(resourceEmail)
+                .map(resource -> createEntryForResource(resource, projectName, start, end, zone))
+                .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail));
     }
 
     public Result<TimesheetEntry> from(String resourceEmail, String projectName, Duration duration, String zone) {
-        Optional<String> validationError = validateInputs(resourceEmail, projectName, zone, duration);
-        return validationError.<Result<TimesheetEntry>>map(Result::failure).orElseGet(() -> resourceRepository.findByEmail(resourceEmail)
+        List<String> validationErrors = validateInputs(resourceEmail, projectName, zone, duration);
+        if (!validationErrors.isEmpty()) {
+            return Result.failure(validationErrors);
+        }
+
+        return resourceRepository.findByEmail(resourceEmail)
                 .map(resource -> createEntryForResource(resource, projectName, duration, zone))
-                .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail)));
+                .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail));
     }
 
-    private Optional<String> validateInputs(String resourceEmail, String projectName, String zone) {
+    private List<String> validateInputs(String resourceEmail, String projectName, String zone) {
+        List<String> errors = new ArrayList<>();
         if (projectName == null || projectName.trim().isEmpty()) {
-            return Optional.of("Project name must not be null or empty.");
+            errors.add("Project name must not be null or empty.");
         }
         if (zone == null || zone.trim().isEmpty()) {
-            return Optional.of("Zone must not be null or empty.");
+            errors.add("Zone must not be null or empty.");
         }
         if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
-            return Optional.of("Email must not be null or empty.");
+            errors.add("Email must not be null or empty.");
         }
-        return Optional.empty();
+        return errors;
     }
 
-    private Optional<String> validateInputs(String resourceEmail, String projectName, String zone, Duration duration) {
-        Optional<String> validationError = validateInputs(resourceEmail, projectName, zone);
-        if (validationError.isPresent()) {
-            return validationError;
-        }
+    private List<String> validateInputs(String resourceEmail, String projectName, String zone, Duration duration) {
+        List<String> errors = validateInputs(resourceEmail, projectName, zone);
         if (duration == null || duration.isZero()) {
-            return Optional.of("Duration must not be null or zero.");
+            errors.add("Duration must not be null or zero.");
         }
-        return Optional.empty();
+        return errors;
     }
 
     private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, LocalDateTime start,
@@ -75,7 +81,8 @@ public class CreateTimesheetEntryService {
                                                           Duration duration, String zone) {
         return projectRepository.findByName(projectName)
                 .map(project -> createAndAppendEntry(resource, project, duration, zone))
-                .orElseGet(() -> Result.failure("Project not found with name: " + projectName));    }
+                .orElseGet(() -> Result.failure("Project not found with name: " + projectName));
+    }
 
     private Result<TimesheetEntry> createAndAppendEntry(Resource resource, Project project, LocalDateTime start,
                                                         LocalDateTime end, String zone) {
