@@ -117,22 +117,19 @@ class TimesheetTest {
     // Method to provide arguments for the parameterized test
     private static Stream<Arguments> timesheetParameters() {
         return Stream.of(
-                // Arguments: fixedInstant, startDateTime, entries, expected
+                // Arguments: fixedInstant, entries, expected
                 Arguments.of(
                         LocalDate.of(2024, 9, 3).atStartOfDay(ZONE_ID).toInstant(),
-                        LocalDateTime.of(2024, 9, 3, 9, 0),
                         new TimesheetEntry[]{},
                         LocalDateTime.of(2024, 9, 3, 9, 0).atZone(ZONE_ID).toInstant()
                 ),
                 Arguments.of(
                         LocalDate.of(2024, 9, 2).atStartOfDay(ZONE_ID).toInstant(),
-                        LocalDateTime.of(2024, 9, 2, 9, 0),
                         new TimesheetEntry[]{},
                         LocalDateTime.of(2024, 9, 2, 9, 0).atZone(ZONE_ID).toInstant()
                 ),
                 Arguments.of(
                         LocalDate.of(2024, 9, 2).atStartOfDay(ZONE_ID).toInstant(),
-                        LocalDateTime.of(2024, 9, 2, 10, 0),
                         new TimesheetEntry[]{TimesheetEntry.from(new Project("Project A"), LocalDateTime.of(2024, 9, 2, 9, 0), LocalDateTime.of(2024, 9, 2, 10, 0), ZONE_ID)},
                         LocalDateTime.of(2024, 9, 2, 10, 0).atZone(ZONE_ID).toInstant()
                 )
@@ -141,7 +138,7 @@ class TimesheetTest {
 
     @ParameterizedTest
     @MethodSource("timesheetParameters")
-    void calculateNextAvailableSlot(Instant fixedInstant, LocalDateTime startDateTime, TimesheetEntry[] entries, Instant expected) {
+    void calculateNextAvailableSlot(Instant fixedInstant, TimesheetEntry[] entries, Instant expected) {
         Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
         for (TimesheetEntry entry : entries) {
             timesheet.appendEntry(entry);
