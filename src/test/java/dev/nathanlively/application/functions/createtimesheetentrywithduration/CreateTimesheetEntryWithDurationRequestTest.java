@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CreateTimesheetEntryWithDurationRequestTest {
@@ -26,7 +24,7 @@ class CreateTimesheetEntryWithDurationRequestTest {
         });
 
         CreateTimesheetEntryWithDurationRequest expected = new CreateTimesheetEntryWithDurationRequest(
-                "Project A", Duration.ofMinutes(30), "America/Chicago");
+                "Project A", "PT30M", "America/Chicago");
 
         assertThat(actual)
                 .isEqualTo(expected);

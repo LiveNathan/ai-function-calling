@@ -105,8 +105,9 @@ public class CreateTimesheetEntryService {
 
 
     public CreateTimesheetEntryWithDurationResponse from(CreateTimesheetEntryWithDurationRequest request) {
+        Duration duration = Duration.parse(request.timesheetEntryDuration());
         Result<TimesheetEntry> result = from("nathanlively@gmail.com", request.projectName(),
-                request.timesheetEntryDuration(), request.zoneId());
+                duration, request.zoneId());
         if (result.isSuccess()) {
             return new CreateTimesheetEntryWithDurationResponse("New timesheet entry created.", result.values().getFirst());
         } else {

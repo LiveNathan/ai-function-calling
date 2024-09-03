@@ -66,4 +66,15 @@ class CreateTimesheetEntryServiceTest {
         assertThat(actual.failureMessages()).isEmpty();
         assertThat(actual).successValues().contains(expected);
     }
+
+    @Test
+    void parseDuration() throws Exception {
+        String durationString = "PT30M";
+        Duration expected = Duration.ofMinutes(30);
+
+        Duration actual = Duration.parse(durationString);
+
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
 }
