@@ -1,13 +1,13 @@
 package dev.nathanlively.domain;
 
-import java.util.Objects;
+import static dev.nathanlively.common.validation.ValidationUtils.requireNonBlank;
 
 public abstract class Named implements Comparable<Named> {
     private final String name;
 
     protected Named(final String name) {
         super();
-        this.name = Objects.requireNonNull(name, () -> "Name cannot be empty");
+        this.name = requireNonBlank(name, () -> "Name cannot be empty");
     }
 
     public String name() {

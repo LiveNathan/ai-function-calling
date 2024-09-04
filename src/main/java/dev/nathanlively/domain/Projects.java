@@ -1,9 +1,6 @@
 package dev.nathanlively.domain;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Projects {
     private final Map<String, Project> nameToProject = new HashMap<>();
@@ -31,5 +28,13 @@ public class Projects {
 
     public List<Project> all() {
         return this.nameToProject.values().stream().sorted().toList();
+    }
+
+    public Project byName(String projectName) {
+        return this.nameToProject.get(projectName);
+    }
+
+    public Set<String> getAllNames() {
+        return new TreeSet<>(nameToProject.keySet());
     }
 }
