@@ -19,12 +19,7 @@ public class Projects {
 
     private void addToCollection(final Project project) {
         this.nameToProject.put(project.name(), project);
-//        this.addToMap(this.nameToProject, project.name(), project);
     }
-
-//    private <K> void addToMap(final Map<K, List<Project>> map, final K key, final Project project) {
-//        map.computeIfAbsent(key, k -> new ArrayList<>(1024)).add(project);
-//    }
 
     public List<Project> all() {
         return this.nameToProject.values().stream().sorted().toList();

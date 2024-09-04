@@ -18,6 +18,15 @@ public class EclipseProjectAdapter implements ProjectRepository {
 
     public EclipseProjectAdapter(EmbeddedStorageManager storageManager) {
         this.storageManager = storageManager;
+        ensureRootInitialized();
+    }
+
+    private void ensureRootInitialized() {
+        if (storageManager.root() == null) {
+            DataRoot root = new DataRoot();
+            storageManager.setRoot(root);
+            storageManager.storeRoot();
+        }
     }
 
     @Write

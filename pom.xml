@@ -117,11 +117,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.store</groupId>
-            <artifactId>integrations-spring-boot3-console</artifactId>
-            <version>${eclipsestore.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse.store</groupId>-->
+<!--            <artifactId>integrations-spring-boot3-console</artifactId>-->
+<!--            <version>${eclipsestore.version}</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
