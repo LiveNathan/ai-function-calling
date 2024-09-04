@@ -75,6 +75,9 @@ class EclipseProjectAdapterTest {
         List<Project> allProjects = adapter.findAll();
         assertThat(allProjects).hasSize(1);
         assertThat(allProjects.getFirst().name()).isEqualTo("Project A");
+
+        List<String> projectNames = adapter.findAllNames();
+        assertThat(projectNames).contains("Project A");
     }
 
     private void deleteDirectoryRecursively(Path path) throws IOException {
