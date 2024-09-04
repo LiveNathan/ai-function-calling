@@ -2,6 +2,7 @@ package dev.nathanlively.config;
 
 import dev.nathanlively.adapter.out.ai.SpringAiAdapter;
 import dev.nathanlively.adapter.out.eclipse.EclipseProjectAdapter;
+import dev.nathanlively.adapter.out.eclipse.EclipseResourceAdapter;
 import dev.nathanlively.application.*;
 import dev.nathanlively.application.port.AiGateway;
 import dev.nathanlively.application.port.ProjectRepository;
@@ -28,8 +29,8 @@ public class ServiceConfig {
     }
 
     @Bean
-    public ResourceRepository resourceRepository() {
-        return InMemoryResourceRepository.createEmpty();
+    public ResourceRepository resourceRepository(EmbeddedStorageManager storageManager) {
+        return new EclipseResourceAdapter(storageManager);
     }
 
     @Bean
