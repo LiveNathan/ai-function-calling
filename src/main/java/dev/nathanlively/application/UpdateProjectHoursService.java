@@ -1,5 +1,7 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursRequest;
+import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.domain.Project;
 
@@ -27,5 +29,16 @@ public class UpdateProjectHoursService {
         projectRepository.save(project);
 
         return Result.success(project);
+    }
+
+    public UpdateProjectHoursResponse with(UpdateProjectHoursRequest request) {
+        Result<Project> result = with(request.projectName(), request.estimatedHours());
+        if (result.isSuccess()) {
+            Project project = result.values().getFirst();
+            return new UpdateProjectHoursResponse("Project hours updated successfully: " + project, project);
+        } else {
+            String allFailureMessages = String.join(", ", result.failureMessages());
+            return new UpdateProjectHoursResponse("Project hours update failed with these errors: " + allFailureMessages, null);
+        }
     }
 }

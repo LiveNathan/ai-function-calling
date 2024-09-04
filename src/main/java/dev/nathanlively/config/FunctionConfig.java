@@ -1,9 +1,6 @@
 package dev.nathanlively.config;
 
-import dev.nathanlively.application.ClockInService;
-import dev.nathanlively.application.ClockOutService;
-import dev.nathanlively.application.CreateProjectService;
-import dev.nathanlively.application.CreateTimesheetEntryService;
+import dev.nathanlively.application.*;
 import dev.nathanlively.application.functions.clockin.ClockInFunction;
 import dev.nathanlively.application.functions.clockin.ClockInRequest;
 import dev.nathanlively.application.functions.clockin.ClockInResponse;
@@ -22,6 +19,9 @@ import dev.nathanlively.application.functions.createtimesheetentrywithduration.C
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
+import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursFunction;
+import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursRequest;
+import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursResponse;
 import dev.nathanlively.application.port.ProjectRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,16 +61,16 @@ public class FunctionConfig {
         return new CreateTimesheetEntryWithDurationFunction(service);
     }
 
-//    @Bean
-//    @Description("Update an existing timesheet entry's project. Use this function in the case when a user clocks in without a project and now wants to add the project to it. (eg. 'Never mind. I'm actually working on Project B.')")
-//    public Function<UpdateProjectRequest, UpdateProjectResponse> updateProject(UpdateTimesheetEntryService updateTimesheetEntryService) {
-//        return new UpdateProjectFunction(updateTimesheetEntryService);
-//    }
-
     @Bean
     @Description("Fetch the list of available project names.")
     public Function<FindAllProjectNamesRequest, FindAllProjectNamesResponse> findAllProjectNames(ProjectRepository repository) {
         return new FindAllProjectNamesFunction(repository);
+    }
+
+    @Bean
+    @Description("Update the estimated labor hours of a project. (eg. 'Project A should have 100 hours of labor.'")
+    public Function<UpdateProjectHoursRequest, UpdateProjectHoursResponse> updateProjectHours(UpdateProjectHoursService service) {
+        return new UpdateProjectHoursFunction(service);
     }
 
 }
