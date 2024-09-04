@@ -36,29 +36,20 @@ class EclipseProjectAdapterTest {
     void setUp() {
         storageDir = Paths.get(System.getProperty("java.io.tmpdir"), "test-store-" + UUID.randomUUID());
 
-        // Static factory method to configure and create EmbeddedStorageFoundation
         EmbeddedStorageFoundation<?> foundation = EmbeddedStorageConfiguration.Builder()
                 .setStorageDirectory(storageDir.toString())
                 .createEmbeddedStorageFoundation();
 
-        // Create and start EmbeddedStorageManager directly in the test
         storageManager = foundation.createEmbeddedStorageManager().start();
-
-        // Set the root object for storageManager
         storageManager.setRoot(new DataRoot());
-
-        // Initialize the adapter with the storageManager
         adapter = new EclipseProjectAdapter(storageManager);
     }
 
     @AfterEach
     void tearDown() throws IOException {
-        // Shutdown the storage manager if running
         if (storageManager != null) {
             storageManager.shutdown();
         }
-
-        // Clean up the temporary storage directory
         if (Files.exists(storageDir)) {
             deleteDirectoryRecursively(storageDir);
         }
