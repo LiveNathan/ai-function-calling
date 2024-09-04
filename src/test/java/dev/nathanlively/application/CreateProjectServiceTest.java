@@ -23,7 +23,7 @@ class CreateProjectServiceTest {
 
     @Test
     void withName() throws Exception {
-        Project expected = new Project(projectNameA);
+        Project expected = Project.create(projectNameA);
 
         Result<Project> actual = service.withName(projectNameA);
 
@@ -37,7 +37,7 @@ class CreateProjectServiceTest {
 
     @Test
     void withName_givenSimilarNames() throws Exception {
-        Project projectA = new Project(projectNameA);
+        Project projectA = Project.create(projectNameA);
         repository.save(projectA);
         String projectNameB = "Project Aa";
 

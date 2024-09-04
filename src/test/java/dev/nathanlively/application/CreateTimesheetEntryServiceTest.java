@@ -19,7 +19,7 @@ class CreateTimesheetEntryServiceTest {
         String resourceEmail = "nathanlively@gmail.com";
         Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         String projectName = "Project A";
-        Project project = new Project(projectName);
+        Project project = Project.create(projectName);
         resourceRepository.save(resource);
         projectRepository.save(project);
         CreateTimesheetEntryService service = new CreateTimesheetEntryService(resourceRepository, projectRepository);
@@ -46,7 +46,7 @@ class CreateTimesheetEntryServiceTest {
         Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
         Resource resource = Resource.withFixedClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null, fixedInstant);
         String projectName = "Project A";
-        Project project = new Project(projectName);
+        Project project = Project.create(projectName);
         resourceRepository.save(resource);
         projectRepository.save(project);
         CreateTimesheetEntryService service = new CreateTimesheetEntryService(resourceRepository, projectRepository);

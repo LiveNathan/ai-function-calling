@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class UpdateTimesheetEntryServiceTest {
     private final String projectName = "Project A (12345)";
-    private final Project project = new Project(projectName);
+    private final Project project = Project.create(projectName);
     private final Instant clockInTime = Instant.now();
     private final String resourceEmail = "nathanlively@gmail.com";
     private UpdateTimesheetEntryService service;

@@ -27,14 +27,25 @@ class TimesheetTest {
         assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNull();
     }
 
-    @Test
-    void clockInWithProject() {
-        Timesheet timesheet = Timesheet.withSystemClock(null);
-        assertThat(timesheet.timeSheetEntries()).isEmpty();
-
-        timesheet.clockInWithProject(new Project("Project A"), Instant.now());
-
-        assertThat(timesheet.mostRecentEntry().project()).isNotNull();
+    private static Stream<Arguments> timesheetParameters() {
+        return Stream.of(
+                // Arguments: fixedInstant, entries, expected
+                Arguments.of(
+                        LocalDate.of(2024, 9, 3).atStartOfDay(ZONE_ID).toInstant(),
+                        new TimesheetEntry[]{},
+                        LocalDateTime.of(2024, 9, 3, 9, 0).atZone(ZONE_ID).toInstant()
+                ),
+                Arguments.of(
+                        LocalDate.of(2024, 9, 2).atStartOfDay(ZONE_ID).toInstant(),
+                        new TimesheetEntry[]{},
+                        LocalDateTime.of(2024, 9, 2, 9, 0).atZone(ZONE_ID).toInstant()
+                ),
+                Arguments.of(
+                        LocalDate.of(2024, 9, 2).atStartOfDay(ZONE_ID).toInstant(),
+                        new TimesheetEntry[]{TimesheetEntry.from(Project.create("Project A"), LocalDateTime.of(2024, 9, 2, 9, 0), LocalDateTime.of(2024, 9, 2, 10, 0), ZONE_ID)},
+                        LocalDateTime.of(2024, 9, 2, 10, 0).atZone(ZONE_ID).toInstant()
+                )
+        );
     }
 
     @Test
@@ -80,22 +91,34 @@ class TimesheetTest {
     }
 
     @Test
+    void clockInWithProject() {
+        Timesheet timesheet = Timesheet.withSystemClock(null);
+        assertThat(timesheet.timeSheetEntries()).isEmpty();
+
+        timesheet.clockInWithProject(Project.create("Project A"), Instant.now());
+
+        assertThat(timesheet.mostRecentEntry().project()).isNotNull();
+    }
+
+    @Test
     void appendEntry_givenOverlap_throwsException() {
         Timesheet timesheet = Timesheet.withSystemClock(null);
-        timesheet.appendEntry(TimesheetEntry.from(new Project("Project A"),
+        timesheet.appendEntry(TimesheetEntry.from(Project.create("Project A"),
                 LocalDateTime.of(2023, 1, 1, 9, 0), LocalDateTime.of(2023, 1, 1, 12, 0), ZoneId.systemDefault()));
 
-        assertThatThrownBy(() -> timesheet.appendEntry(TimesheetEntry.from(new Project("Project B"),
+        assertThatThrownBy(() -> timesheet.appendEntry(TimesheetEntry.from(Project.create("Project B"),
                 LocalDateTime.of(2023, 1, 1, 11, 0), LocalDateTime.of(2023, 1, 1, 14, 0), ZoneId.systemDefault())))
                 .isInstanceOf(OverlappingWorkPeriodException.class)
                 .hasMessage("Work periods cannot overlap.");
     }
 
+    private static final ZoneId ZONE_ID = ZoneId.of("America/Chicago");
+
     @Test
     void appendEntry_givenProjectAndDuration() {
         Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
         Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
-        Project project = new Project("Project A");
+        Project project = Project.create("Project A");
         Duration duration = Duration.ofHours(1);
         LocalDateTime start = LocalDateTime.of(2024, 3, 15, 9, 0);
         LocalDateTime end = LocalDateTime.of(2024, 3, 15, 10, 0);
@@ -109,29 +132,6 @@ class TimesheetTest {
 
         assertThat(timesheet.timeSheetEntries().getLast())
                 .isEqualTo(expected);
-    }
-
-    private static final ZoneId ZONE_ID = ZoneId.of("America/Chicago");
-
-    private static Stream<Arguments> timesheetParameters() {
-        return Stream.of(
-                // Arguments: fixedInstant, entries, expected
-                Arguments.of(
-                        LocalDate.of(2024, 9, 3).atStartOfDay(ZONE_ID).toInstant(),
-                        new TimesheetEntry[]{},
-                        LocalDateTime.of(2024, 9, 3, 9, 0).atZone(ZONE_ID).toInstant()
-                ),
-                Arguments.of(
-                        LocalDate.of(2024, 9, 2).atStartOfDay(ZONE_ID).toInstant(),
-                        new TimesheetEntry[]{},
-                        LocalDateTime.of(2024, 9, 2, 9, 0).atZone(ZONE_ID).toInstant()
-                ),
-                Arguments.of(
-                        LocalDate.of(2024, 9, 2).atStartOfDay(ZONE_ID).toInstant(),
-                        new TimesheetEntry[]{TimesheetEntry.from(new Project("Project A"), LocalDateTime.of(2024, 9, 2, 9, 0), LocalDateTime.of(2024, 9, 2, 10, 0), ZONE_ID)},
-                        LocalDateTime.of(2024, 9, 2, 10, 0).atZone(ZONE_ID).toInstant()
-                )
-        );
     }
 
     @ParameterizedTest
