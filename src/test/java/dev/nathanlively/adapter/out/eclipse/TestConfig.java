@@ -26,6 +26,6 @@ public class TestConfig {
         myConfiguration.setStorageDirectory(tempDir);
         EmbeddedStorageFoundation<?> storageFoundation = foundationFactory.createStorageFoundation(myConfiguration);
 
-        return managerFactory.createStorage(storageFoundation, true);
+        return managerFactory.createStorage(storageFoundation, false);
     }
 }
