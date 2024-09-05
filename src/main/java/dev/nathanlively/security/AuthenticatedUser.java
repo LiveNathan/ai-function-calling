@@ -1,6 +1,7 @@
 package dev.nathanlively.security;
 
 import com.vaadin.flow.spring.security.AuthenticationContext;
+import dev.nathanlively.application.port.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,6 @@ public class AuthenticatedUser {
         this.authenticationContext = authenticationContext;
     }
 
-    @Transactional
     public Optional<User> get() {
         return authenticationContext.getAuthenticatedUser(UserDetails.class)
                 .map(userDetails -> userRepository.findByUsername(userDetails.getUsername()));

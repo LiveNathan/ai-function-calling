@@ -1,8 +1,11 @@
 package dev.nathanlively.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.server.StreamResource;
 import dev.nathanlively.domain.Named;
 
+import java.io.ByteArrayInputStream;
 import java.util.Set;
 
 public class User extends Named {
@@ -50,6 +53,13 @@ public class User extends Named {
 
     public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public String getProfilePictureUri() {
+        Avatar avatar = new Avatar(name());
+        StreamResource resource = new StreamResource("profile-pic", () -> new ByteArrayInputStream(profilePicture));
+        avatar.setImageResource(resource);
+        return avatar.getImage();
     }
 
     @Override
