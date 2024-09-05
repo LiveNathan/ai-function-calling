@@ -1,10 +1,13 @@
 package dev.nathanlively.config;
 
 import dev.nathanlively.adapter.out.ai.SpringAiAdapter;
+import dev.nathanlively.adapter.out.eclipse.EclipseProjectAdapter;
+import dev.nathanlively.adapter.out.eclipse.EclipseResourceAdapter;
 import dev.nathanlively.application.*;
 import dev.nathanlively.application.port.AiGateway;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
@@ -26,13 +29,13 @@ public class ServiceConfig {
     }
 
     @Bean
-    public ResourceRepository resourceRepository() {
-        return InMemoryResourceRepository.createEmpty();
+    public ResourceRepository resourceRepository(EmbeddedStorageManager storageManager) {
+        return new EclipseResourceAdapter(storageManager);
     }
 
     @Bean
-    public ProjectRepository projectRepository() {
-        return InMemoryProjectRepository.createEmpty();
+    public ProjectRepository projectRepository(EmbeddedStorageManager storageManager) {
+        return new EclipseProjectAdapter(storageManager);
     }
 
     @Bean

@@ -7,18 +7,16 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Objects;
 
-public final class Resource {
-    private ResourceType resourceType;
-    private JobTitle jobTitle;
-    private String name;
-    private String email;
+public final class Resource extends Named {
+    private final ResourceType resourceType;
+    private final JobTitle jobTitle;
+    private final String email;
     private Timesheet timeSheet;
 
-    private Resource(ResourceType resourceType, JobTitle jobTitle, String name, String email,
-                     Timesheet timeSheet, MyClock clock) {
+    private Resource(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet, MyClock clock) {
+        super(name);
         Objects.requireNonNull(resourceType, "ResourceType cannot be null");
         Objects.requireNonNull(jobTitle, "JobTitle cannot be null");
-        Objects.requireNonNull(name, "Name cannot be null");
         Objects.requireNonNull(email, "Email cannot be null");
         if (timeSheet == null) {
             switch (clock) {
@@ -31,7 +29,6 @@ public final class Resource {
         }
         this.resourceType = resourceType;
         this.jobTitle = jobTitle;
-        this.name = name;
         this.email = email;
     }
 
@@ -59,4 +56,32 @@ public final class Resource {
         return timeSheet;
     }
 
+    // hashCode, equals and toString overridden for a better object comparison and representation
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Resource resource = (Resource) obj;
+        return resourceType == resource.resourceType &&
+                jobTitle == resource.jobTitle &&
+                Objects.equals(email, resource.email) &&
+                Objects.equals(timeSheet, resource.timeSheet) &&
+                Objects.equals(name(), resource.name());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resourceType, jobTitle, name(), email, timeSheet);
+    }
+
+    @Override
+    public String toString() {
+        return "Resource[" +
+                "resourceType=" + resourceType +
+                ", jobTitle=" + jobTitle +
+                ", name=" + name() +
+                ", email=" + email +
+                ", timeSheet=" + timeSheet +
+                ']';
+    }
 }
