@@ -1,9 +1,8 @@
 package dev.nathanlively.domain;
 
-import java.io.Serializable;
 import java.util.*;
 
-public class Projects implements Serializable {
+public class Projects {
     private final Map<String, Project> nameToProject = new HashMap<>();
 
     public Projects() {
