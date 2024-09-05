@@ -1,17 +1,24 @@
 package dev.nathanlively.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import dev.nathanlively.domain.Named;
 
 import java.util.Set;
 
-public class User extends AbstractEntity {
-
+public class User extends Named {
     private String username;
-    private String name;
     @JsonIgnore
     private String hashedPassword;
     private Set<Role> roles;
     private byte[] profilePicture;
+
+    public User(String username, String name, String hashedPassword, Set<Role> roles, byte[] profilePicture) {
+        super(name);
+        this.username = username;
+        this.hashedPassword = hashedPassword;
+        this.roles = roles;
+        this.profilePicture = profilePicture;
+    }
 
     public String getUsername() {
         return username;
@@ -19,14 +26,6 @@ public class User extends AbstractEntity {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getHashedPassword() {
@@ -53,4 +52,12 @@ public class User extends AbstractEntity {
         this.profilePicture = profilePicture;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", name='" + name() + '\'' +
+                ", roles=" + roles +
+                '}';
+    }
 }
