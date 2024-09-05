@@ -21,12 +21,11 @@ public class EclipseProjectAdapter implements ProjectRepository {
 
     public EclipseProjectAdapter(EmbeddedStorageManager storageManager) {
         this.storageManager = storageManager;
-        ensureRootInitialized();
+//        ensureRootInitialized();
     }
 
     private void ensureRootInitialized() {
         if (storageManager.root() == null) {
-            log.info("Root is null, initializing");
             DataRoot root = new DataRoot();
             storageManager.setRoot(root);
             saveWithEagerStoring(root);
@@ -41,6 +40,7 @@ public class EclipseProjectAdapter implements ProjectRepository {
     public void save(Project project) {
         DataRoot root = (DataRoot) storageManager.root();
         root.projects().add(project);
+//        storageManager.store(root.projects());
         saveWithEagerStoring(root);  // Use eager storer for at least this save operation to ensure persistence
     }
 

@@ -1,5 +1,6 @@
 package dev.nathanlively.adapter.out.eclipse;
 
+import dev.nathanlively.domain.DataRoot;
 import dev.nathanlively.domain.Project;
 import org.eclipse.store.storage.embedded.configuration.types.EmbeddedStorageConfiguration;
 import org.eclipse.store.storage.embedded.types.EmbeddedStorageFoundation;
@@ -76,6 +77,10 @@ class EclipseProjectAdapterTest {
                 .setStorageDirectory(storageDir.toString())
                 .createEmbeddedStorageFoundation();
         storageManager = foundation.createEmbeddedStorageManager().start();
+        if (storageManager.root() == null) {
+            DataRoot root = new DataRoot();
+            storageManager.setRoot(root);
+        }
         adapter = new EclipseProjectAdapter(storageManager);
     }
 

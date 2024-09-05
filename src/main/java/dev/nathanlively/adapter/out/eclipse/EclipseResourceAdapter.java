@@ -21,12 +21,11 @@ public class EclipseResourceAdapter implements ResourceRepository {
 
     public EclipseResourceAdapter(EmbeddedStorageManager storageManager) {
         this.storageManager = storageManager;
-        ensureRootInitialized();
+//        ensureRootInitialized();
     }
 
     private void ensureRootInitialized() {
         if (storageManager.root() == null) {
-            log.info("Root is null, initializing");
             DataRoot root = new DataRoot();
             storageManager.setRoot(root);
             saveWithEagerStoring(root);
@@ -40,6 +39,7 @@ public class EclipseResourceAdapter implements ResourceRepository {
     public void save(Resource resource) {
         DataRoot root = (DataRoot) storageManager.root();
         root.resources().add(resource);
+//        storageManager.store(root.projects());
         saveWithEagerStoring(root);
     }
 
