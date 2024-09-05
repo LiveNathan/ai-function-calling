@@ -1,6 +1,8 @@
 package dev.nathanlively.domain;
 
-public class DataRoot {
+import java.io.Serializable;
+
+public class DataRoot implements Serializable {
     private final Projects projects = new Projects();
     private final Resources resources = new Resources();
 
