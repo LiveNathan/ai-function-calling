@@ -8,8 +8,6 @@ import org.eclipse.serializer.persistence.types.Storer;
 import org.eclipse.store.integrations.spring.boot.types.concurrent.Read;
 import org.eclipse.store.integrations.spring.boot.types.concurrent.Write;
 import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,22 +15,9 @@ import java.util.Optional;
 
 public class EclipseProjectAdapter implements ProjectRepository {
     private final EmbeddedStorageManager storageManager;
-    private static final Logger log = LoggerFactory.getLogger(EclipseProjectAdapter.class);
 
     public EclipseProjectAdapter(EmbeddedStorageManager storageManager) {
         this.storageManager = storageManager;
-//        ensureRootInitialized();
-    }
-
-    private void ensureRootInitialized() {
-        if (storageManager.root() == null) {
-            DataRoot root = new DataRoot();
-            storageManager.setRoot(root);
-            saveWithEagerStoring(root);
-            log.info("Root initialized and stored.");
-        } else {
-            log.info("Root already initialized");
-        }
     }
 
     @Write
@@ -40,7 +25,6 @@ public class EclipseProjectAdapter implements ProjectRepository {
     public void save(Project project) {
         DataRoot root = (DataRoot) storageManager.root();
         root.projects().add(project);
-//        storageManager.store(root.projects());
         saveWithEagerStoring(root);  // Use eager storer for at least this save operation to ensure persistence
     }
 

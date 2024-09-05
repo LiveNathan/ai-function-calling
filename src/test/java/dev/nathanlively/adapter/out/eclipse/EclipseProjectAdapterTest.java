@@ -50,25 +50,17 @@ class EclipseProjectAdapterTest {
 
     @Test
     void canWriteReadRestartAndReadAgain() {
-        log.info("Starting test: canWriteReadRestartAndReadAgain");
-
-        // Initial write
         writeData();
-
-        // Stop and restart the storage manager
         storageManager.shutdown();
         log.info("Storage manager shut down. Restarting...");
 
-        // Adding a delay to ensure persistence
-        try {
+        try {  // Adding a delay to ensure persistence. Probably not necessary.
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
         startStorageManager();
-
-        // Verify data is still present
         readData();
     }
 
@@ -90,13 +82,11 @@ class EclipseProjectAdapterTest {
 
         Project project = Project.create("Project A");
         adapter.save(project);
-
-        // Explicitly save root
-        storageManager.storeRoot();
+        storageManager.storeRoot();  // Explicitly save root. Why?
 
         List<Project> allProjects = adapter.findAll();
         assertThat(allProjects).hasSize(1);
-        assertThat(allProjects.get(0).name()).isEqualTo("Project A");
+        assertThat(allProjects.getFirst().name()).isEqualTo("Project A");
 
         List<String> projectNames = adapter.findAllNames();
         assertThat(projectNames).contains("Project A");
@@ -105,7 +95,7 @@ class EclipseProjectAdapterTest {
     private void readData() {
         List<Project> allProjects = adapter.findAll();
         assertThat(allProjects).hasSize(1);
-        assertThat(allProjects.get(0).name()).isEqualTo("Project A");
+        assertThat(allProjects.getFirst().name()).isEqualTo("Project A");
 
         List<String> projectNames = adapter.findAllNames();
         assertThat(projectNames).contains("Project A");
@@ -124,7 +114,7 @@ class EclipseProjectAdapterTest {
                         });
             }
         } else {
-            log.warn("Deletion path does not exist: " + path);
+            log.warn("Deletion path does not exist: {}", path);
         }
     }
 }
