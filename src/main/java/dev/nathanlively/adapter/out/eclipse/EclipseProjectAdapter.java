@@ -41,19 +41,13 @@ public class EclipseProjectAdapter implements ProjectRepository {
     public void save(Project project) {
         DataRoot root = (DataRoot) storageManager.root();
         root.projects().add(project);
-        log.info("Adding project: " + project);
-
-        // Use eager storer for at least this save operation to ensure persistence
-        saveWithEagerStoring(root);
-
-        log.info("Root and projects stored. Total projects: " + root.projects().all().size());
+        saveWithEagerStoring(root);  // Use eager storer for at least this save operation to ensure persistence
     }
 
     @Read
     @Override
     public List<Project> findAll() {
         DataRoot root = (DataRoot) storageManager.root();
-        log.info("Retrieving all projects. Total projects: " + root.projects().all().size());
         return new ArrayList<>(root.projects().all());
     }
 
@@ -64,7 +58,6 @@ public class EclipseProjectAdapter implements ProjectRepository {
         String cleanedName = ProjectNameMatcher.from(projectName, allNames).orElse(null);
         if (cleanedName == null) return Optional.empty();
         DataRoot root = (DataRoot) storageManager.root();
-        log.info("Total projects: " + root.projects().all().size());
         return Optional.ofNullable(root.projects().byName(projectName));
     }
 
@@ -72,7 +65,6 @@ public class EclipseProjectAdapter implements ProjectRepository {
     @Override
     public List<String> findAllNames() {
         DataRoot root = (DataRoot) storageManager.root();
-        log.info("Retrieving all project names. Total projects: " + root.projects().all().size());
         return new ArrayList<>(root.projects().getAllNames());
     }
 
