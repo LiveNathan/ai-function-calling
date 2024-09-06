@@ -7,6 +7,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.internal.RouteUtil;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.nathanlively.security.AuthenticatedUser;
 
@@ -19,18 +21,18 @@ public class RegisterView extends LoginOverlay implements BeforeEnterObserver {
     public RegisterView(AuthenticatedUser authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
 
-        setAction("register");
+        setAction(RouteUtil.getRoutePath(VaadinService.getCurrent().getContext(), getClass()));
 
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
         i18n.getHeader().setTitle("AI Function Calling");
         i18n.getHeader().setDescription("Register a new user");
+        i18n.getForm().setSubmit("Register");
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
-
         setForgotPasswordButtonVisible(false);
 
-        Button loginButton = new Button("Back to Login", event ->
+        Button loginButton = new Button("Login Existing User", event ->
                 getUI().ifPresent(ui -> ui.navigate("login"))
         );
         getCustomFormArea().add(loginButton);
