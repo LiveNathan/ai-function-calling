@@ -12,7 +12,7 @@ public class InputValidator {
 
     public static List<String> validateInputs(String resourceEmail, String projectName, String zone) {
         List<String> errors = new ArrayList<>();
-        validateProjectName(errors, projectName);
+        validateString(errors, projectName);
         validateZone(errors, zone);
         validateResourceEmail(errors, resourceEmail);
         return errors;
@@ -26,13 +26,13 @@ public class InputValidator {
 
     public static List<String> validateInputs(String projectName, int estimatedHours) {
         List<String> errors = new ArrayList<>();
-        validateProjectName(errors, projectName);
+        validateString(errors, projectName);
         validateEstimatedHours(errors, estimatedHours);
         return errors;
     }
 
-    private static void validateProjectName(List<String> errors, String projectName) {
-        if (projectName == null || projectName.trim().isEmpty()) {
+    private static void validateString(List<String> errors, String string) {
+        if (string == null || string.trim().isEmpty()) {
             errors.add("Project name must not be null or empty.");
         }
     }
@@ -59,5 +59,13 @@ public class InputValidator {
         if (estimatedHours <= 0) {
             errors.add("Estimated hours must be greater than zero.");
         }
+    }
+
+    public static List<String> validateInputs(String... strings) {
+        List<String> errors = new ArrayList<>();
+        for (String string : strings) {
+            validateString(errors, string);
+        }
+        return errors;
     }
 }
