@@ -24,6 +24,11 @@ public class UserRegistrationService {
         }
 
         User user = new User(username, username, password, Collections.singleton(Role.USER), new byte[0]);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            return Result.failure("Problem saving user: " + e.getMessage());
+        }
         return Result.success(user);
     }
 }

@@ -4,6 +4,7 @@ import dev.nathanlively.application.port.UserRepository;
 import dev.nathanlively.security.InMemoryUserRepository;
 import dev.nathanlively.security.Role;
 import dev.nathanlively.security.User;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -14,6 +15,7 @@ class UserRegistrationServiceTest {
     @Test
     void with() throws Exception {
         UserRepository repository = InMemoryUserRepository.createEmpty();
+        Assertions.assertThat(repository.findAll()).hasSize(0);
         UserRegistrationService service = new UserRegistrationService(repository);
         String username = "travsi@micework.ch";
         String password = "<PASSWORD>";
@@ -25,5 +27,6 @@ class UserRegistrationServiceTest {
         assertThat(actual.failureMessages()).isEmpty();
         assertThat(actual).successValues().contains(expected);
 
+        assertThat(repository.findAll()).hasSize(1);
     }
 }

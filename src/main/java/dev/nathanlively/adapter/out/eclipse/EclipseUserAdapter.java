@@ -8,6 +8,9 @@ import org.eclipse.store.integrations.spring.boot.types.concurrent.Read;
 import org.eclipse.store.integrations.spring.boot.types.concurrent.Write;
 import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EclipseUserAdapter implements UserRepository {
     private final EmbeddedStorageManager storageManager;
 
@@ -28,13 +31,13 @@ public class EclipseUserAdapter implements UserRepository {
         root.users().add(user);
         saveWithEagerStoring(root);  // Use eager storing to ensure persistence
     }
-//
-//    @Read
-//    public List<User> findAll() {
-//        DataRoot root = (DataRoot) storageManager.root();
-//        return new ArrayList<>(root.users().all());
-//    }
-//
+
+    @Read
+    public List<User> findAll() {
+        DataRoot root = (DataRoot) storageManager.root();
+        return new ArrayList<>(root.users().all());
+    }
+
 //    @Read
 //    public List<String> findAllUsernames() {
 //        DataRoot root = (DataRoot) storageManager.root();
