@@ -79,4 +79,9 @@ public class ServiceConfig {
     public UpdateProjectHoursService updateProjectHoursService(ProjectRepository projectRepository) {
         return new UpdateProjectHoursService(projectRepository);
     }
+
+    @Bean
+    public UserRegistrationService userRegistrationService(UserRepository userRepository) {
+        return new UserRegistrationService(userRepository);
+    }
 }
