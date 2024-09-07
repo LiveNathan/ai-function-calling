@@ -1,4 +1,4 @@
-package dev.nathanlively.adapter.in.web.login;
+package dev.nathanlively.adapter.in.web.register;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.login.LoginI18n;
@@ -34,6 +34,7 @@ public class RegisterView extends LoginOverlay implements BeforeEnterObserver {
         i18n.setHeader(new LoginI18n.Header());
         i18n.getHeader().setTitle("AI Function Calling");
         i18n.getHeader().setDescription("Register a new user");
+        i18n.getForm().setTitle("Register");
         i18n.getForm().setSubmit("Register");
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
