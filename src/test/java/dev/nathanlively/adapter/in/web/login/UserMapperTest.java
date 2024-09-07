@@ -20,4 +20,20 @@ class UserMapperTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    void mapToDto() throws Exception {
+        String email = "nathanlively@gmail.com";
+        String password = "password";
+        String nathan = "Nathan";
+        User user = new User(email, nathan, password, null, null);
+        assertThat(user.name()).isNotNull();
+        UserDto expected = new UserDto(email, password, nathan);
+
+        UserDto actual = UserMapper.INSTANCE.userToUserDto(user);
+
+        assertThat(actual).isNotNull();
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
+
 }

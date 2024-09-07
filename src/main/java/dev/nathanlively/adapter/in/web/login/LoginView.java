@@ -18,7 +18,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import dev.nathanlively.adapter.in.web.register.FormPurpose;
 import dev.nathanlively.application.Result;
 import dev.nathanlively.application.UserService;
 import dev.nathanlively.security.AuthenticatedUser;

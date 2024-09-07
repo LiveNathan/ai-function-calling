@@ -1,4 +1,4 @@
-package dev.nathanlively.adapter.in.web.register;
+package dev.nathanlively.adapter.in.web.login;
 
 public enum FormPurpose {
     LOGIN,

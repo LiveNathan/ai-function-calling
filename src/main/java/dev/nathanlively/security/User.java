@@ -56,6 +56,10 @@ public class User extends Named {
         this.profilePicture = profilePicture;
     }
 
+    public String getName() {
+        return name();
+    }
+
     public String getProfilePictureUri() {
         Avatar avatar = new Avatar(name());
         StreamResource resource = new StreamResource("profile-pic", () -> new ByteArrayInputStream(profilePicture));
