@@ -66,13 +66,13 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     @NotNull
-    private  Div createDiv() {
+    private Div createDiv() {
         TabSheet tabSheet = createTabSheet();
         return new Div(tabSheet);
     }
 
     @NotNull
-    private  TabSheet createTabSheet() {
+    private TabSheet createTabSheet() {
         FormLayout loginForm = createForm(FormPurpose.LOGIN);
         FormLayout registerForm = createForm(FormPurpose.REGISTER);
 

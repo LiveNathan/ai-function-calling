@@ -8,10 +8,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UserMapperTest {
     @Test
     void mapToObject() throws Exception {
-        UserDto userDto = new UserDto("nathanlively@gmail.com", "password", "Nathan");
-        User actual = UserMapper.INSTANCE.userDtoToUser(userDto);
-        assertThat(actual).isNotNull();
+        String email = "nathanlively@gmail.com";
+        String password = "password";
+        String nathan = "Nathan";
+        UserDto userDto = new UserDto(email, password, nathan);
+        User expected = new User(email, nathan, password, null, null);
 
+        User actual = UserMapper.INSTANCE.userDtoToUser(userDto);
+
+        assertThat(actual).isNotNull();
+        assertThat(actual).isEqualTo(expected);
     }
 
 }
