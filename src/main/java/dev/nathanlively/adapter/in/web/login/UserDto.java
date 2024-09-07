@@ -4,15 +4,15 @@ import java.util.Objects;
 
 public  class UserDto {
     private  String username;
-    private  String hashedPassword;
+    private  String password;
     private  String name;
 
     public UserDto() {
     }
 
-    public UserDto(String username, String hashedPassword, String name) {
+    public UserDto(String username, String password, String name) {
         this.username = username;
-        this.hashedPassword = hashedPassword;
+        this.password = password;
         this.name = name;
     }
 
@@ -20,8 +20,8 @@ public  class UserDto {
         this.username = username;
     }
 
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
+    public String getHashedPassword() {
+        return password;
     }
 
     public void setName(String name) {
@@ -32,8 +32,8 @@ public  class UserDto {
         return username;
     }
 
-    public String getHashedPassword() {
-        return hashedPassword;
+    public void setHashedPassword(String hashedPassword) {
+        this.password = hashedPassword;
     }
 
     public String getName() {
@@ -46,20 +46,20 @@ public  class UserDto {
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (UserDto) obj;
         return Objects.equals(this.username, that.username) &&
-                Objects.equals(this.hashedPassword, that.hashedPassword) &&
+                Objects.equals(this.password, that.password) &&
                 Objects.equals(this.name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, hashedPassword, name);
+        return Objects.hash(username, password, name);
     }
 
     @Override
     public String toString() {
         return "UserDto[" +
                 "getUsername=" + username + ", " +
-                "getHashedPassword=" + hashedPassword + ", " +
+                "getHashedPassword=" + password + ", " +
                 "getName=" + name + ']';
     }
 

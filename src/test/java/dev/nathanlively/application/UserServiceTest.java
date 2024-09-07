@@ -14,7 +14,7 @@ import static dev.nathanlively.application.ResultAssertions.assertThat;
 
 class UserServiceTest {
     @Test
-    void register() throws Exception {
+    void register() {
         UserRepository repository = InMemoryUserRepository.createEmpty();
         assertThat(repository.findAll()).hasSize(0);
         UserService service = new UserService(repository);

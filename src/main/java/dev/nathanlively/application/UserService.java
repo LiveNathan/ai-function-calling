@@ -32,6 +32,21 @@ public class UserService {
     }
 
     public Result<User> login(UserDto userDto) {
-        return null;
+        User user = userRepository.findByUsername(userDto.getUsername());
+        if (user == null) {
+            return Result.failure("User not found");
+        }
+
+        if (!matchesPassword(userDto.getHashedPassword(), user.getHashedPassword())) {
+            return Result.failure("Invalid password");
+        }
+
+        return Result.success(user);
+    }
+
+    // Dummy implementation for password matching. Replace with actual functionality.
+    private boolean matchesPassword(String rawPassword, String hashedPassword) {
+        // Compare the passwords (e.g., BCrypt, PBKDF2, etc.)
+        return rawPassword.equals(hashedPassword);
     }
 }

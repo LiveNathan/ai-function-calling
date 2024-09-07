@@ -1,6 +1,7 @@
 package dev.nathanlively.adapter.in.web.login;
 
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -137,8 +138,14 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             binder.writeBean(userDto);
         } catch (ValidationException e) {
             notifyValidationException(e);
+            return;
         }
         Result<User> result = service.register(userDto);
+        if (result.isSuccess()) {
+            Notification.show("Registration successful");
+        } else {
+            Notification.show("Registration failed: " + result.failureMessages());
+        }
     }
 
     private void handleLogin(ClickEvent<Button> event, Binder<UserDto> binder) {
@@ -147,10 +154,15 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             binder.writeBean(userDto);
         } catch (ValidationException e) {
             notifyValidationException(e);
+            return;
         }
         Result<User> result = service.login(userDto);
-
-// handle result
+        if (result.isSuccess()) {
+//            authenticatedUser.set(result.getData());
+            UI.getCurrent().getPage().setLocation("/");
+        } else {
+            Notification.show("Login failed: " + result.failureMessages());
+        }
     }
 
     @Override
