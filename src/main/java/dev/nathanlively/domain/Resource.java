@@ -79,7 +79,7 @@ public final class Resource extends Named {
         return "Resource[" +
                 "resourceType=" + resourceType +
                 ", jobTitle=" + jobTitle +
-                ", name=" + name() +
+                ", getName=" + name() +
                 ", email=" + email +
                 ", timeSheet=" + timeSheet +
                 ']';

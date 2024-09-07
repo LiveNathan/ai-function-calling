@@ -14,7 +14,7 @@ class UserMapperTest {
         UserDto userDto = new UserDto(email, password, nathan);
         User expected = new User(email, nathan, password, null, null);
 
-        User actual = UserMapper.INSTANCE.userDtoToUser(userDto);
+        User actual = UserMapper.INSTANCE.fromDto(userDto);
 
         assertThat(actual).isNotNull();
         assertThat(actual).isEqualTo(expected);
@@ -26,10 +26,10 @@ class UserMapperTest {
         String password = "password";
         String nathan = "Nathan";
         User user = new User(email, nathan, password, null, null);
-        assertThat(user.name()).isNotNull();
+        assertThat(user.getName()).isNotNull();
         UserDto expected = new UserDto(email, password, nathan);
 
-        UserDto actual = UserMapper.INSTANCE.userToUserDto(user);
+        UserDto actual = UserMapper.INSTANCE.fromUser(user);
 
         assertThat(actual).isNotNull();
         assertThat(actual)

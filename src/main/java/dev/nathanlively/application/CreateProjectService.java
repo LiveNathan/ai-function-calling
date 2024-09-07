@@ -16,12 +16,12 @@ public class CreateProjectService {
 
     public Result<Project> withName(String projectName) {
         if (projectName == null || projectName.trim().isEmpty()) {
-            return Result.failure("Project name must not be null or empty.");
+            return Result.failure("Project getName must not be null or empty.");
         }
 
         Optional<Project> similarProject = projectRepository.findByName(projectName);
         if (similarProject.isPresent()) {
-            return Result.failure("There's already a project called " + similarProject.get().name() + ". Please create a more unique name.");
+            return Result.failure("There's already a project called " + similarProject.get().name() + ". Please create a more unique getName.");
         }
 
         Project project = Project.create(projectName);

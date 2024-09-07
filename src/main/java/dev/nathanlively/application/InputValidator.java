@@ -33,7 +33,7 @@ public class InputValidator {
 
     private static void validateString(List<String> errors, String string) {
         if (string == null || string.trim().isEmpty()) {
-            errors.add("Project name must not be null or empty.");
+            errors.add("Project getName must not be null or empty.");
         }
     }
 

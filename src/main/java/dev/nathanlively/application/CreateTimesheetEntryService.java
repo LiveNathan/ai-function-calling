@@ -53,7 +53,7 @@ public class CreateTimesheetEntryService {
                     resourceRepository.save(resource);
                     return entryResult;
                 })
-                .orElseGet(() -> Result.failure("Project not found register name: " + projectName));
+                .orElseGet(() -> Result.failure("Project not found register getName: " + projectName));
     }
 
     private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, Duration duration, String zone) {
@@ -63,7 +63,7 @@ public class CreateTimesheetEntryService {
                     resourceRepository.save(resource);
                     return entryResult;
                 })
-                .orElseGet(() -> Result.failure("Project not found register name: " + projectName));
+                .orElseGet(() -> Result.failure("Project not found register getName: " + projectName));
     }
 
     public CreateTimesheetEntryResponse from(CreateTimesheetEntryRequest request) {

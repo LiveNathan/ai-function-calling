@@ -21,7 +21,7 @@ public class UpdateProjectHoursService {
 
         Optional<Project> optionalProject = projectRepository.findByName(projectName);
         if (optionalProject.isEmpty()) {
-            return Result.failure("Project not found register name: " + projectName);
+            return Result.failure("Project not found register getName: " + projectName);
         }
 
         Project project = optionalProject.get();

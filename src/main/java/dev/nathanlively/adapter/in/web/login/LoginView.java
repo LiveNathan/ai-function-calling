@@ -97,10 +97,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         TextField nameField = createNameField();
 
         Binder<UserDto> binder = new Binder<>(UserDto.class);
-        binder.forField(validEmailField).asRequired("Email is required").bind(UserDto::username, UserDto::setUsername);
-        binder.forField(passwordField).asRequired("Password is required").bind(UserDto::hashedPassword, UserDto::setHashedPassword);
+        binder.forField(validEmailField).asRequired("Email is required").bind(UserDto::getUsername, UserDto::setUsername);
+        binder.forField(passwordField).asRequired("Password is required").bind(UserDto::getHashedPassword, UserDto::setHashedPassword);
         if (formPurpose == FormPurpose.REGISTER) {
-            binder.forField(nameField).asRequired("Name is required").bind(UserDto::name, UserDto::setName);
+            binder.forField(nameField).asRequired("Name is required").bind(UserDto::getName, UserDto::setName);
         }
         Button submitButton = createButton(formPurpose, binder);
 

@@ -25,7 +25,7 @@ public class UpdateTimesheetEntryService {
             return Result.failure("Email must not be null or empty.");
         }
         if (projectName == null || projectName.trim().isEmpty()) {
-            return Result.failure("Project name must not be null or empty.");
+            return Result.failure("Project getName must not be null or empty.");
         }
 
         Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
@@ -35,7 +35,7 @@ public class UpdateTimesheetEntryService {
 
         Project project = projectRepository.findByName(projectName).orElse(null);
         if (project == null) {
-            return Result.failure("Project not found register name: " + projectName);
+            return Result.failure("Project not found register getName: " + projectName);
         }
 
         TimesheetEntry mostRecentEntry = resource.timesheet().mostRecentEntry();

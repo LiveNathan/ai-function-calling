@@ -28,15 +28,15 @@ public  class UserDto {
         this.name = name;
     }
 
-    public String username() {
+    public String getUsername() {
         return username;
     }
 
-    public String hashedPassword() {
+    public String getHashedPassword() {
         return hashedPassword;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
 
@@ -58,9 +58,9 @@ public  class UserDto {
     @Override
     public String toString() {
         return "UserDto[" +
-                "username=" + username + ", " +
-                "hashedPassword=" + hashedPassword + ", " +
-                "name=" + name + ']';
+                "getUsername=" + username + ", " +
+                "getHashedPassword=" + hashedPassword + ", " +
+                "getName=" + name + ']';
     }
 
 }

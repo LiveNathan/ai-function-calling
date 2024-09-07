@@ -3,21 +3,21 @@ package dev.nathanlively.security;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.server.StreamResource;
-import dev.nathanlively.domain.Named;
 
 import java.io.ByteArrayInputStream;
 import java.util.Objects;
 import java.util.Set;
 
-public class User extends Named {
+public class User {
     private String username;
     @JsonIgnore
     private String hashedPassword;
     private Set<Role> roles;
     private byte[] profilePicture;
+    private String name;
 
     public User(String username, String name, String hashedPassword, Set<Role> roles, byte[] profilePicture) {
-        super(name);
+        this.name = name;
         this.username = username;
         this.hashedPassword = hashedPassword;
         this.roles = roles;
@@ -57,11 +57,15 @@ public class User extends Named {
     }
 
     public String getName() {
-        return name();
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getProfilePictureUri() {
-        Avatar avatar = new Avatar(name());
+        Avatar avatar = new Avatar(name);
         StreamResource resource = new StreamResource("profile-pic", () -> new ByteArrayInputStream(profilePicture));
         avatar.setImageResource(resource);
         return avatar.getImage();
@@ -83,8 +87,8 @@ public class User extends Named {
     @Override
     public String toString() {
         return "User{" +
-                "username='" + username + '\'' +
-                ", name='" + name() + '\'' +
+                "getUsername='" + username + '\'' +
+                ", getName='" + name + '\'' +
                 ", roles=" + roles +
                 '}';
     }

@@ -16,11 +16,11 @@ public class UserService {
     }
 
     public Result<User> register(UserDto userDto) {
-        if (userRepository.findByUsername(userDto.username()) != null) {
+        if (userRepository.findByUsername(userDto.getUsername()) != null) {
             return Result.failure("Username already exists");
         }
 
-        User user = UserMapper.INSTANCE.userDtoToUser(userDto);
+        User user = UserMapper.INSTANCE.fromDto(userDto);
         user.setRoles(Collections.singleton(Role.USER));
         user.setProfilePicture(new byte[0]);
         try {
