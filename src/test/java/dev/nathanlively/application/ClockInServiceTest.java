@@ -61,7 +61,7 @@ class ClockInServiceTest {
     void clockIn_resourceNotFound_returnResultWithErrorMessage() {
         String resourceEmail = "bademail@gmail.com";
         Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
-        assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
+        assertThat(actual).isFailure().failureMessages().contains("Resource not found register email: " + resourceEmail);
     }
 
 

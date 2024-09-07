@@ -66,7 +66,7 @@ class ClockOutServiceTest {
     void clockOut_resourceNotFound_returnResultWithErrorMessage() {
         String resourceEmail = "bademail@gmail.com";
         Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockInTime);
-        assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
+        assertThat(actual).isFailure().failureMessages().contains("Resource not found register email: " + resourceEmail);
     }
 
 }

@@ -13,7 +13,7 @@ import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.nathanlively.application.Result;
-import dev.nathanlively.application.UserRegistrationService;
+import dev.nathanlively.application.UserService;
 import dev.nathanlively.security.AuthenticatedUser;
 import dev.nathanlively.security.User;
 
@@ -22,9 +22,9 @@ import dev.nathanlively.security.User;
 @Route(value = "register")
 public class RegisterView extends LoginOverlay implements BeforeEnterObserver {
     private final AuthenticatedUser authenticatedUser;
-    private final UserRegistrationService service;
+    private final UserService service;
 
-    public RegisterView(AuthenticatedUser authenticatedUser, UserRegistrationService service) {
+    public RegisterView(AuthenticatedUser authenticatedUser, UserService service) {
         this.authenticatedUser = authenticatedUser;
         this.service = service;
 
@@ -54,7 +54,7 @@ public class RegisterView extends LoginOverlay implements BeforeEnterObserver {
         String username = event.getUsername();
         String password = event.getPassword();
 
-        Result<User> result = service.with(username, password);
+        Result<User> result = service.register();
         if (result.isSuccess()) {
             Notification notification = Notification.show("Registration successful!");
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);

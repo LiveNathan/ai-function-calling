@@ -1,5 +1,7 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.adapter.in.web.login.UserDto;
+import dev.nathanlively.adapter.in.web.login.UserMapper;
 import dev.nathanlively.application.port.UserRepository;
 import dev.nathanlively.security.InMemoryUserRepository;
 import dev.nathanlively.security.Role;
@@ -11,17 +13,18 @@ import java.util.Collections;
 
 import static dev.nathanlively.application.ResultAssertions.assertThat;
 
-class UserRegistrationServiceTest {
+class UserServiceTest {
     @Test
-    void with() throws Exception {
+    void register() throws Exception {
         UserRepository repository = InMemoryUserRepository.createEmpty();
         Assertions.assertThat(repository.findAll()).hasSize(0);
-        UserRegistrationService service = new UserRegistrationService(repository);
+        UserService service = new UserService(repository);
         String username = "travsi@micework.ch";
         String password = "<PASSWORD>";
         User expected = new User(username, "Travis", password, Collections.singleton(Role.USER), new byte[0]);
+        UserDto userDto = UserMapper.INSTANCE.userToUserDto(expected);
 
-        Result<User> actual = service.with(username, password);
+        Result<User> actual = service.register(userDto);
 
         assertThat(actual).isSuccess();
         assertThat(actual.failureMessages()).isEmpty();

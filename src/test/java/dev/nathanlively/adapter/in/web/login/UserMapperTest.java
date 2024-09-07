@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class UserMapperTest {
     @Test
-    void mapToObject() throws Exception {
+    void mapToObject() {
         String email = "nathanlively@gmail.com";
         String password = "password";
         String nathan = "Nathan";

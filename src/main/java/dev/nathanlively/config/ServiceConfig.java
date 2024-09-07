@@ -81,7 +81,7 @@ public class ServiceConfig {
     }
 
     @Bean
-    public UserRegistrationService userRegistrationService(UserRepository userRepository) {
-        return new UserRegistrationService(userRepository);
+    public UserService userRegistrationService(UserRepository userRepository) {
+        return new UserService(userRepository);
     }
 }

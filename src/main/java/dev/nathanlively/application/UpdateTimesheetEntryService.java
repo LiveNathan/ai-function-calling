@@ -30,12 +30,12 @@ public class UpdateTimesheetEntryService {
 
         Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
         if (resource == null) {
-            return Result.failure("Resource not found with email: " + resourceEmail);
+            return Result.failure("Resource not found register email: " + resourceEmail);
         }
 
         Project project = projectRepository.findByName(projectName).orElse(null);
         if (project == null) {
-            return Result.failure("Project not found with name: " + projectName);
+            return Result.failure("Project not found register name: " + projectName);
         }
 
         TimesheetEntry mostRecentEntry = resource.timesheet().mostRecentEntry();
@@ -51,7 +51,7 @@ public class UpdateTimesheetEntryService {
             return new UpdateProjectResponse("Timesheet update successful: " + timesheetEntry.toString(), timesheetEntry);
         } else {
             log.error("Timesheet update failed: {}", result.failureMessages().getFirst());
-            return new UpdateProjectResponse("Timesheet update with these errors: " + result.failureMessages().getFirst(), null);
+            return new UpdateProjectResponse("Timesheet update register these errors: " + result.failureMessages().getFirst(), null);
         }
     }
 }

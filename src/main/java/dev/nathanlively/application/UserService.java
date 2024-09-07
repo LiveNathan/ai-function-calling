@@ -1,34 +1,37 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.adapter.in.web.login.UserDto;
+import dev.nathanlively.adapter.in.web.login.UserMapper;
 import dev.nathanlively.application.port.UserRepository;
 import dev.nathanlively.security.Role;
 import dev.nathanlively.security.User;
 
 import java.util.Collections;
-import java.util.List;
 
-public class UserRegistrationService {
+public class UserService {
     private final UserRepository userRepository;
 
-    public UserRegistrationService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public Result<User> with(String username, String password) {
-        List<String> validationErrors = InputValidator.validateInputs(username, password);
-        if (!validationErrors.isEmpty()) {
-            return Result.failure(validationErrors);
-        }
-        if (userRepository.findByUsername(username) != null) {
+    public Result<User> register(UserDto userDto) {
+        if (userRepository.findByUsername(userDto.username()) != null) {
             return Result.failure("Username already exists");
         }
 
-        User user = new User(username, username, password, Collections.singleton(Role.USER), new byte[0]);
+        User user = UserMapper.INSTANCE.userDtoToUser(userDto);
+        user.setRoles(Collections.singleton(Role.USER));
+        user.setProfilePicture(new byte[0]);
         try {
             userRepository.save(user);
         } catch (Exception e) {
             return Result.failure("Problem saving user: " + e.getMessage());
         }
         return Result.success(user);
+    }
+
+    public Result<User> login(UserDto userDto) {
+        return null;
     }
 }

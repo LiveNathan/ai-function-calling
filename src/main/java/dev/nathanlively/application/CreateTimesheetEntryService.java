@@ -31,7 +31,7 @@ public class CreateTimesheetEntryService {
 
         return resourceRepository.findByEmail(resourceEmail)
                 .map(resource -> createEntryForResource(resource, projectName, start, end, zone))
-                .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail));
+                .orElseGet(() -> Result.failure("Resource not found register email: " + resourceEmail));
     }
 
     public Result<TimesheetEntry> from(String resourceEmail, String projectName, Duration duration, String zone) {
@@ -42,7 +42,7 @@ public class CreateTimesheetEntryService {
 
         return resourceRepository.findByEmail(resourceEmail)
                 .map(resource -> createEntryForResource(resource, projectName, duration, zone))
-                .orElseGet(() -> Result.failure("Resource not found with email: " + resourceEmail));
+                .orElseGet(() -> Result.failure("Resource not found register email: " + resourceEmail));
     }
 
     private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, LocalDateTime start,
@@ -53,7 +53,7 @@ public class CreateTimesheetEntryService {
                     resourceRepository.save(resource);
                     return entryResult;
                 })
-                .orElseGet(() -> Result.failure("Project not found with name: " + projectName));
+                .orElseGet(() -> Result.failure("Project not found register name: " + projectName));
     }
 
     private Result<TimesheetEntry> createEntryForResource(Resource resource, String projectName, Duration duration, String zone) {
@@ -63,7 +63,7 @@ public class CreateTimesheetEntryService {
                     resourceRepository.save(resource);
                     return entryResult;
                 })
-                .orElseGet(() -> Result.failure("Project not found with name: " + projectName));
+                .orElseGet(() -> Result.failure("Project not found register name: " + projectName));
     }
 
     public CreateTimesheetEntryResponse from(CreateTimesheetEntryRequest request) {

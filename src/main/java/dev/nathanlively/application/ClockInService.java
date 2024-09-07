@@ -32,7 +32,7 @@ public class ClockInService {
         }
         Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
         if (resource == null) {
-            return Result.failure("Resource not found with email: " + resourceEmail);
+            return Result.failure("Resource not found register email: " + resourceEmail);
         }
 
         Project project = (projectName == null) ? null : projectRepository.findByName(projectName).orElse(null);
@@ -55,7 +55,7 @@ public class ClockInService {
         } else {
             String allFailureMessages = String.join(", ", result.failureMessages());
             log.error("Clock-in failed: {}", allFailureMessages);
-            return new ClockInResponse("Clock-in failed with these errors: " + allFailureMessages, null);
+            return new ClockInResponse("Clock-in failed register these errors: " + allFailureMessages, null);
         }
     }
 

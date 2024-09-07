@@ -5,19 +5,24 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.nathanlively.adapter.in.web.register.FormPurpose;
-import dev.nathanlively.application.UserRegistrationService;
+import dev.nathanlively.application.Result;
+import dev.nathanlively.application.UserService;
 import dev.nathanlively.security.AuthenticatedUser;
+import dev.nathanlively.security.User;
 import org.jetbrains.annotations.NotNull;
 
 @AnonymousAllowed
@@ -26,9 +31,9 @@ import org.jetbrains.annotations.NotNull;
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final AuthenticatedUser authenticatedUser;
-    private final UserRegistrationService service;
+    private final UserService service;
 
-    public LoginView(AuthenticatedUser authenticatedUser, UserRegistrationService service) {
+    public LoginView(AuthenticatedUser authenticatedUser, UserService service) {
         this.authenticatedUser = authenticatedUser;
         this.service = service;
         Div tabSheetContainer = createDiv();
@@ -82,13 +87,23 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         return tabSheet;
     }
 
+    private static void notifyValidationException(ValidationException e) {
+        Notification notification = Notification.show("Validation error: " + e.getMessage());
+    }
+
     @NotNull
     private FormLayout createForm(FormPurpose formPurpose) {
         EmailField validEmailField = createEmailField();
         PasswordField passwordField = createPasswordField();
         TextField nameField = createNameField();
-//        Binder<Person> binder = new Binder<>(Person.class);
-        Button submitButton = createButton(formPurpose, validEmailField, passwordField);
+
+        Binder<UserDto> binder = new Binder<>(UserDto.class);
+        binder.forField(validEmailField).asRequired("Email is required").bind(UserDto::username, UserDto::setUsername);
+        binder.forField(passwordField).asRequired("Password is required").bind(UserDto::hashedPassword, UserDto::setHashedPassword);
+        if (formPurpose == FormPurpose.REGISTER) {
+            binder.forField(nameField).asRequired("Name is required").bind(UserDto::name, UserDto::setName);
+        }
+        Button submitButton = createButton(formPurpose, binder);
 
         FormLayout formLayout = new FormLayout();
         switch (formPurpose) {
@@ -100,39 +115,43 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     @NotNull
-    private Button createButton(FormPurpose formPurpose, EmailField emailField, PasswordField passwordField) {
+    private Button createButton(FormPurpose formPurpose, Binder<UserDto> binder) {
         Button submitButton = new Button();
         switch (formPurpose) {
             case LOGIN -> {
                 submitButton.setText("Login");
                 submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-                submitButton.addClickListener(event -> handleLogin(event, emailField, passwordField));
+                submitButton.addClickListener(event -> handleLogin(event, binder));
             }
             case REGISTER -> {
                 submitButton.setText("Register");
                 submitButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-                submitButton.addClickListener(event -> handleRegistration(event, emailField, passwordField));
+                submitButton.addClickListener(event -> handleRegistration(event, binder));
             }
         }
         return submitButton;
     }
 
-    private void handleRegistration(ClickEvent<Button> event, EmailField emailField, PasswordField passwordField) {
-
+    private void handleRegistration(ClickEvent<Button> event, Binder<UserDto> binder) {
+        UserDto userDto = new UserDto();
+        try {
+            binder.writeBean(userDto);
+        } catch (ValidationException e) {
+            notifyValidationException(e);
+        }
+        Result<User> result = service.register(userDto);
     }
 
-    private void handleLogin(ClickEvent<Button> event, EmailField emailField, PasswordField passwordField) {
-        String email = emailField.getValue();
-        String password = passwordField.getValue();
-//        service.login
+    private void handleLogin(ClickEvent<Button> event, Binder<UserDto> binder) {
+        UserDto userDto = new UserDto();
+        try {
+            binder.writeBean(userDto);
+        } catch (ValidationException e) {
+            notifyValidationException(e);
+        }
+        Result<User> result = service.login(userDto);
 
-        // Handle registration logic
-//        if (service.register(email, password)) {
-        // Redirect to the main view after successful registration
-//            UI.getCurrent().navigate("");
-//        } else {
-        // Show registration error
-//        }
+// handle result
     }
 
     @Override

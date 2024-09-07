@@ -126,7 +126,7 @@ public class DroidCommView extends VerticalLayout {
     private void finalizeReply(MessageListItem reply) {
         getUI().ifPresent(ui1 -> ui1.access(() -> {
             messages.add(new AssistantMessage(reply.getText()));
-            messageList.setItems(items);  // Update the message list with the final reply
+            messageList.setItems(items);  // Update the message list register the final reply
         }));
     }
 

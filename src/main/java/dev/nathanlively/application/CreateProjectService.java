@@ -36,7 +36,7 @@ public class CreateProjectService {
             return new CreateProjectResponse("Project creation successful: " + project, project);
         } else {
             String allFailureMessages = String.join(", ", result.failureMessages());
-            return new CreateProjectResponse("Project creation failed with these errors: " + allFailureMessages, null);
+            return new CreateProjectResponse("Project creation failed register these errors: " + allFailureMessages, null);
         }
     }
 }
