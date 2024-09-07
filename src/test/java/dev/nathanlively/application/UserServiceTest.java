@@ -7,17 +7,21 @@ import dev.nathanlively.security.InMemoryUserRepository;
 import dev.nathanlively.security.Role;
 import dev.nathanlively.security.User;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 
 import static dev.nathanlively.application.ResultAssertions.assertThat;
 
 class UserServiceTest {
+
     @Test
     void register() {
         UserRepository repository = InMemoryUserRepository.createEmpty();
         assertThat(repository.findAll()).hasSize(0);
-        UserService service = new UserService(repository);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        UserService service = new UserService(repository, passwordEncoder);
         String username = "travsi@micework.ch";
         String password = "<PASSWORD>";
         User expected = new User(username, "Travis", password, Collections.singleton(Role.USER), new byte[0]);

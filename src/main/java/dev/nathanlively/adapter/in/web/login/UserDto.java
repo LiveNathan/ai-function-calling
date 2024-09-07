@@ -20,7 +20,7 @@ public  class UserDto {
         this.username = username;
     }
 
-    public String getHashedPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -59,7 +59,7 @@ public  class UserDto {
     public String toString() {
         return "UserDto[" +
                 "getUsername=" + username + ", " +
-                "getHashedPassword=" + password + ", " +
+                "getPassword=" + password + ", " +
                 "getName=" + name + ']';
     }
 

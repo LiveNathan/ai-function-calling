@@ -16,6 +16,7 @@ import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class ServiceConfig {
@@ -81,7 +82,7 @@ public class ServiceConfig {
     }
 
     @Bean
-    public UserService userRegistrationService(UserRepository userRepository) {
-        return new UserService(userRepository);
+    public UserService userRegistrationService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return new UserService(userRepository, passwordEncoder);
     }
 }

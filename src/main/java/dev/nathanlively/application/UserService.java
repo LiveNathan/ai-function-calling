@@ -5,24 +5,28 @@ import dev.nathanlively.adapter.in.web.login.UserMapper;
 import dev.nathanlively.application.port.UserRepository;
 import dev.nathanlively.security.Role;
 import dev.nathanlively.security.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Result<User> register(UserDto userDto) {
         if (userRepository.findByUsername(userDto.getUsername()) != null) {
             return Result.failure("Username already exists");
         }
-
         User user = UserMapper.INSTANCE.fromDto(userDto);
         user.setRoles(Collections.singleton(Role.USER));
         user.setProfilePicture(new byte[0]);
+        user.setHashedPassword(passwordEncoder.encode(userDto.getPassword()));
+
         try {
             userRepository.save(user);
         } catch (Exception e) {
@@ -36,17 +40,9 @@ public class UserService {
         if (user == null) {
             return Result.failure("User not found");
         }
-
-        if (!matchesPassword(userDto.getHashedPassword(), user.getHashedPassword())) {
+        if (!passwordEncoder.matches(userDto.getPassword(), user.getHashedPassword())) {
             return Result.failure("Invalid password");
         }
-
         return Result.success(user);
-    }
-
-    // Dummy implementation for password matching. Replace with actual functionality.
-    private boolean matchesPassword(String rawPassword, String hashedPassword) {
-        // Compare the passwords (e.g., BCrypt, PBKDF2, etc.)
-        return rawPassword.equals(hashedPassword);
     }
 }
