@@ -6,6 +6,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
@@ -58,9 +60,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     @NotNull
     private static EmailField createEmailField() {
         EmailField validEmailField = new EmailField();
-        validEmailField.setLabel("Email address");
+        validEmailField.setLabel("Email");
         validEmailField.setErrorMessage("Enter a valid email address");
         validEmailField.setClearButtonVisible(true);
+        validEmailField.setId("email-field-register");
         return validEmailField;
     }
 
@@ -78,7 +81,12 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     @NotNull
     private TabSheet createTabSheet() {
-        FormLayout loginForm = createForm(FormPurpose.LOGIN);
+        LoginForm loginForm = new LoginForm();
+        LoginI18n i18n = LoginI18n.createDefault();
+        i18n.getForm().setTitle("");
+        i18n.getForm().setUsername("Email");
+        loginForm.setI18n(i18n);
+
         FormLayout registerForm = createForm(FormPurpose.REGISTER);
 
         TabSheet tabSheet = new TabSheet();
@@ -111,6 +119,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             case REGISTER -> formLayout.add(validEmailField, passwordField, nameField, submitButton);
         }
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
+        formLayout.setMaxWidth("360px");
+        formLayout.setId("register-form");
         return formLayout;
     }
 
@@ -164,7 +174,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             Notification.show("Login failed: " + result.failureMessages());
         }
     }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (authenticatedUser.get().isPresent()) {

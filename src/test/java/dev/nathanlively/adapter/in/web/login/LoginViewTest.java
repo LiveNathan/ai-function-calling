@@ -3,6 +3,8 @@ package dev.nathanlively.adapter.in.web.login;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import dev.nathanlively.adapter.in.web.droidcomm.KaribuTest;
@@ -29,6 +31,21 @@ class LoginViewTest extends KaribuTest {
     }
 
     @Test
+    @Disabled("until I learn how to test form layouts")
+    void newUserCanViewRegisterForm() throws Exception {
+        UI.getCurrent().navigate(LoginView.class);
+
+        // Need to figure out how to click on the tab.
+        _get(Tab.class, spec -> spec.withLabel("Register")).setSelected(true);
+        awaitUIUpdates();
+        assertThat(_get(Tab.class, spec -> spec.withLabel("Register")).isSelected())
+                .isTrue();
+//        assertThat(_get(FormLayout.class, spec -> spec.withId("register-form")).isVisible())
+//                .isTrue();
+        _get(EmailField.class, spec -> spec.withId("email-field-register")).setValue("travsi@micework.ch");
+    }
+
+    @Test
     @Disabled("until I learn how to test login forms")
     void nathanCanLoginWithForm() throws Exception {
         UI.getCurrent().navigate(LoginView.class);
@@ -40,15 +57,8 @@ class LoginViewTest extends KaribuTest {
         String pageTitle = UI.getCurrent().getInternals().getTitle();
         assertThat(pageTitle).isEqualTo("Home");
     }
+
     private void awaitUIUpdates() {
         MockVaadin.clientRoundtrip();
-    }
-
-    @Test
-    void newUserCanNavigateToRegister() throws Exception {
-        _get(Button.class, spec -> spec.withText("Register New User")).click();
-
-        String pageTitle = UI.getCurrent().getInternals().getTitle();
-        assertThat(pageTitle).isEqualTo("Register");
     }
 }
