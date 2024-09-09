@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Resources {
     private final Map<String, Resource> emailToResource = new HashMap<>();
+    private final Map<Project, List<TimesheetEntry>> projectToTimesheetEntries = new HashMap<>();
 
     public Resources() {
         super();
@@ -31,5 +32,9 @@ public class Resources {
 
     public Set<String> getAllEmails() {
         return new TreeSet<>(emailToResource.keySet());
+    }
+
+    public List<TimesheetEntry> timesheetEntries(Project project) {
+        return null;
     }
 }
