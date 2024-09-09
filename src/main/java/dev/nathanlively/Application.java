@@ -36,7 +36,7 @@ public class Application implements AppShellConfigurator {
         return args -> {
             String email = "nathanlively@gmail.com";
             String name = "Nathan Lively";
-            Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, name, email, null);
+            Resource resource = Resource.create(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, name, email, null);
             String rawPassword = "password";
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String hashedPassword = passwordEncoder.encode(rawPassword);

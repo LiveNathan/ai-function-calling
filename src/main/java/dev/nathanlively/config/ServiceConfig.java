@@ -82,7 +82,9 @@ public class ServiceConfig {
     }
 
     @Bean
-    public UserService userRegistrationService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        return new UserService(userRepository, passwordEncoder);
+    public UserService userRegistrationService(UserRepository userRepository,
+                                               PasswordEncoder passwordEncoder,
+                                               ResourceRepository resourceRepository) {
+        return new UserService(userRepository, resourceRepository, passwordEncoder);
     }
 }

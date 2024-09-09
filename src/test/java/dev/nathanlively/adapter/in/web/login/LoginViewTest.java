@@ -32,7 +32,7 @@ class LoginViewTest extends KaribuTest {
 
     @Test
     @Disabled("until I learn how to test form layouts")
-    void newUserCanViewRegisterForm() throws Exception {
+    void newUserCanViewRegisterForm() {
         UI.getCurrent().navigate(LoginView.class);
 
         // Need to figure out how to click on the tab.

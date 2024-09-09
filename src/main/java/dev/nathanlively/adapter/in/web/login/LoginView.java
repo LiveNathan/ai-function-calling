@@ -1,7 +1,5 @@
 package dev.nathanlively.adapter.in.web.login;
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -20,6 +18,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.internal.RouteUtil;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.nathanlively.application.Result;
 import dev.nathanlively.application.UserService;
@@ -34,6 +34,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final AuthenticatedUser authenticatedUser;
     private final UserService service;
+    private final TabSheet tabSheet = createTabSheet();
 
     public LoginView(AuthenticatedUser authenticatedUser, UserService service) {
         this.authenticatedUser = authenticatedUser;
@@ -75,19 +76,17 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     @NotNull
     private Div createDiv() {
-        TabSheet tabSheet = createTabSheet();
         return new Div(tabSheet);
+    }
+
+    private static void notifyValidationException(ValidationException e) {
+        Notification.show("Validation error: " + e.getMessage());
     }
 
     @NotNull
     private TabSheet createTabSheet() {
-        LoginForm loginForm = new LoginForm();
-        LoginI18n i18n = LoginI18n.createDefault();
-        i18n.getForm().setTitle("");
-        i18n.getForm().setUsername("Email");
-        loginForm.setI18n(i18n);
-
-        FormLayout registerForm = createForm(FormPurpose.REGISTER);
+        LoginForm loginForm = createLoginForm();
+        FormLayout registerForm = createRegistrationForm();
 
         TabSheet tabSheet = new TabSheet();
         tabSheet.add("Login", loginForm);
@@ -95,12 +94,20 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         return tabSheet;
     }
 
-    private static void notifyValidationException(ValidationException e) {
-        Notification notification = Notification.show("Validation error: " + e.getMessage());
+    @NotNull
+    private LoginForm createLoginForm() {
+        LoginForm loginForm = new LoginForm();
+        LoginI18n i18n = LoginI18n.createDefault();
+        i18n.getForm().setTitle("");
+        i18n.getForm().setUsername("Email");
+        i18n.setAdditionalInformation(null);
+        loginForm.setI18n(i18n);
+        loginForm.setAction(RouteUtil.getRoutePath(VaadinService.getCurrent().getContext(), getClass()));
+        return loginForm;
     }
 
     @NotNull
-    private FormLayout createForm(FormPurpose formPurpose) {
+    private FormLayout createRegistrationForm() {
         EmailField validEmailField = createEmailField();
         PasswordField passwordField = createPasswordField();
         TextField nameField = createNameField();
@@ -108,16 +115,11 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         Binder<UserDto> binder = new Binder<>(UserDto.class);
         binder.forField(validEmailField).asRequired("Email is required").bind(UserDto::getUsername, UserDto::setUsername);
         binder.forField(passwordField).asRequired("Password is required").bind(UserDto::getPassword, UserDto::setHashedPassword);
-        if (formPurpose == FormPurpose.REGISTER) {
-            binder.forField(nameField).asRequired("Name is required").bind(UserDto::getName, UserDto::setName);
-        }
-        Button submitButton = createButton(formPurpose, binder);
+        binder.forField(nameField).asRequired("Name is required").bind(UserDto::getName, UserDto::setName);
+        Button submitButton = createSubmitButton(binder);
 
         FormLayout formLayout = new FormLayout();
-        switch (formPurpose) {
-            case LOGIN -> formLayout.add(validEmailField, passwordField, submitButton);
-            case REGISTER -> formLayout.add(validEmailField, passwordField, nameField, submitButton);
-        }
+        formLayout.add(validEmailField, passwordField, nameField, submitButton);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
         formLayout.setMaxWidth("360px");
         formLayout.setId("register-form");
@@ -125,24 +127,15 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     @NotNull
-    private Button createButton(FormPurpose formPurpose, Binder<UserDto> binder) {
+    private Button createSubmitButton(Binder<UserDto> binder) {
         Button submitButton = new Button();
-        switch (formPurpose) {
-            case LOGIN -> {
-                submitButton.setText("Login");
-                submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-                submitButton.addClickListener(event -> handleLogin(event, binder));
-            }
-            case REGISTER -> {
-                submitButton.setText("Register");
-                submitButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-                submitButton.addClickListener(event -> handleRegistration(event, binder));
-            }
-        }
+        submitButton.setText("Register");
+        submitButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        submitButton.addClickListener(event -> handleRegistration(binder));
         return submitButton;
     }
 
-    private void handleRegistration(ClickEvent<Button> event, Binder<UserDto> binder) {
+    private void handleRegistration(Binder<UserDto> binder) {
         UserDto userDto = new UserDto();
         try {
             binder.writeBean(userDto);
@@ -153,27 +146,13 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         Result<User> result = service.register(userDto);
         if (result.isSuccess()) {
             Notification.show("Registration successful");
+            // set Login as active tab
+            tabSheet.setSelectedIndex(0);
         } else {
             Notification.show("Registration failed: " + result.failureMessages());
         }
     }
 
-    private void handleLogin(ClickEvent<Button> event, Binder<UserDto> binder) {
-        UserDto userDto = new UserDto();
-        try {
-            binder.writeBean(userDto);
-        } catch (ValidationException e) {
-            notifyValidationException(e);
-            return;
-        }
-        Result<User> result = service.login(userDto);
-        if (result.isSuccess()) {
-//            authenticatedUser.set(result.getData());
-            UI.getCurrent().getPage().setLocation("/");
-        } else {
-            Notification.show("Login failed: " + result.failureMessages());
-        }
-    }
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (authenticatedUser.get().isPresent()) {

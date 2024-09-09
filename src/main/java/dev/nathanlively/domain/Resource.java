@@ -32,7 +32,7 @@ public final class Resource extends Named {
         this.email = email;
     }
 
-    public static Resource withSystemClock(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet) {
+    public static Resource create(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet) {
         return new Resource(resourceType, jobTitle, name, email, timeSheet, new MySystemClock());
     }
 

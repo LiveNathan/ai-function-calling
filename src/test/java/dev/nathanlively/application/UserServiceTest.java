@@ -2,6 +2,7 @@ package dev.nathanlively.application;
 
 import dev.nathanlively.adapter.in.web.login.UserDto;
 import dev.nathanlively.adapter.in.web.login.UserMapper;
+import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.application.port.UserRepository;
 import dev.nathanlively.security.InMemoryUserRepository;
 import dev.nathanlively.security.Role;
@@ -18,10 +19,12 @@ class UserServiceTest {
 
     @Test
     void register() {
-        UserRepository repository = InMemoryUserRepository.createEmpty();
-        assertThat(repository.findAll()).hasSize(0);
+        UserRepository userRepository = InMemoryUserRepository.createEmpty();
+        ResourceRepository resourceRepository = InMemoryResourceRepository.createEmpty();
+        assertThat(userRepository.findAll()).hasSize(0);
+        assertThat(resourceRepository.findAll()).hasSize(0);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        UserService service = new UserService(repository, passwordEncoder);
+        UserService service = new UserService(userRepository, resourceRepository, passwordEncoder);
         String username = "travsi@micework.ch";
         String password = "<PASSWORD>";
         User expected = new User(username, "Travis", password, Collections.singleton(Role.USER), new byte[0]);
@@ -34,6 +37,7 @@ class UserServiceTest {
         assertThat(actual.failureMessages()).isEmpty();
         assertThat(actual).successValues().contains(expected);
 
-        assertThat(repository.findAll()).hasSize(1);
+        assertThat(userRepository.findAll()).hasSize(1);
+        assertThat(resourceRepository.findAll()).hasSize(1);
     }
 }

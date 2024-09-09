@@ -2,7 +2,11 @@ package dev.nathanlively.application;
 
 import dev.nathanlively.adapter.in.web.login.UserDto;
 import dev.nathanlively.adapter.in.web.login.UserMapper;
+import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.application.port.UserRepository;
+import dev.nathanlively.domain.JobTitle;
+import dev.nathanlively.domain.Resource;
+import dev.nathanlively.domain.ResourceType;
 import dev.nathanlively.security.Role;
 import dev.nathanlively.security.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,10 +15,12 @@ import java.util.Collections;
 
 public class UserService {
     private final UserRepository userRepository;
+    private final ResourceRepository resourceRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, ResourceRepository resourceRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.resourceRepository = resourceRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -27,21 +33,13 @@ public class UserService {
         user.setProfilePicture(new byte[0]);
         user.setHashedPassword(passwordEncoder.encode(userDto.getPassword()));
 
+        Resource resource = Resource.create(ResourceType.FULL_TIME, JobTitle.PROGRAMMER, userDto.getName(), userDto.getUsername(), null);
+
         try {
             userRepository.save(user);
+            resourceRepository.save(resource);
         } catch (Exception e) {
             return Result.failure("Problem saving user: " + e.getMessage());
-        }
-        return Result.success(user);
-    }
-
-    public Result<User> login(UserDto userDto) {
-        User user = userRepository.findByUsername(userDto.getUsername());
-        if (user == null) {
-            return Result.failure("User not found");
-        }
-        if (!passwordEncoder.matches(userDto.getPassword(), user.getHashedPassword())) {
-            return Result.failure("Invalid password");
         }
         return Result.success(user);
     }
