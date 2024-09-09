@@ -30,7 +30,7 @@ class ClockOutServiceTest {
         project = Project.create("Project A (12345)");
         projectRepository.save(project);
         service = new ClockOutService(resourceRepository);
-        Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        Resource resource = Resource.create(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
         resource.appendTimesheetEntry(timesheetEntry);
         resourceRepository.save(resource);
@@ -66,7 +66,7 @@ class ClockOutServiceTest {
     void clockOut_resourceNotFound_returnResultWithErrorMessage() {
         String resourceEmail = "bademail@gmail.com";
         Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockInTime);
-        assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
+        assertThat(actual).isFailure().failureMessages().contains("Resource not found register email: " + resourceEmail);
     }
 
 }

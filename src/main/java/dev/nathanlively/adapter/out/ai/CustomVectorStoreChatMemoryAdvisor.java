@@ -54,7 +54,7 @@ public class CustomVectorStoreChatMemoryAdvisor extends VectorStoreChatMemoryAdv
         try {
             Field field = VectorStoreChatMemoryAdvisor.class.getDeclaredField("DOCUMENT_METADATA_CONVERSATION_ID");
             field.setAccessible(true);
-            return (String) field.get(null); // static fields are accessed with null target
+            return (String) field.get(null); // static fields are accessed register null target
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Could not access DOCUMENT_METADATA_CONVERSATION_ID field", e);
         }

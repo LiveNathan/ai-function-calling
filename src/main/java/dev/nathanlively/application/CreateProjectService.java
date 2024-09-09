@@ -16,12 +16,12 @@ public class CreateProjectService {
 
     public Result<Project> withName(String projectName) {
         if (projectName == null || projectName.trim().isEmpty()) {
-            return Result.failure("Project name must not be null or empty.");
+            return Result.failure("Project getName must not be null or empty.");
         }
 
         Optional<Project> similarProject = projectRepository.findByName(projectName);
         if (similarProject.isPresent()) {
-            return Result.failure("There's already a project called " + similarProject.get().name() + ". Please create a more unique name.");
+            return Result.failure("There's already a project called " + similarProject.get().name() + ". Please create a more unique getName.");
         }
 
         Project project = Project.create(projectName);
@@ -36,7 +36,7 @@ public class CreateProjectService {
             return new CreateProjectResponse("Project creation successful: " + project, project);
         } else {
             String allFailureMessages = String.join(", ", result.failureMessages());
-            return new CreateProjectResponse("Project creation failed with these errors: " + allFailureMessages, null);
+            return new CreateProjectResponse("Project creation failed register these errors: " + allFailureMessages, null);
         }
     }
 }

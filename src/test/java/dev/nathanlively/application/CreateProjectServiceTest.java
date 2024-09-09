@@ -43,6 +43,6 @@ class CreateProjectServiceTest {
 
         Result<Project> actual = service.withName(projectNameB);
 
-        assertThat(actual).isFailure().failureMessages().contains("There's already a project called " + projectNameA + ". Please create a more unique name.");
+        assertThat(actual).isFailure().failureMessages().contains("There's already a project called " + projectNameA + ". Please create a more unique getName.");
     }
 }

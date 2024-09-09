@@ -26,7 +26,7 @@ class ClockInServiceTest {
         resourceRepository = InMemoryResourceRepository.createEmpty();
         projectRepository = InMemoryProjectRepository.createEmpty();
         service = new ClockInService(resourceRepository, projectRepository);
-        Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        Resource resource = Resource.create(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
         resourceRepository.save(resource);
         projectRepository.save(project);
     }
@@ -61,7 +61,7 @@ class ClockInServiceTest {
     void clockIn_resourceNotFound_returnResultWithErrorMessage() {
         String resourceEmail = "bademail@gmail.com";
         Result<TimesheetEntry> actual = service.clockIn(resourceEmail, clockInTime, projectName);
-        assertThat(actual).isFailure().failureMessages().contains("Resource not found with email: " + resourceEmail);
+        assertThat(actual).isFailure().failureMessages().contains("Resource not found register email: " + resourceEmail);
     }
 
 

@@ -39,7 +39,7 @@ public class Project extends Named {
     @Override
     public String toString() {
         return "Project[" +
-                "name=" + name() + ", " +
+                "getName=" + name() + ", " +
                 "estimatedHours=" + estimatedHours + ']';
     }
 

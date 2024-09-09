@@ -33,7 +33,7 @@ class AiServiceTest {
     @Test
     void sendMessageAndReceiveReplies_clockIn_returnsJson() {
         UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "clock in to project A", "chatId1", ZoneId.of("America/Chicago").toString());
-        String jsonResponse = "{\"function_call\": {\"name\": \"clockOut\", \"arguments\": {\"projectId\": \"A\"}}}";
+        String jsonResponse = "{\"function_call\": {\"getName\": \"clockOut\", \"arguments\": {\"projectId\": \"A\"}}}";
 
         Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);
 

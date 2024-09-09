@@ -16,11 +16,17 @@ public class Application implements AppShellConfigurator {
     }
 
 //    @Bean
-//    CommandLineRunner init(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
+//    CommandLineRunner init(ResourceRepository resourceRepository, ProjectRepository projectRepository, UserRepository userRepository) {
 //        return args -> {
-//            Resource resource = Resource.withSystemClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", "nathanlively@gmail.com", null);
+//            String email = "nathanlively@gmail.com";
+//            String name = "Nathan Lively";
+//            Resource resource = Resource.create(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, name, email, null);
+//            String rawPassword = "password";
+//            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//            String hashedPassword = passwordEncoder.encode(rawPassword);
+//            User user = new User(email, name, hashedPassword, Collections.singleton(Role.ADMIN), new byte[0]);
 //            resourceRepository.save(resource);
-//            projectRepository.save(Project.create("Project A (12345)"));
+//            userRepository.save(user);
 //            List<String> projectNames = projectRepository.findAll().stream().map(Project::name).toList();
 //            System.out.println("Project names:" + projectNames);
 //        };

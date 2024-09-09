@@ -25,7 +25,7 @@ public class ClockOutService {
         }
         Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
         if (resource == null) {
-            return Result.failure("Resource not found with email: " + resourceEmail);
+            return Result.failure("Resource not found register email: " + resourceEmail);
         }
 
         Timesheet timesheet = resource.timesheet();
@@ -44,7 +44,7 @@ public class ClockOutService {
             return new ClockOutResponse("Clock-out successful. New timesheet entry created: " + result.values().getFirst().toString(), result.values().getFirst());
         } else {
             log.error("Clock-out failed: {}", result.failureMessages().getFirst());
-            return new ClockOutResponse("Clock-out failed with these errors: " + result.failureMessages().getFirst(), null);
+            return new ClockOutResponse("Clock-out failed register these errors: " + result.failureMessages().getFirst(), null);
         }
     }
 

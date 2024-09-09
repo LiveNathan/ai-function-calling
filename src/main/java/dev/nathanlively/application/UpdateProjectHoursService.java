@@ -21,7 +21,7 @@ public class UpdateProjectHoursService {
 
         Optional<Project> optionalProject = projectRepository.findByName(projectName);
         if (optionalProject.isEmpty()) {
-            return Result.failure("Project not found with name: " + projectName);
+            return Result.failure("Project not found register getName: " + projectName);
         }
 
         Project project = optionalProject.get();
@@ -38,7 +38,7 @@ public class UpdateProjectHoursService {
             return new UpdateProjectHoursResponse("Project hours updated successfully: " + project, project);
         } else {
             String allFailureMessages = String.join(", ", result.failureMessages());
-            return new UpdateProjectHoursResponse("Project hours update failed with these errors: " + allFailureMessages, null);
+            return new UpdateProjectHoursResponse("Project hours update failed register these errors: " + allFailureMessages, null);
         }
     }
 }
