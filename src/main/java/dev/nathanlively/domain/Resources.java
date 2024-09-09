@@ -35,6 +35,6 @@ public class Resources {
     }
 
     public List<TimesheetEntry> timesheetEntries(Project project) {
-        return null;
+        return List.of();
     }
 }
