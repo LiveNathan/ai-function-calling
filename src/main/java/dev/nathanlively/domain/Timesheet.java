@@ -8,6 +8,7 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class Timesheet {
     private final List<TimesheetEntry> timeSheetEntries;
@@ -104,5 +105,12 @@ public final class Timesheet {
             throw new AlreadyClockedOutException();
         }
         recentEntry.clockOut(clockOutTime);
+    }
+
+    public List<TimesheetEntry> entriesByProject(Project projectA) {
+        Objects.requireNonNull(projectA, "Project cannot be null");
+        return timeSheetEntries.stream()
+                .filter(entry -> projectA.equals(entry.project()))
+                .collect(Collectors.toList());
     }
 }

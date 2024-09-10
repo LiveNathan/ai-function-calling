@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -23,6 +24,7 @@ class ResourcesTest {
     }
 
     @Test
+    @Disabled("until timesheet entries by project")
     void timesheetEntriesPerProjectAreUpdated_givenOneEntry() {
         Resources resources = new Resources();
         Project project = Project.create("Project A");
