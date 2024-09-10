@@ -42,12 +42,9 @@ public class Resources {
     }
 
     public float totalTimesheetEntryHours(Project project) {
-        List<TimesheetEntry> entries = timesheetEntriesByProject(project);
-        // Add up all each duration
-        Duration duration = Duration.ZERO;
-        for (TimesheetEntry entry : entries) {
-            duration = duration.plus(entry.duration());
-        }
-        return duration.toHours();
+        return timesheetEntriesByProject(project).stream()
+                .map(TimesheetEntry::duration)
+                .reduce(Duration.ZERO, Duration::plus)
+                .toHours();
     }
 }
