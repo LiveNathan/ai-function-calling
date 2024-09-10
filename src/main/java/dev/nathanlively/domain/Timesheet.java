@@ -38,7 +38,7 @@ public final class Timesheet {
         timeSheetEntries.add(timesheetEntry);
     }
 
-    public void appendEntryWithDuration(Project project, Duration duration, ZoneId zone) {
+    void appendEntryWithDuration(Project project, Duration duration, ZoneId zone) {
         Objects.requireNonNull(project, "Project cannot be null");
         Objects.requireNonNull(duration, "Duration cannot be null");
 

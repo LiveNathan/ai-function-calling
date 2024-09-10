@@ -7,7 +7,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,23 +62,32 @@ class WorkPeriodTest {
         Instant twentyNineMinutesAgo = now.minusSeconds(60 * 29);
         Instant tenMinutesAgo = now.minusSeconds(60 * 10);
 
+        Instant firstEntryStart = LocalDateTime.of(2024, 3, 15, 9, 0).atZone(ZoneId.of("America/Chicago")).toInstant();
+        Instant firstEntryEnd = LocalDateTime.of(2024, 3, 15, 10, 0).atZone(ZoneId.of("America/Chicago")).toInstant();
+        Instant secondEntryEnd = firstEntryEnd.plus(Duration.ofMinutes(20));
+
         return Stream.of(
-                // No overlap
+                // 1. No overlap
                 Arguments.of(new WorkPeriod(oneHourAgo, thirtyMinutesAgo),
                         new WorkPeriod(twentyNineMinutesAgo, now),
                         false),
 
-                // General overlap
+                // 2. No overlap (exact)
+                Arguments.of(new WorkPeriod(firstEntryStart, firstEntryEnd),
+                        new WorkPeriod(firstEntryEnd, secondEntryEnd),
+                        false),
+
+                // 3. No overlap (exact)
+                Arguments.of(new WorkPeriod(oneHourAgo, thirtyMinutesAgo),
+                        new WorkPeriod(thirtyMinutesAgo, now),
+                        false),
+
+                // 4. General overlap
                 Arguments.of(new WorkPeriod(oneHourAgo, tenMinutesAgo),
                         new WorkPeriod(twentyNineMinutesAgo, now),
                         true),
 
-                // Exact overlap
-                Arguments.of(new WorkPeriod(oneHourAgo, thirtyMinutesAgo),
-                        new WorkPeriod(thirtyMinutesAgo, now),
-                        true),
-
-                // Fully contained
+                // 5. Fully contained
                 Arguments.of(new WorkPeriod(oneHourAgo, now),
                         new WorkPeriod(thirtyMinutesAgo, tenMinutesAgo),
                         true)
