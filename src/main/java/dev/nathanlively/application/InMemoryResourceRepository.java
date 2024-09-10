@@ -1,7 +1,9 @@
 package dev.nathanlively.application;
 
 import dev.nathanlively.application.port.ResourceRepository;
+import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
+import dev.nathanlively.domain.TimesheetEntry;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,5 +39,12 @@ public class InMemoryResourceRepository implements ResourceRepository {
     @Override
     public Optional<Resource> findByEmail(String resourceEmail) {
         return Optional.ofNullable(resources.get(resourceEmail));
+    }
+
+    @Override
+    public List<TimesheetEntry> timesheetEntriesByProject(Project project) {
+        return findAll().stream()
+                .flatMap(resource -> resource.timesheet().entriesByProject(project).stream())
+                .toList();
     }
 }

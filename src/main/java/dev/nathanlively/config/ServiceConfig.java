@@ -87,4 +87,10 @@ public class ServiceConfig {
                                                ResourceRepository resourceRepository) {
         return new UserService(userRepository, resourceRepository, passwordEncoder);
     }
+
+    @Bean
+    public TimesheetEntriesPerProject timesheetEntriesPerProject(ResourceRepository resourceRepository,
+                                                                 ProjectRepository projectRepository) {
+        return new TimesheetEntriesPerProject(resourceRepository, projectRepository);
+    }
 }

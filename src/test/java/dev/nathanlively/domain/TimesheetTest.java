@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +62,7 @@ class TimesheetTest {
     void clockOut() {
         Timesheet timesheet = Timesheet.withSystemClock(null);
         assertThat(timesheet.timeSheetEntries()).isEmpty();
-        timesheet.clockIn(Instant.now().minusSeconds(60*2));
+        timesheet.clockIn(Instant.now().minusSeconds(60 * 2));
 
         timesheet.clockOut(Instant.now());
 
@@ -71,7 +72,7 @@ class TimesheetTest {
     @Test
     void clockOutThrowsAlreadyClockedOutException() {
         Timesheet timesheet = Timesheet.withSystemClock(null);
-        timesheet.clockIn(Instant.now().minusSeconds(60*2));
+        timesheet.clockIn(Instant.now().minusSeconds(60 * 2));
         timesheet.clockOut(Instant.now());
 
         assertThatThrownBy(() -> timesheet.clockOut(Instant.now().plusSeconds(60 * 3)))
@@ -82,7 +83,7 @@ class TimesheetTest {
     @Test
     void clockIn_givenNullClockOut_clockOutAutomaticallyThenIn() {
         Timesheet timesheet = Timesheet.withSystemClock(null);
-        timesheet.clockIn(Instant.now().minusSeconds(60*2));
+        timesheet.clockIn(Instant.now().minusSeconds(60 * 2));
 
         timesheet.clockIn(Instant.now());
 
@@ -143,5 +144,20 @@ class TimesheetTest {
         }
         Instant actual = timesheet.calculateNextAvailableSlot(ZONE_ID);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void findEntriesByProject() {
+        Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
+        Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
+        Project projectA = Project.create("Project A");
+        timesheet.appendEntryWithDuration(projectA, Duration.ofHours(1), ZONE_ID);
+        List<TimesheetEntry> expected = new ArrayList<>();
+        expected.add(timesheet.mostRecentEntry());
+
+        List<TimesheetEntry> actual = timesheet.entriesByProject(projectA);
+
+        assertThat(actual)
+                .isEqualTo(expected);
     }
 }

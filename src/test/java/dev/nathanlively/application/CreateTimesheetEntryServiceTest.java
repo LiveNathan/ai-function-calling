@@ -68,7 +68,7 @@ class CreateTimesheetEntryServiceTest {
     }
 
     @Test
-    void parseDuration() throws Exception {
+    void parseDuration() {
         String durationString = "PT30M";
         Duration expected = Duration.ofMinutes(30);
 

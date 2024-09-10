@@ -4,7 +4,6 @@ import java.util.*;
 
 public class Resources {
     private final Map<String, Resource> emailToResource = new HashMap<>();
-    private final Map<Project, List<TimesheetEntry>> projectToTimesheetEntries = new HashMap<>();
 
     public Resources() {
         super();
@@ -34,7 +33,10 @@ public class Resources {
         return new TreeSet<>(emailToResource.keySet());
     }
 
-    public List<TimesheetEntry> timesheetEntries(Project project) {
-        return null;
+    public List<TimesheetEntry> timesheetEntriesByProject(Project project) {
+        Objects.requireNonNull(project, "Project cannot be null");
+        return this.emailToResource.values().stream()
+                .flatMap(resource -> resource.timesheet().entriesByProject(project).stream())
+                .toList();
     }
 }
