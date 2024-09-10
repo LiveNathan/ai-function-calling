@@ -3,7 +3,6 @@ package dev.nathanlively.domain;
 import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -116,7 +115,6 @@ class TimesheetTest {
     private static final ZoneId ZONE_ID = ZoneId.of("America/Chicago");
 
     @Test
-    @Disabled("Until workperiods")
     void appendEntry_givenProjectAndDuration() {
         Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
         Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
@@ -135,6 +133,7 @@ class TimesheetTest {
         assertThat(timesheet.timeSheetEntries().getLast())
                 .isEqualTo(expected);
 
+        // Double checking no overlap
         timesheet.appendEntryWithDuration(project, Duration.ofMinutes(20), zone);
     }
 

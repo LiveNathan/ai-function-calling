@@ -1,6 +1,5 @@
 package dev.nathanlively.domain;
 
-import java.time.Duration;
 import java.util.*;
 
 public class Resources {
@@ -42,9 +41,10 @@ public class Resources {
     }
 
     public float totalTimesheetEntryHours(Project project) {
-        return timesheetEntriesByProject(project).stream()
-                .map(TimesheetEntry::duration)
-                .reduce(Duration.ZERO, Duration::plus)
-                .toHours();
+        long totalMinutes = timesheetEntriesByProject(project).stream()
+                .mapToLong(entry -> entry.duration().toMinutes())
+                .sum();
+        float minutes = totalMinutes / 60.0f;
+        return Math.round(minutes * 100.0f) / 100.0f;  // precision 0.01
     }
 }
