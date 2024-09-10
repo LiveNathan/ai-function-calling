@@ -41,4 +41,16 @@ class ResourcesTest {
                 .isEqualTo(expected);
     }
 
+    @Test
+    void totalTimesheetEntryHoursByProject() throws Exception {
+        Resources resources = new Resources();
+        Project project = Project.create("Project A");
+        float expected = 0f;
+
+        float actual = resources.totalTimesheetEntryHours(project);
+
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
+
 }

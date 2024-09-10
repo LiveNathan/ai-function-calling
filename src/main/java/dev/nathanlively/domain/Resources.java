@@ -39,4 +39,8 @@ public class Resources {
                 .flatMap(resource -> resource.timesheet().entriesByProject(project).stream())
                 .toList();
     }
+
+    public float totalTimesheetEntryHours(Project project) {
+        return 0;
+    }
 }
