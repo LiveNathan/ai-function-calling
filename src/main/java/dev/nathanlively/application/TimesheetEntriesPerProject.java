@@ -25,6 +25,8 @@ public class TimesheetEntriesPerProject {
         if (optionalProject.isEmpty()) {
             return Collections.emptyList();
         }
-        return null;
+        Project project = optionalProject.get();
+        List<TimesheetEntry> entries = repository.timesheetEntriesByProject(project);
+        return entries;
     }
 }
