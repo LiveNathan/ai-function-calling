@@ -151,8 +151,9 @@ class TimesheetTest {
         Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
         Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
         Project projectA = Project.create("Project A");
-//        timesheet.appendEntryWithDuration(projectA, Duration.ofHours(1), ZONE_ID);
+        timesheet.appendEntryWithDuration(projectA, Duration.ofHours(1), ZONE_ID);
         List<TimesheetEntry> expected = new ArrayList<>();
+        expected.add(timesheet.mostRecentEntry());
 
         List<TimesheetEntry> actual = timesheet.entriesByProject(projectA);
 
