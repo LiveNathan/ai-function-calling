@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TimesheetEntriesPerProjectTest {
     @Test
-    void with() throws Exception {
+    void with() {
         ResourceRepository resourceRepository = InMemoryResourceRepository.createEmpty();
         ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
         TimesheetEntriesPerProject service = new TimesheetEntriesPerProject(resourceRepository, projectRepository);

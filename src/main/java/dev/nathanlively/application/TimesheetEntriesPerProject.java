@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class TimesheetEntriesPerProject {
-    private final ResourceRepository repository;
+    private final ResourceRepository resourceRepository;
     private final ProjectRepository projectRepository;
 
-    public TimesheetEntriesPerProject(ResourceRepository repository, ProjectRepository projectRepository) {
-        this.repository = repository;
+    public TimesheetEntriesPerProject(ResourceRepository resourceRepository, ProjectRepository projectRepository) {
+        this.resourceRepository = resourceRepository;
         this.projectRepository = projectRepository;
     }
 
@@ -21,6 +21,10 @@ public class TimesheetEntriesPerProject {
         Objects.requireNonNull(projectName, "Project name cannot be null.");
         Project project = projectRepository.findByName(projectName)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectName));
-        return repository.timesheetEntriesByProject(project);
+        return resourceRepository.timesheetEntriesByProject(project);
+    }
+
+    public List<String> allProjectNames() {
+        return projectRepository.findAllNames();
     }
 }
