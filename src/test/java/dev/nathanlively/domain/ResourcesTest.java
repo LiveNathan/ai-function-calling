@@ -42,7 +42,7 @@ class ResourcesTest {
     }
 
     @Test
-    void totalTimesheetEntryHoursByProject() throws Exception {
+    void totalTimesheetEntryHoursByProject() {
         Resources resources = new Resources();
         Project project = Project.create("Project A");
         ZoneId ZONE_ID = ZoneId.of("America/Chicago");

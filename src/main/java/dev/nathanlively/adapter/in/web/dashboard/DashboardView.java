@@ -1,13 +1,16 @@
 package dev.nathanlively.adapter.in.web.dashboard;
 
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -39,18 +42,23 @@ public class DashboardView extends Main {
     }
 
     private void initializeUIComponents(UI ui) {
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
         H2 h2 = new H2("Timesheet Entries Per Project");
         Select<String> projectSelect = createProjectSelect();
+        Paragraph totalHoursEstimatedParagraph = new Paragraph();
+        Paragraph consumedHoursParagraph = new Paragraph();
+        horizontalLayout.add(h2, projectSelect);
+
         Grid<TimesheetEntry> entryGrid = createEntryGrid();
 
         ui.getPage().retrieveExtendedClientDetails(details -> {
             ZoneId finalZoneId = getZoneIdFromDetails(details.getTimeZoneId());
             Notification.show("ZoneId : " + finalZoneId.getId());
             configureEntryGrid(entryGrid, finalZoneId);
-            updateProjectSelectOnChange(projectSelect, entryGrid);
+            updateProjectSelectOnChange(projectSelect, entryGrid, totalHoursEstimatedParagraph, consumedHoursParagraph);
         });
 
-        Div timesheetEntriesDiv = createTimesheetEntriesDiv(h2, projectSelect, entryGrid);
+        Div timesheetEntriesDiv = createTimesheetEntriesDiv(horizontalLayout, entryGrid);
         add(timesheetEntriesDiv);
     }
 
@@ -89,12 +97,15 @@ public class DashboardView extends Main {
         return instant.atZone(zoneId).format(formatter);
     }
 
-    private void updateProjectSelectOnChange(Select<String> projectSelect, Grid<TimesheetEntry> entryGrid) {
+    private void updateProjectSelectOnChange(Select<String> projectSelect, Grid<TimesheetEntry> entryGrid, Paragraph totalHoursEstimatedParagraph, Paragraph consumedHours) {
         projectSelect.addValueChangeListener(event -> {
             String selectedProject = event.getValue();
             if (selectedProject != null) {
                 List<TimesheetEntry> entries = timesheetEntriesByProject.with(selectedProject);
                 entryGrid.setItems(entries);
+                int totalHoursEstimated = timesheetEntriesByProject.totalHoursEstimated(selectedProject);
+                float hoursConsumed = timesheetEntriesByProject.hoursConsumed(selectedProject);
+                totalHoursEstimatedParagraph.add(totalHoursEstimated + " hours estimated");
             } else {
                 entryGrid.setItems(Collections.emptyList());
                 Notification.show("Empty List");
@@ -102,10 +113,12 @@ public class DashboardView extends Main {
         });
     }
 
-    private Div createTimesheetEntriesDiv(H2 h2, Select<String> projectSelect, Grid<TimesheetEntry> entryGrid) {
+    private Div createTimesheetEntriesDiv(Component... components) {
         Div timesheetEntriesDiv = new Div();
         timesheetEntriesDiv.getElement().getClassList().add("m-8");
-        timesheetEntriesDiv.add(h2, projectSelect, entryGrid);
+        for (Component component : components) {
+            timesheetEntriesDiv.add(component);
+        }
         return timesheetEntriesDiv;
     }
 }
