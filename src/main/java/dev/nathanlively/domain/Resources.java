@@ -34,10 +34,9 @@ public class Resources {
     }
 
     public List<TimesheetEntry> timesheetEntriesByProject(Project project) {
-        List<TimesheetEntry> timesheetEntries = new ArrayList<>();
-        for (Resource resource : this.emailToResource.values()) {
-            timesheetEntries.addAll(resource.timesheet().entriesByProject(project));
-        }
-        return timesheetEntries;
+        Objects.requireNonNull(project, "Project cannot be null");
+        return this.emailToResource.values().stream()
+                .flatMap(resource -> resource.timesheet().entriesByProject(project).stream())
+                .toList();
     }
 }
