@@ -1,5 +1,6 @@
 package dev.nathanlively.domain;
 
+import java.time.Duration;
 import java.util.*;
 
 public class Resources {
@@ -41,6 +42,12 @@ public class Resources {
     }
 
     public float totalTimesheetEntryHours(Project project) {
-        return 0;
+        List<TimesheetEntry> entries = timesheetEntriesByProject(project);
+        // Add up all each duration
+        Duration duration = Duration.ZERO;
+        for (TimesheetEntry entry : entries) {
+            duration = duration.plus(entry.duration());
+        }
+        return duration.toHours();
     }
 }

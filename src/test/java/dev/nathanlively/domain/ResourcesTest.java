@@ -45,7 +45,12 @@ class ResourcesTest {
     void totalTimesheetEntryHoursByProject() throws Exception {
         Resources resources = new Resources();
         Project project = Project.create("Project A");
-        float expected = 0f;
+        ZoneId ZONE_ID = ZoneId.of("America/Chicago");
+        Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
+        Resource resource = Resource.withFixedClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", "nathanlively@gmail.com", null, fixedInstant);
+        resources.add(resource);
+        resource.appendTimesheetEntry(project, Duration.ofHours(1), ZoneId.of("America/Chicago"));
+        float expected = 1f;
 
         float actual = resources.totalTimesheetEntryHours(project);
 
