@@ -11,7 +11,7 @@ public final class Resource extends Named {
     private final ResourceType resourceType;
     private final JobTitle jobTitle;
     private final String email;
-    private Timesheet timeSheet;
+    private final Timesheet timeSheet;
 
     private Resource(ResourceType resourceType, JobTitle jobTitle, String name, String email, Timesheet timeSheet, MyClock clock) {
         super(name);
@@ -20,8 +20,8 @@ public final class Resource extends Named {
         Objects.requireNonNull(email, "Email cannot be null");
         if (timeSheet == null) {
             switch (clock) {
-                case MySystemClock systemClock -> this.timeSheet = Timesheet.withSystemClock(null);
-                case FixedClock fixedClock -> this.timeSheet = Timesheet.withFixedClock(null, clock.now());
+                case MySystemClock ignored -> this.timeSheet = Timesheet.withSystemClock(null);
+                case FixedClock ignored -> this.timeSheet = Timesheet.withFixedClock(null, clock.now());
                 case null, default -> throw new IllegalArgumentException("Unsupported clock type");
             }
         } else {

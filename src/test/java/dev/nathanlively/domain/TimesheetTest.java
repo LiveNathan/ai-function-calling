@@ -147,7 +147,7 @@ class TimesheetTest {
     }
 
     @Test
-    void findEntriesByProject() throws Exception {
+    void findEntriesByProject() {
         Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
         Timesheet timesheet = Timesheet.withFixedClock(null, fixedInstant);
         Project projectA = Project.create("Project A");
