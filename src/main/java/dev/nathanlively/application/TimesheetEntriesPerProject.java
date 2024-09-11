@@ -39,6 +39,6 @@ public class TimesheetEntriesPerProject {
 
     public float hoursConsumed(String projectName) {
         Project project = getProject(projectName);
-        resourceRepository.totalTimesheetEntryHours(project);
+        return resourceRepository.totalTimesheetEntryHours(project);
     }
 }

@@ -44,7 +44,6 @@ public class Resources {
         long totalMinutes = timesheetEntriesByProject(project).stream()
                 .mapToLong(entry -> entry.duration().toMinutes())
                 .sum();
-        float minutes = totalMinutes / 60.0f;
-        return Math.round(minutes * 100.0f) / 100.0f;  // precision 0.01
+        return Math.round(totalMinutes / 60.0f * 100.0f) / 100.0f;  // precision 0.01
     }
 }

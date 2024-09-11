@@ -47,4 +47,12 @@ public class InMemoryResourceRepository implements ResourceRepository {
                 .flatMap(resource -> resource.timesheet().entriesByProject(project).stream())
                 .toList();
     }
+
+    @Override
+    public float totalTimesheetEntryHours(Project project) {
+        long totalMinutes = timesheetEntriesByProject(project).stream()
+                .mapToLong(entry -> entry.duration().toMinutes())
+                .sum();
+        return Math.round(totalMinutes / 60.0f * 100.0f) / 100.0f;  // precision 0.01
+    }
 }

@@ -47,7 +47,7 @@ public class DashboardView extends Main {
         Select<String> projectSelect = createProjectSelect();
         Paragraph totalHoursEstimatedParagraph = new Paragraph();
         Paragraph consumedHoursParagraph = new Paragraph();
-        horizontalLayout.add(h2, projectSelect);
+        horizontalLayout.add(h2, projectSelect, totalHoursEstimatedParagraph, consumedHoursParagraph);
 
         Grid<TimesheetEntry> entryGrid = createEntryGrid();
 
@@ -106,6 +106,7 @@ public class DashboardView extends Main {
                 int totalHoursEstimated = timesheetEntriesByProject.totalHoursEstimated(selectedProject);
                 float hoursConsumed = timesheetEntriesByProject.hoursConsumed(selectedProject);
                 totalHoursEstimatedParagraph.add(totalHoursEstimated + " hours estimated");
+                consumedHours.add(hoursConsumed + " hours consumed");
             } else {
                 entryGrid.setItems(Collections.emptyList());
                 Notification.show("Empty List");
