@@ -15,4 +15,6 @@ public interface ResourceRepository {
     Optional<Resource> findByEmail(String resourceEmail);
 
     List<TimesheetEntry> timesheetEntriesByProject(Project project);
+
+    float totalTimesheetEntryHours(Project project);
 }

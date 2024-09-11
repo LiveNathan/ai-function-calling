@@ -70,10 +70,8 @@ public class WorkPeriod {
             return false;
         }
 
-        boolean endsAfterStartOfNew = !this.end.isBefore(newPeriod.start);
-        boolean startsBeforeEndOfNew = !this.start.isAfter(newPeriod.end);
+        return this.start.isBefore(newPeriod.end) && newPeriod.start.isBefore(this.end);
 
-        return endsAfterStartOfNew && startsBeforeEndOfNew;
     }
 
     @Override

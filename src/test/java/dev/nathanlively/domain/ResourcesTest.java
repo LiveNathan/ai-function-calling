@@ -41,4 +41,22 @@ class ResourcesTest {
                 .isEqualTo(expected);
     }
 
+    @Test
+    void totalTimesheetEntryHoursByProject() {
+        Resources resources = new Resources();
+        Project project = Project.create("Project A");
+        ZoneId ZONE_ID = ZoneId.of("America/Chicago");
+        Instant fixedInstant = LocalDate.of(2024, 3, 15).atStartOfDay(ZONE_ID).toInstant();
+        Resource resource = Resource.withFixedClock(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", "nathanlively@gmail.com", null, fixedInstant);
+        resources.add(resource);
+        resource.appendTimesheetEntry(project, Duration.ofHours(1), ZoneId.of("America/Chicago"));
+        resource.appendTimesheetEntry(project, Duration.ofMinutes(20), ZoneId.of("America/Chicago"));
+        float expected = 1.33f;
+
+        float actual = resources.totalTimesheetEntryHours(project);
+
+        assertThat(actual)
+                .isEqualTo(expected);
+    }
+
 }

@@ -19,12 +19,26 @@ public class TimesheetEntriesPerProject {
 
     public List<TimesheetEntry> with(String projectName) {
         Objects.requireNonNull(projectName, "Project name cannot be null.");
-        Project project = projectRepository.findByName(projectName)
-                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectName));
+        Project project = getProject(projectName);
         return resourceRepository.timesheetEntriesByProject(project);
+    }
+
+    private Project getProject(String projectName) {
+        return projectRepository.findByName(projectName)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectName));
     }
 
     public List<String> allProjectNames() {
         return projectRepository.findAllNames();
+    }
+
+    public int totalHoursEstimated(String projectName) {
+        Project project = getProject(projectName);
+        return project.estimatedHours();
+    }
+
+    public float hoursConsumed(String projectName) {
+        Project project = getProject(projectName);
+        return resourceRepository.totalTimesheetEntryHours(project);
     }
 }

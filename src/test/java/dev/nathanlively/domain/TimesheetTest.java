@@ -32,8 +32,7 @@ class TimesheetTest {
         return Stream.of(
                 // Arguments: fixedInstant, entries, expected
                 Arguments.of(
-                        LocalDate.of(2024, 9, 3).atStartOfDay(ZONE_ID).toInstant(),
-                        new TimesheetEntry[]{},
+                        LocalDate.of(2024, 9, 3).atStartOfDay(ZONE_ID).toInstant(), new TimesheetEntry[]{},
                         LocalDateTime.of(2024, 9, 3, 9, 0).atZone(ZONE_ID).toInstant()
                 ),
                 Arguments.of(
@@ -133,6 +132,9 @@ class TimesheetTest {
 
         assertThat(timesheet.timeSheetEntries().getLast())
                 .isEqualTo(expected);
+
+        // Double checking no overlap
+        timesheet.appendEntryWithDuration(project, Duration.ofMinutes(20), zone);
     }
 
     @ParameterizedTest

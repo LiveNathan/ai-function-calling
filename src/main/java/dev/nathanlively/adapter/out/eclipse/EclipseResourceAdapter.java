@@ -43,10 +43,18 @@ public class EclipseResourceAdapter implements ResourceRepository {
         return Optional.ofNullable(root.resources().byEmail(resourceEmail));
     }
 
+    @Read
     @Override
     public List<TimesheetEntry> timesheetEntriesByProject(Project project) {
         DataRoot root = (DataRoot) storageManager.root();
         return root.resources().timesheetEntriesByProject(project);
+    }
+
+    @Read
+    @Override
+    public float totalTimesheetEntryHours(Project project) {
+        DataRoot root = (DataRoot) storageManager.root();
+        return root.resources().totalTimesheetEntryHours(project);
     }
 
     private void saveWithEagerStoring(DataRoot root) {
