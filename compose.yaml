@@ -1,4 +1,5 @@
-version: '3.7'
+#  To remove!
+#  docker compose --file compose.yaml down && docker volume rm chroma-data
 services:
   server:
     image: ghcr.io/chroma-core/chroma:latest
