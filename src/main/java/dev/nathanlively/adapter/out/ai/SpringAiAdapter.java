@@ -6,8 +6,8 @@ import dev.nathanlively.application.port.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -38,8 +38,8 @@ public class SpringAiAdapter implements AiGateway {
                         Available projects are: {available_projects}. The project name is its natural identifier.""")
                 .defaultFunctions("clockIn", "clockOut", "findAllProjectNames", "createProject", "createTimesheetEntry", "createTimesheetEntryWithDuration", "updateProjectHours")
                 .defaultAdvisors(
-                        new MessageChatMemoryAdvisor(chatMemory),
-//                        new VectorStoreChatMemoryAdvisor(vectorStore),
+//                        new MessageChatMemoryAdvisor(chatMemory),
+                        new VectorStoreChatMemoryAdvisor(vectorStore),
                         new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults().withSimilarityThreshold(0.5)
                                 .withFilterExpression(new FilterExpressionBuilder().eq("context", "qa").build())),
                         new LoggingAdvisor())
@@ -60,7 +60,7 @@ public class SpringAiAdapter implements AiGateway {
                 )))
                 .user(userMessageDto.userMessageText())
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 20))  // top-K value to limit the number of responses from the vector store.
                 .stream()
                 .content()
                 .onErrorResume(WebClientResponseException.class, e -> {
