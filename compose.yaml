@@ -1,5 +1,3 @@
-#  To remove!
-#  docker compose --file compose.yaml down && docker volume rm chroma-data
 services:
   server:
     image: ghcr.io/chroma-core/chroma:latest
@@ -24,3 +22,5 @@ volumes:
 networks:
   net:
     driver: bridge
+
+# To remove:  docker volume rm ai-function-calling_chroma-data
