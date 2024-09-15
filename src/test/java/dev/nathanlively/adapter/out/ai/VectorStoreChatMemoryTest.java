@@ -26,21 +26,21 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @Testcontainers
 public class VectorStoreChatMemoryTest {
 
     @Container
     static ChromaDBContainer chromaContainer = new ChromaDBContainer("chromadb/chroma:0.4.23");
+
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withUserConfiguration(TestApplication.class)
             .withPropertyValues("spring.ai.openai.apiKey=" + System.getenv("OPENAI_API_KEY"));
+
     List<Document> documents = List.of(
             new Document("Spring AI rocks!! Spring AI rocks!! Spring AI rocks!! Spring AI rocks!! Spring AI rocks!!",
                     Collections.singletonMap("meta1", "meta1")),
             new Document("Hello World Hello World Hello World Hello World Hello World Hello World Hello World"),
-            new Document(
-                    "Great Depression Great Depression Great Depression Great Depression Great Depression Great Depression",
+            new Document("Great Depression Great Depression Great Depression Great Depression Great Depression Great Depression",
                     Collections.singletonMap("meta2", "meta2")));
 
     @Test
@@ -54,14 +54,14 @@ public class VectorStoreChatMemoryTest {
             List<Document> results = vectorStore.similaritySearch(SearchRequest.query("Great").withTopK(1));
 
             assertThat(results).hasSize(1);
-            Document resultDoc = results.get(0);
+            Document resultDoc = results.getFirst();
             assertThat(resultDoc.getId()).isEqualTo(documents.get(2).getId());
             assertThat(resultDoc.getContent()).isEqualTo(
                     "Great Depression Great Depression Great Depression Great Depression Great Depression Great Depression");
             assertThat(resultDoc.getMetadata()).containsKeys("meta2", "distance");
 
             // Remove all documents from the store
-            vectorStore.delete(documents.stream().map(doc -> doc.getId()).toList());
+            vectorStore.delete(documents.stream().map(Document::getId).toList());
 
             List<Document> results2 = vectorStore.similaritySearch(SearchRequest.query("Great").withTopK(1));
             assertThat(results2).hasSize(0);
