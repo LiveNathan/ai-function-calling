@@ -1,22 +1,40 @@
 package dev.nathanlively.application;
 
 import dev.nathanlively.application.port.ResourceRepository;
-import dev.nathanlively.domain.JobTitle;
-import dev.nathanlively.domain.Resource;
-import dev.nathanlively.domain.ResourceType;
-import dev.nathanlively.domain.TimesheetEntry;
+import dev.nathanlively.application.port.UserRepository;
+import dev.nathanlively.domain.*;
+import dev.nathanlively.security.AuthenticatedUser;
+import dev.nathanlively.security.InMemoryUserRepository;
+import dev.nathanlively.security.Role;
+import dev.nathanlively.security.User;
 import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GetRecentTimesheetEntryServiceTest {
     @Test
     void with() throws Exception {
-        String resourceEmail = "nathanlively@gmail.com";
-        Resource resource = Resource.create(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, "Nathan Lively", resourceEmail, null);
+        String email = "nathanlively@gmail.com";
+        String name = "Nathan Lively";
+        Resource resource = Resource.create(ResourceType.FULL_TIME, JobTitle.TECHNICIAN, name, email, null);
+        TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(new Project("Project A", 100), Instant.now());
+        resource.appendTimesheetEntry(timesheetEntry);
+        User user = new User(email, name, "password", Collections.singleton(Role.USER), new byte[0]);
         ResourceRepository repository = InMemoryResourceRepository.createEmpty();
+        UserRepository userRepository = InMemoryUserRepository.createEmpty();
         repository.save(resource);
-        GetRecentTimesheetEntryService service = new GetRecentTimesheetEntryService(repository);
+        userRepository.save(user);
+        AuthenticatedUser authenticatedUser = mock(AuthenticatedUser.class);
+        when(authenticatedUser.get()).thenReturn(Optional.of(user));
 
-        Result<TimesheetEntry> actual = service.with(resourceEmail);
+        GetRecentTimesheetEntryService service = new GetRecentTimesheetEntryService(repository, authenticatedUser);
+
+        Result<TimesheetEntry> actual = service.with();
 
         ResultAssertions.assertThat(actual).isSuccess();
     }
