@@ -41,7 +41,9 @@ public class SpringAiAdapter implements AiGateway {
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(chatMemory),
                         new VectorStoreChatMemoryAdvisor(vectorStore),
-                        new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults().withSimilarityThreshold(0.5)
+                        new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
+                                .withSimilarityThreshold(0.5)
+                                .withTopK(3)
                                 .withFilterExpression(new FilterExpressionBuilder().eq("context", "qa").build())),
                         new LoggingAdvisor())
                 .build();
@@ -61,7 +63,7 @@ public class SpringAiAdapter implements AiGateway {
                 )))
                 .user(userMessageDto.userMessageText())
                 .advisors(advisorSpec -> advisorSpec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, userMessageDto.chatId())
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))  // top-K value to limit the number of responses from the vector store.
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 8))  // top-K value to limit the number of responses from the vector store.
                 .stream()
                 .content()
                 .onErrorResume(WebClientResponseException.class, e -> {
