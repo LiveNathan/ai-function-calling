@@ -26,7 +26,9 @@ public class UnfulfilledRequestService {
     }
 
     private List<Document> fetchDocuments() {
-        return vectorStore.similaritySearch(SearchRequest.query("I don't have the capability").withTopK(10));
+        return vectorStore.similaritySearch(SearchRequest.query("I don't have the capability")
+                .withTopK(10)
+                .withSimilarityThreshold(0.6));
     }
 
     private UnfulfilledUserRequest createUserRequest(Document document) {

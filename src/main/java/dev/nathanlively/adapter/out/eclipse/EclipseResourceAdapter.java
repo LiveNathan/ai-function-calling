@@ -19,6 +19,14 @@ public class EclipseResourceAdapter implements ResourceRepository {
 
     public EclipseResourceAdapter(EmbeddedStorageManager storageManager) {
         this.storageManager = storageManager;
+        initializeRoot();
+    }
+
+    private void initializeRoot() {
+        if (storageManager.root() == null) {
+            storageManager.setRoot(new DataRoot());
+            storageManager.storeRoot();
+        }
     }
 
     @Write
