@@ -14,7 +14,7 @@ public class InputValidator {
         List<String> errors = new ArrayList<>();
         validateString(errors, projectName);
         validateZone(errors, zone);
-        validateResourceEmail(errors, resourceEmail);
+        email(errors, resourceEmail);
         return errors;
     }
 
@@ -43,7 +43,7 @@ public class InputValidator {
         }
     }
 
-    private static void validateResourceEmail(List<String> errors, String resourceEmail) {
+    public static void email(List<String> errors, String resourceEmail) {
         if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
             errors.add("Email must not be null or empty.");
         }

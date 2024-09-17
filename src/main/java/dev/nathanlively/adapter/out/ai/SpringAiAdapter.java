@@ -42,7 +42,7 @@ public class SpringAiAdapter implements AiGateway {
                         new MessageChatMemoryAdvisor(chatMemory),
                         new VectorStoreChatMemoryAdvisor(vectorStore),
                         new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
-                                .withSimilarityThreshold(0.5)
+                                .withSimilarityThreshold(0.7)
                                 .withTopK(3)
                                 .withFilterExpression(new FilterExpressionBuilder().eq("context", "qa").build())),
                         new LoggingAdvisor())
