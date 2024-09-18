@@ -34,7 +34,7 @@ class GetRecentTimesheetEntryServiceTest {
         TestAuthenticationContext testAuthCtx = new TestAuthenticationContext(user);
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(testAuthCtx, userRepository);
 
-        GetRecentTimesheetEntryService service = new GetRecentTimesheetEntryService(resourceRepository, authenticatedUser);
+        GetRecentTimesheetEntryService service = new GetRecentTimesheetEntryService(resourceRepository);
 
         Result<TimesheetEntry> actual = service.with();
 

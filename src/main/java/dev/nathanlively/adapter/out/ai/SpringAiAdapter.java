@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
-import org.springframework.ai.chat.client.advisor.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -37,10 +36,10 @@ public class SpringAiAdapter implements AiGateway {
                         For questions about long documents, pull the most relevant quote from the document and consider whether it answers the user's question or whether it lacks sufficient detail.
                         Today is {current_date}. This message was sent by {user_name} at exactly {message_creation_time} instant register {message_creation_timezone} timezone.
                         Available projects are: {available_projects}. The project name is its natural identifier.""")
-                .defaultFunctions("clockIn", "clockOut", "findAllProjectNames", "createProject", "createTimesheetEntry", "createTimesheetEntryWithDuration", "updateProjectHours")
+                .defaultFunctions("clockIn", "clockOut", "findAllProjectNames", "createProject", "createTimesheetEntry", "createTimesheetEntryWithDuration", "updateProjectHours", "getMostRecentTimesheetEntry")
                 .defaultAdvisors(
                         new MessageChatMemoryAdvisor(chatMemory),
-                        new VectorStoreChatMemoryAdvisor(vectorStore),
+//                        new VectorStoreChatMemoryAdvisor(vectorStore),
                         new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults()
                                 .withSimilarityThreshold(0.7)
                                 .withTopK(3)

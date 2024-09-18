@@ -4,31 +4,26 @@ import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentT
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
-import dev.nathanlively.security.AuthenticatedUser;
-import dev.nathanlively.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class GetRecentTimesheetEntryService {
     private static final Logger log = LoggerFactory.getLogger(GetRecentTimesheetEntryService.class);
     private final ResourceRepository resourceRepository;
-    private final AuthenticatedUser authenticatedUser;
 
-    public GetRecentTimesheetEntryService(ResourceRepository resourceRepository, AuthenticatedUser authenticatedUser) {
+    public GetRecentTimesheetEntryService(ResourceRepository resourceRepository) {
         this.resourceRepository = resourceRepository;
-        this.authenticatedUser = authenticatedUser;
     }
 
     public Result<TimesheetEntry> with() {
-        Optional<User> maybeUser = authenticatedUser.get();
-        if (maybeUser.isEmpty()) {
+        String username = getAuthenticatedUsername();
+        if (username == null) {
             log.warn("User is not authenticated.");
             return Result.failure("User is not authenticated.");
         }
-
-        String username = maybeUser.get().getUsername();
         Resource resource = resourceRepository.findByEmail(username).orElse(null);
         if (resource == null) {
             return Result.failure("Resource not found register email: " + username);
@@ -52,5 +47,37 @@ public class GetRecentTimesheetEntryService {
             log.error("Timesheet update failed: {}", result.failureMessages().getFirst());
             return new GetRecentTimesheetEntryResponse("Fetching timesheet entry produced these errors: " + result.failureMessages().getFirst(), null);
         }
+    }
+
+    private String getAuthenticatedUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            log.debug("No authentication object found in security context.");
+            return null;
+        }
+
+        log.debug("Authentication object found: {}", authentication);
+
+        if (!authentication.isAuthenticated()) {
+            log.debug("Authentication object is not authenticated.");
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+        log.debug("Authentication principal: {}", principal);
+
+        if (principal instanceof String) {
+            log.debug("Principal is a string, likely 'anonymousUser'.");
+            return null;
+        }
+
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            log.debug("Authenticated username: {}", username);
+            return username;
+        }
+
+        log.debug("Principal is not an instance of UserDetails.");
+        return null;
     }
 }

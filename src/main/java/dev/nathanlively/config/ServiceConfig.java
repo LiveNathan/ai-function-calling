@@ -97,6 +97,6 @@ public class ServiceConfig {
 
     @Bean
     public GetRecentTimesheetEntryService getRecentTimesheetEntryService(ResourceRepository repository, AuthenticatedUser user) {
-        return new GetRecentTimesheetEntryService(repository, user);
+        return new GetRecentTimesheetEntryService(repository);
     }
 }

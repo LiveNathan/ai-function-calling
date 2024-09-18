@@ -4,7 +4,7 @@ import dev.nathanlively.application.GetRecentTimesheetEntryService;
 
 import java.util.function.Function;
 
-public class GetRecentTimesheetEntryFunction implements Function<Void, GetRecentTimesheetEntryResponse> {
+public class GetRecentTimesheetEntryFunction implements Function<GetRecentTimesheetEntryRequest, GetRecentTimesheetEntryResponse> {
     private final GetRecentTimesheetEntryService service;
 
     public GetRecentTimesheetEntryFunction(GetRecentTimesheetEntryService service) {
@@ -12,7 +12,7 @@ public class GetRecentTimesheetEntryFunction implements Function<Void, GetRecent
     }
 
     @Override
-    public GetRecentTimesheetEntryResponse apply(Void unused) {
+    public GetRecentTimesheetEntryResponse apply(GetRecentTimesheetEntryRequest unused) {
         return service.forAi();
     }
 }

@@ -20,6 +20,7 @@ import dev.nathanlively.application.functions.findallprojectnames.FindAllProject
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
 import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryFunction;
+import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryRequest;
 import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryResponse;
 import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursFunction;
 import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursRequest;
@@ -65,7 +66,7 @@ public class FunctionConfig {
 
     @Bean
     @Description("Get the most recent timesheet entry for a resource. Use this when the user asks about recent activity. (eg. 'What am I currently clocked into?')")
-    public Function<Void, GetRecentTimesheetEntryResponse> getMostRecentTimesheetEntry(GetRecentTimesheetEntryService service) {
+    public Function<GetRecentTimesheetEntryRequest, GetRecentTimesheetEntryResponse> getMostRecentTimesheetEntry(GetRecentTimesheetEntryService service) {
         return new GetRecentTimesheetEntryFunction(service);
     }
 
