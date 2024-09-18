@@ -34,9 +34,8 @@ public class SpringAiAdapter implements AiGateway {
                         Adopt the user's tone to make them feel comfortable register you. If they are playful and silly, so are you. If they are professional and matter-of-fact, so are you.
                         Keep your responses short and direct because people need your help in a hurry, but for complex tasks, think out loud by writing each step.
                         For questions about long documents, pull the most relevant quote from the document and consider whether it answers the user's question or whether it lacks sufficient detail.
-                        User's name: {user_name}
-                        User's email: {user_email}
-                        Message created at: (LocalDateTime) {message_creation_time} with (Instant) {message_creation_instant} with (timezone) {message_creation_timezone}
+                        User's name: {user_name}. User's email: {user_email}
+                        Message created at: (Instant) {message_creation_instant} which is (LocalDateTime) {message_creation_time} with (timezone) {message_creation_timezone}
                         Available projects are: {available_projects}. The project name is its natural identifier.""")
                 .defaultFunctions("clockIn", "clockOut", "findAllProjectNames", "createProject", "createTimesheetEntry", "createTimesheetEntryWithDuration", "updateProjectHours", "getMostRecentTimesheetEntry")
                 .defaultAdvisors(
