@@ -58,6 +58,7 @@ public class SpringAiAdapter implements AiGateway {
                         "message_creation_time", userMessageDto.creationTime().toString(),
                         "message_creation_timezone", userMessageDto.creationTimezone(),
                         "user_name", userMessageDto.userName(),
+                        "user_email", userMessageDto.email(),
                         "available_projects", projectNames
                 )))
                 .user(userMessageDto.userMessageText())

@@ -38,7 +38,7 @@ public class GetRecentTimesheetEntryService {
     }
 
     public GetRecentTimesheetEntryResponse forAi(GetRecentTimesheetEntryRequest request) {
-        Result<TimesheetEntry> result = with(request.username());
+        Result<TimesheetEntry> result = with(request.email());
         if (result.isSuccess()) {
             TimesheetEntry timesheetEntry = result.values().getFirst();
             return new GetRecentTimesheetEntryResponse("Most recent timesheet entry found.", timesheetEntry);
@@ -72,7 +72,7 @@ public class GetRecentTimesheetEntryService {
 
         if (principal instanceof UserDetails) {
             String username = ((UserDetails) principal).getUsername();
-            log.debug("Authenticated username: {}", username);
+            log.debug("Authenticated email: {}", username);
             return username;
         }
 

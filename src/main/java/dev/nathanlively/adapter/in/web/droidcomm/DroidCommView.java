@@ -83,10 +83,11 @@ public class DroidCommView extends VerticalLayout {
         }
 
         User user = maybeUser.get();
-        String userName = maybeUser.get().getName();
+        String userName = user.getName();
+        String email = user.getUsername();
         MessageListItem userMessage = new MessageListItem(userMessageText, creationTime, userName, user.getProfilePictureUri());
         String chatId = user.getUsername();
-        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId, timezone);
+        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId, timezone, email);
         appendMessageAndReply(userMessage, messageScroller, userMessageDto);
     }
 
