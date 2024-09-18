@@ -41,7 +41,7 @@ public class GetRecentTimesheetEntryService {
         Result<TimesheetEntry> result = with(request.email());
         if (result.isSuccess()) {
             TimesheetEntry timesheetEntry = result.values().getFirst();
-            TimesheetEntryDto timesheetEntryDto = TimesheetEntryDto.from(timesheetEntry, null);
+            TimesheetEntryDto timesheetEntryDto = TimesheetEntryDto.from(timesheetEntry, request.timezone());
             return new GetRecentTimesheetEntryResponse("Most recent timesheet entry found.", timesheetEntryDto);
         } else {
             log.error("Timesheet update failed: {}", result.failureMessages().getFirst());
