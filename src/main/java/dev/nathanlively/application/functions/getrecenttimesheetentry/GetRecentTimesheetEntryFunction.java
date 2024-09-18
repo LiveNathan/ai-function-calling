@@ -13,7 +13,6 @@ public class GetRecentTimesheetEntryFunction implements Function<GetRecentTimesh
 
     @Override
     public GetRecentTimesheetEntryResponse apply(GetRecentTimesheetEntryRequest request) {
-        GetRecentTimesheetEntryResponse response = service.forAi(request);
-        return response;
+        return service.forAi(request);
     }
 }

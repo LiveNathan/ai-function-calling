@@ -12,14 +12,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TimesheetEntryDtoTest {
     @Test
-    void fromDomain() throws Exception {
+    void fromDomain() {
+        ZoneId zoneId = ZoneId.of("America/Chicago");
         Instant start = LocalDateTime.of(2024, 3, 15, 9, 0).atZone(ZoneId.of("America/Chicago")).toInstant();
         String projectA = "Project A";
         TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(new Project(projectA, 0), start);
         TimesheetEntryDto expected = new TimesheetEntryDto(projectA,
-                WorkPeriodDto.from(timesheetEntry.workPeriod()));
+                WorkPeriodDto.from(timesheetEntry.workPeriod(), zoneId));
 
-        TimesheetEntryDto actual = TimesheetEntryDto.from(timesheetEntry);
+        TimesheetEntryDto actual = TimesheetEntryDto.from(timesheetEntry, zoneId);
 
         assertThat(actual)
                 .isEqualTo(expected);
