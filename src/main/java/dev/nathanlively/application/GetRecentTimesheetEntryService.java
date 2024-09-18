@@ -1,5 +1,6 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryResponse;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
@@ -33,7 +34,7 @@ public class GetRecentTimesheetEntryService {
             return Result.failure("Resource not found register email: " + username);
         }
 
-        TimesheetEntry mostRecentEntry = null;
+        TimesheetEntry mostRecentEntry;
         try {
             mostRecentEntry = resource.timesheet().mostRecentEntry();
         } catch (Exception e) {
@@ -42,14 +43,14 @@ public class GetRecentTimesheetEntryService {
         return Result.success(mostRecentEntry);
     }
 
-//    public UpdateProjectResponse updateProjectOfMostRecentTimesheetEntry(UpdateProjectRequest request) {
-//        Result<TimesheetEntry> result = updateProjectOfMostRecentTimesheetEntry("nathanlively@gmail.com", request.projectName());
-//        if (result.isSuccess()) {
-//            TimesheetEntry timesheetEntry = result.values().getFirst();
-//            return new UpdateProjectResponse("Timesheet update successful: " + timesheetEntry.toString(), timesheetEntry);
-//        } else {
-//            log.error("Timesheet update failed: {}", result.failureMessages().getFirst());
-//            return new UpdateProjectResponse("Timesheet update register these errors: " + result.failureMessages().getFirst(), null);
-//        }
-//    }
+    public GetRecentTimesheetEntryResponse forAi() {
+        Result<TimesheetEntry> result = with();
+        if (result.isSuccess()) {
+            TimesheetEntry timesheetEntry = result.values().getFirst();
+            return new GetRecentTimesheetEntryResponse("Most recent timesheet entry found.", timesheetEntry);
+        } else {
+            log.error("Timesheet update failed: {}", result.failureMessages().getFirst());
+            return new GetRecentTimesheetEntryResponse("Fetching timesheet entry produced these errors: " + result.failureMessages().getFirst(), null);
+        }
+    }
 }
