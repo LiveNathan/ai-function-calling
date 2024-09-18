@@ -1,5 +1,6 @@
 package dev.nathanlively.application;
 
+import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryRequest;
 import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryResponse;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.domain.Resource;
@@ -18,11 +19,9 @@ public class GetRecentTimesheetEntryService {
         this.resourceRepository = resourceRepository;
     }
 
-    public Result<TimesheetEntry> with() {
-        String username = getAuthenticatedUsername();
-        if (username == null) {
-            log.warn("User is not authenticated.");
-            return Result.failure("User is not authenticated.");
+    public Result<TimesheetEntry> with(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return Result.failure("Email must not be null or empty.");
         }
         Resource resource = resourceRepository.findByEmail(username).orElse(null);
         if (resource == null) {
@@ -38,8 +37,8 @@ public class GetRecentTimesheetEntryService {
         return Result.success(mostRecentEntry);
     }
 
-    public GetRecentTimesheetEntryResponse forAi() {
-        Result<TimesheetEntry> result = with();
+    public GetRecentTimesheetEntryResponse forAi(GetRecentTimesheetEntryRequest request) {
+        Result<TimesheetEntry> result = with(request.username());
         if (result.isSuccess()) {
             TimesheetEntry timesheetEntry = result.values().getFirst();
             return new GetRecentTimesheetEntryResponse("Most recent timesheet entry found.", timesheetEntry);
