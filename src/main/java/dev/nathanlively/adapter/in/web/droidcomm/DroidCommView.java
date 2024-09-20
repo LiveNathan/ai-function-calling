@@ -22,6 +22,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import reactor.core.publisher.Flux;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,8 +74,9 @@ public class DroidCommView extends VerticalLayout {
         String userMessageText = event.getValue();
         String timestamp = event.getTimestamp();
         String timezone = event.getTimezone();
-        log.info("Timestamp : {}, Timezone : {}", timestamp, timezone);
-        Instant creationTime = timestamp != null ? Instant.parse(timestamp) : Instant.now();
+        LocalDateTime creationTime = event.getLocalDateTime();
+        log.info("LocalDateTime : {}, Timezone : {}", creationTime, timezone);
+        Instant timestampInstant = timestamp != null ? Instant.parse(timestamp) : Instant.now();
 
         Optional<User> maybeUser = authenticatedUser.get();
         if (maybeUser.isEmpty()) {
@@ -83,10 +85,11 @@ public class DroidCommView extends VerticalLayout {
         }
 
         User user = maybeUser.get();
-        String userName = maybeUser.get().getName();
-        MessageListItem userMessage = new MessageListItem(userMessageText, creationTime, userName, user.getProfilePictureUri());
+        String userName = user.getName();
+        String email = user.getUsername();
+        MessageListItem userMessage = new MessageListItem(userMessageText, timestampInstant, userName, user.getProfilePictureUri());
         String chatId = user.getUsername();
-        UserMessageDto userMessageDto = new UserMessageDto(creationTime, userName, userMessageText, chatId, timezone);
+        UserMessageDto userMessageDto = new UserMessageDto(timestampInstant, creationTime, userName, userMessageText, chatId, timezone, email);
         appendMessageAndReply(userMessage, messageScroller, userMessageDto);
     }
 

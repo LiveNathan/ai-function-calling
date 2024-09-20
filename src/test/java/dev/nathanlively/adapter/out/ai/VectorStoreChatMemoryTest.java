@@ -1,5 +1,6 @@
 package dev.nathanlively.adapter.out.ai;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chroma.ChromaApi;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Tag("database")
 @Testcontainers
 public class VectorStoreChatMemoryTest {
 

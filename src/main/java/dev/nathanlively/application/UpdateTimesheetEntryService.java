@@ -50,8 +50,9 @@ public class UpdateTimesheetEntryService {
             TimesheetEntry timesheetEntry = result.values().getFirst();
             return new UpdateProjectResponse("Timesheet update successful: " + timesheetEntry.toString(), timesheetEntry);
         } else {
-            log.error("Timesheet update failed: {}", result.failureMessages().getFirst());
-            return new UpdateProjectResponse("Timesheet update register these errors: " + result.failureMessages().getFirst(), null);
+            String allFailureMessages = String.join(", ", result.failureMessages());
+            log.error("Fetching timesheet failed: {}", allFailureMessages);
+            return new UpdateProjectResponse("Fetching timesheet produced these errors: " + allFailureMessages, null);
         }
     }
 }

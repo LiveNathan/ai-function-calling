@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 class AiServiceTest {
@@ -22,7 +23,7 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_commCheck() {
-        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "comm check", "chatId1", ZoneId.of("America/Chicago").toString());
+        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), LocalDateTime.now(), "Nathan", "comm check", "chatId1", ZoneId.of("America/Chicago").toString(), "nathanlively@gmail.com");
         Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);
 
         StepVerifier.create(actual)
@@ -32,7 +33,7 @@ class AiServiceTest {
 
     @Test
     void sendMessageAndReceiveReplies_clockIn_returnsJson() {
-        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), "Nathan", "clock in to project A", "chatId1", ZoneId.of("America/Chicago").toString());
+        UserMessageDto userMessageDto = new UserMessageDto(Instant.now(), LocalDateTime.now(), "Nathan", "clock in to project A", "chatId1", ZoneId.of("America/Chicago").toString(), "nathanlively@gmail.com");
         String jsonResponse = "{\"function_call\": {\"getName\": \"clockOut\", \"arguments\": {\"projectId\": \"A\"}}}";
 
         Flux<String> actual = service.sendMessageAndReceiveReplies(userMessageDto);

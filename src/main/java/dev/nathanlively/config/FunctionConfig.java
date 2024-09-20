@@ -19,6 +19,9 @@ import dev.nathanlively.application.functions.createtimesheetentrywithduration.C
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesFunction;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesRequest;
 import dev.nathanlively.application.functions.findallprojectnames.FindAllProjectNamesResponse;
+import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryFunction;
+import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryRequest;
+import dev.nathanlively.application.functions.getrecenttimesheetentry.GetRecentTimesheetEntryResponse;
 import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursFunction;
 import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursRequest;
 import dev.nathanlively.application.functions.updateprojecthours.UpdateProjectHoursResponse;
@@ -59,6 +62,12 @@ public class FunctionConfig {
     @Description("Create a new timesheet entry for a resource. Use this when the duration is known. (eg. 'I worked on Project A for 30 minutes.')")
     public Function<CreateTimesheetEntryWithDurationRequest, CreateTimesheetEntryWithDurationResponse> createTimesheetEntryWithDuration(CreateTimesheetEntryService service) {
         return new CreateTimesheetEntryWithDurationFunction(service);
+    }
+
+    @Bean
+    @Description("Get the most recent timesheet entry for a resource. Use this when the user asks about recent activity. (eg. 'What am I currently clocked into?')")
+    public Function<GetRecentTimesheetEntryRequest, GetRecentTimesheetEntryResponse> getMostRecentTimesheetEntry(GetRecentTimesheetEntryService service) {
+        return new GetRecentTimesheetEntryFunction(service);
     }
 
     @Bean

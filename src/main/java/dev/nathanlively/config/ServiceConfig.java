@@ -9,6 +9,7 @@ import dev.nathanlively.application.port.AiGateway;
 import dev.nathanlively.application.port.ProjectRepository;
 import dev.nathanlively.application.port.ResourceRepository;
 import dev.nathanlively.application.port.UserRepository;
+import dev.nathanlively.security.AuthenticatedUser;
 import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -92,5 +93,10 @@ public class ServiceConfig {
     public TimesheetEntriesPerProject timesheetEntriesPerProject(ResourceRepository resourceRepository,
                                                                  ProjectRepository projectRepository) {
         return new TimesheetEntriesPerProject(resourceRepository, projectRepository);
+    }
+
+    @Bean
+    public GetRecentTimesheetEntryService getRecentTimesheetEntryService(ResourceRepository repository, AuthenticatedUser user) {
+        return new GetRecentTimesheetEntryService(repository);
     }
 }

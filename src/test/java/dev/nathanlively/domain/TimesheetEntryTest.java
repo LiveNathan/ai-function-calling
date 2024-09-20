@@ -17,7 +17,7 @@ class TimesheetEntryTest {
     @BeforeEach
     void setUp() {
         project = Project.create("Project A");
-        entry =  TimesheetEntry.clockIn(project, Instant.now());
+        entry = TimesheetEntry.clockIn(project, Instant.now());
     }
 
     @Test
@@ -52,5 +52,20 @@ class TimesheetEntryTest {
         assertThat(actual)
                 .isEqualTo(expected);
     }
+
+//    @Test
+//    void mapToJson() throws Exception {
+//        TimesheetEntry timesheetEntry = TimesheetEntry.clockIn(Instant.now());
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String actual = objectMapper.writeValueAsString(timesheetEntry);
+//        String expected = """
+//                {
+//                  "message" : "Most recent timesheet entry found.",
+//                  "timesheetEntry" : { }
+//                }""";
+//
+//        assertThat(actual)
+//                .isEqualTo(expected);
+//    }
 
 }

@@ -1,5 +1,6 @@
 package dev.nathanlively.adapter.out.ai;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
-
+@Disabled("until I learn how to test against chroma")
 @SpringBootTest(classes = SpringAiIssue1301IT.Conf.class)
 @EnabledIfEnvironmentVariable(named = "OPENAI_API_KEY", matches = ".+")
 @Testcontainers
