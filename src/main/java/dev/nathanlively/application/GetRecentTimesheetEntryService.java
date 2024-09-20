@@ -7,9 +7,6 @@ import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public class GetRecentTimesheetEntryService {
     private static final Logger log = LoggerFactory.getLogger(GetRecentTimesheetEntryService.class);
@@ -49,35 +46,4 @@ public class GetRecentTimesheetEntryService {
         }
     }
 
-    private String getAuthenticatedUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            log.debug("No authentication object found in security context.");
-            return null;
-        }
-
-        log.debug("Authentication object found: {}", authentication);
-
-        if (!authentication.isAuthenticated()) {
-            log.debug("Authentication object is not authenticated.");
-            return null;
-        }
-
-        Object principal = authentication.getPrincipal();
-        log.debug("Authentication principal: {}", principal);
-
-        if (principal instanceof String) {
-            log.debug("Principal is a string, likely 'anonymousUser'.");
-            return null;
-        }
-
-        if (principal instanceof UserDetails) {
-            String username = ((UserDetails) principal).getUsername();
-            log.debug("Authenticated email: {}", username);
-            return username;
-        }
-
-        log.debug("Principal is not an instance of UserDetails.");
-        return null;
-    }
 }
