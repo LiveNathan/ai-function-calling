@@ -49,7 +49,7 @@ public class ClockInService {
 
     public ClockInResponse clockIn(ClockInRequest request) {
         Result<TimesheetEntry> result = clockIn("nathanlively@gmail.com",
-                request.messageCreationTime(), request.projectName());
+                request.messageCreationInstant(), request.projectName());
         if (result.isSuccess()) {
             return new ClockInResponse("Clock-in successful. New timesheet entry created: ", result.values().getFirst());
         } else {

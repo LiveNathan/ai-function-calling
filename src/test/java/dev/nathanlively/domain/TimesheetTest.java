@@ -3,6 +3,7 @@ package dev.nathanlively.domain;
 import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,12 +18,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TimesheetTest {
+    private static final ZoneId ZONE_ID = ZoneId.of("America/Chicago");
+
     @Test
-    void clockIn() {
+    void clockIn_givenInstant() {
         Timesheet timesheet = Timesheet.withSystemClock(null);
         assertThat(timesheet.timeSheetEntries()).isEmpty();
 
         timesheet.clockIn(Instant.now());
+
+        assertThat(timesheet.mostRecentEntry().workPeriod().start()).isNotNull();
+        assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNull();
+    }
+
+    @Test
+    void clockIn_givenLocalDateTime() {
+        Timesheet timesheet = Timesheet.withSystemClock(null);
+        assertThat(timesheet.timeSheetEntries()).isEmpty();
+        LocalDateTime clockInTime = LocalDateTime.of(2024, 9, 3, 9, 0);
+
+        timesheet.clockIn(clockInTime, ZONE_ID);
 
         assertThat(timesheet.mostRecentEntry().workPeriod().start()).isNotNull();
         assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNull();
@@ -58,7 +73,19 @@ class TimesheetTest {
     }
 
     @Test
-    void clockOut() {
+    void clockOut_givenInstant() {
+        Timesheet timesheet = Timesheet.withSystemClock(null);
+        assertThat(timesheet.timeSheetEntries()).isEmpty();
+        timesheet.clockIn(Instant.now().minusSeconds(60 * 2));
+
+        timesheet.clockOut(Instant.now());
+
+        assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNotNull();
+    }
+
+    @Test
+    @Disabled("until clock in")
+    void clockOut_givenLocalDateTime() {
         Timesheet timesheet = Timesheet.withSystemClock(null);
         assertThat(timesheet.timeSheetEntries()).isEmpty();
         timesheet.clockIn(Instant.now().minusSeconds(60 * 2));
@@ -111,8 +138,6 @@ class TimesheetTest {
                 .isInstanceOf(OverlappingWorkPeriodException.class)
                 .hasMessage("Work periods cannot overlap.");
     }
-
-    private static final ZoneId ZONE_ID = ZoneId.of("America/Chicago");
 
     @Test
     void appendEntry_givenProjectAndDuration() {
