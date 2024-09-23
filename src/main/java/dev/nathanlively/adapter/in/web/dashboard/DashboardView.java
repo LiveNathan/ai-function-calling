@@ -53,7 +53,7 @@ public class DashboardView extends Main {
 
         ui.getPage().retrieveExtendedClientDetails(details -> {
             ZoneId finalZoneId = getZoneIdFromDetails(details.getTimeZoneId());
-            Notification.show("zoneId : " + finalZoneId.getId());
+            Notification.show("timezoneId : " + finalZoneId.getId());
             configureEntryGrid(entryGrid, finalZoneId);
             updateProjectSelectOnChange(projectSelect, entryGrid, totalHoursEstimatedParagraph, consumedHoursParagraph);
         });

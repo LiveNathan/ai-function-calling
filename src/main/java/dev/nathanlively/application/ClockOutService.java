@@ -32,13 +32,13 @@ public class ClockOutService {
             return Result.failure("Clock out time cannot be null.");
         }
         if (zoneIdRequest == null) {
-            return Result.failure("zoneId cannot be null.");
+            return Result.failure("timezoneId cannot be null.");
         }
         ZoneId zoneId;
         try {
             zoneId = ZoneId.of(zoneIdRequest);
         } catch (Exception e) {
-            return Result.failure("Problem converting to zoneId: " + e.getMessage());
+            return Result.failure("Problem converting to timezoneId: " + e.getMessage());
         }
 
         Timesheet timesheet = resource.timesheet();
@@ -52,13 +52,13 @@ public class ClockOutService {
     }
 
     public ClockOutResponse clockOut(ClockOutRequest request) {
-        Result<TimesheetEntry> result = clockOut("nathanlively@gmail.com", request.messageCreationTime(), request.zoneId());
+        Result<TimesheetEntry> result = clockOut("nathanlively@gmail.com", request.clockOutTime(), request.timezoneId());
         if (result.isSuccess()) {
             ZoneId zoneId;
             try {
-                zoneId = ZoneId.of(request.zoneId());
+                zoneId = ZoneId.of(request.timezoneId());
             } catch (Exception e) {
-                return new ClockOutResponse("Problem converting to zoneId: " + e.getMessage(), null);
+                return new ClockOutResponse("Problem converting to timezoneId: " + e.getMessage(), null);
             }
             return new ClockOutResponse("Clock-out successful. Timesheet entry updated.", TimesheetEntryDto.from(result.values().getFirst(), zoneId));
         } else {

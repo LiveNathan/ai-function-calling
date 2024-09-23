@@ -95,7 +95,7 @@ public final class Timesheet {
     }
 
     public void clockIn(LocalDateTime clockInTime, ZoneId zone) {
-        Objects.requireNonNull(zone, "zoneId cannot be null");
+        Objects.requireNonNull(zone, "timezoneId cannot be null");
         clockIn(clockInTime.atZone(zone).toInstant());
     }
 
@@ -106,7 +106,7 @@ public final class Timesheet {
 
     public void clockInWithProject(Project project, LocalDateTime clockInTime, ZoneId zone) {
         Objects.requireNonNull(project, "Project cannot be null");
-        Objects.requireNonNull(zone, "zoneId cannot be null");
+        Objects.requireNonNull(zone, "timezoneId cannot be null");
         clockIn(clockInTime.atZone(zone).toInstant(), project);
     }
 
@@ -120,7 +120,7 @@ public final class Timesheet {
 
     public void clockOut(LocalDateTime clockOutTime, ZoneId zoneId) {
         Objects.requireNonNull(clockOutTime, "ClockOutTime cannot be null");
-        Objects.requireNonNull(zoneId, "zoneId cannot be null");
+        Objects.requireNonNull(zoneId, "timezoneId cannot be null");
         clockOut(clockOutTime.atZone(zoneId).toInstant());
     }
 

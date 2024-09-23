@@ -11,7 +11,7 @@ public record WorkPeriodDto(LocalDateTime start, LocalDateTime end, Duration dur
 
     public static WorkPeriodDto from(WorkPeriod workPeriod, ZoneId zoneId) {
         Objects.requireNonNull(workPeriod, "WorkPeriod cannot be null");
-        Objects.requireNonNull(zoneId, "zoneId cannot be null.");
+        Objects.requireNonNull(zoneId, "timezoneId cannot be null.");
 
         Duration duration = (workPeriod.end() != null) ? workPeriod.getDuration() : null;
 
