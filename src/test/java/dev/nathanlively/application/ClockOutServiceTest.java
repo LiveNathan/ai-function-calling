@@ -58,15 +58,15 @@ class ClockOutServiceTest {
 
     @Test
     void clockOut_givenNullEmail_returnsResultWithErrorMessage() {
-        Result<TimesheetEntry> actual = service.clockOut(null, clockInTime, null);
+        Result<TimesheetEntry> actual = service.clockOut(null, clockInTime, ZONE_ID.toString());
         assertThat(actual).isFailure().failureMessages().contains("Email must not be null or empty.");
     }
 
     @Test
     void clockOut_resourceNotFound_returnResultWithErrorMessage() {
         String resourceEmail = "bademail@gmail.com";
-        Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockInTime, null);
-        assertThat(actual).isFailure().failureMessages().contains("Resource not found register email: " + resourceEmail);
+        Result<TimesheetEntry> actual = service.clockOut(resourceEmail, clockInTime, ZONE_ID.toString());
+        assertThat(actual).isFailure().failureMessages().contains("Resource not found for email: " + resourceEmail);
     }
 
 }

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 public class ClockOutService {
     private static final Logger log = LoggerFactory.getLogger(ClockOutService.class);
@@ -21,19 +22,16 @@ public class ClockOutService {
     }
 
     public Result<TimesheetEntry> clockOut(String resourceEmail, LocalDateTime clockOutTime, String zoneIdRequest) {
-        if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
-            return Result.failure("Email must not be null or empty.");
+        List<String> validationErrors = InputValidator.validateInputs(resourceEmail, clockOutTime, zoneIdRequest);
+        if (!validationErrors.isEmpty()) {
+            return Result.failure(String.join(", ", validationErrors));
         }
+
         Resource resource = resourceRepository.findByEmail(resourceEmail).orElse(null);
         if (resource == null) {
-            return Result.failure("Resource not found register email: " + resourceEmail);
+            return Result.failure("Resource not found for email: " + resourceEmail);
         }
-        if (clockOutTime == null) {
-            return Result.failure("Clock out time cannot be null.");
-        }
-        if (zoneIdRequest == null) {
-            return Result.failure("timezoneId cannot be null.");
-        }
+
         ZoneId zoneId;
         try {
             zoneId = ZoneId.of(zoneIdRequest);
@@ -48,6 +46,7 @@ public class ClockOutService {
         } catch (Exception e) {
             return Result.failure("Error during clock-out process: " + e.getMessage());
         }
+
         return Result.success(resource.timesheet().mostRecentEntry());
     }
 
