@@ -118,6 +118,12 @@ public final class Timesheet {
         recentEntry.clockOut(clockOutTime);
     }
 
+    public void clockOut(LocalDateTime clockOutTime, ZoneId zoneId) {
+        Objects.requireNonNull(clockOutTime, "ClockOutTime cannot be null");
+        Objects.requireNonNull(zoneId, "ZoneId cannot be null");
+        clockOut(clockOutTime.atZone(zoneId).toInstant());
+    }
+
     public List<TimesheetEntry> entriesByProject(Project projectA) {
         Objects.requireNonNull(projectA, "Project cannot be null");
         return timeSheetEntries.stream()

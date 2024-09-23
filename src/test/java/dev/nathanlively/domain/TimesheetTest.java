@@ -3,7 +3,6 @@ package dev.nathanlively.domain;
 import dev.nathanlively.domain.exceptions.AlreadyClockedOutException;
 import dev.nathanlively.domain.exceptions.NoTimesheetEntriesException;
 import dev.nathanlively.domain.exceptions.OverlappingWorkPeriodException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -84,13 +83,14 @@ class TimesheetTest {
     }
 
     @Test
-    @Disabled("until clock in")
     void clockOut_givenLocalDateTime() {
         Timesheet timesheet = Timesheet.withSystemClock(null);
         assertThat(timesheet.timeSheetEntries()).isEmpty();
-        timesheet.clockIn(Instant.now().minusSeconds(60 * 2));
+        LocalDateTime clockInTime = LocalDateTime.of(2024, 9, 3, 9, 0);
+        timesheet.clockIn(clockInTime, ZONE_ID);
+        LocalDateTime clockOutTime = LocalDateTime.of(2024, 9, 3, 10, 0);
 
-        timesheet.clockOut(Instant.now());
+        timesheet.clockOut(clockOutTime, ZONE_ID);
 
         assertThat(timesheet.mostRecentEntry().workPeriod().end()).isNotNull();
     }
