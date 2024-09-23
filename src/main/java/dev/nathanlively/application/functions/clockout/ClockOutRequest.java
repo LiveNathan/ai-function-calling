@@ -1,6 +1,6 @@
 package dev.nathanlively.application.functions.clockout;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
-public record ClockOutRequest(Instant messageCreationTime) {
+public record ClockOutRequest(LocalDateTime messageCreationTime, String zoneId) {
 }
