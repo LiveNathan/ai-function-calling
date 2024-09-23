@@ -8,12 +8,11 @@ import dev.nathanlively.domain.Project;
 import dev.nathanlively.domain.Resource;
 import dev.nathanlively.domain.TimesheetEntry;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class ClockInService {
     private final ResourceRepository resourceRepository;
@@ -25,8 +24,8 @@ public class ClockInService {
         this.projectRepository = projectRepository;
     }
 
-    public Result<TimesheetEntry> clockIn(@NotBlank String resourceEmail, @NotNull Instant clockInTime,
-                                          @Nullable String projectName) {
+    public Result<TimesheetEntry> clockIn(String resourceEmail, LocalDateTime clockInTime, @Nullable String projectName,
+                                          ZoneId zoneId) {
         if (resourceEmail == null || resourceEmail.trim().isEmpty()) {
             return Result.failure("Email must not be null or empty.");
         }
@@ -38,8 +37,8 @@ public class ClockInService {
         Project project = (projectName == null) ? null : projectRepository.findByName(projectName).orElse(null);
         TimesheetEntry timesheetEntry;
         try {
-            timesheetEntry = TimesheetEntry.clockIn(project, clockInTime);
-            resource.appendTimesheetEntry(timesheetEntry);
+            resource.timesheet().clockInWithProject(project, clockInTime, zoneId);
+            timesheetEntry = resource.timesheet().mostRecentEntry();
             resourceRepository.save(resource);
         } catch (Exception e) {
             return Result.failure("Error during clock-in process: " + e.getMessage());
@@ -48,10 +47,16 @@ public class ClockInService {
     }
 
     public ClockInResponse clockIn(ClockInRequest request) {
-        Result<TimesheetEntry> result = clockIn("nathanlively@gmail.com",
-                request.messageCreationInstant(), request.projectName());
+        ZoneId zoneId;
+        try {
+            zoneId = ZoneId.of(request.timezoneId());
+        } catch (Exception e) {
+            return new ClockInResponse("Problem converting to timezoneId: " + e.getMessage(), null);
+        }
+
+        Result<TimesheetEntry> result = clockIn("nathanlively@gmail.com", request.clockInTime(), request.projectName(), zoneId);
         if (result.isSuccess()) {
-            return new ClockInResponse("Clock-in successful. New timesheet entry created: ", result.values().getFirst());
+            return new ClockInResponse("Clock-in successful. New timesheet entry created: ", TimesheetEntryDto.from(result.values().getFirst(), zoneId));
         } else {
             String allFailureMessages = String.join(", ", result.failureMessages());
             log.error("Clock-in failed: {}", allFailureMessages);

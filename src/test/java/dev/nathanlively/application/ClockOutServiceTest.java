@@ -20,17 +20,14 @@ class ClockOutServiceTest {
     private final LocalDateTime clockInTime = LocalDateTime.of(2024, 9, 3, 9, 0);
     private final LocalDateTime clockOutTime = LocalDateTime.of(2024, 9, 3, 10, 0);
     private ResourceRepository resourceRepository;
-    private ProjectRepository projectRepository;
     private ClockOutService service;
-    private TimesheetEntry timesheetEntry;
-    private Project project;
-    private ZoneId ZONE_ID = ZoneId.of("America/Chicago");
+    private final ZoneId ZONE_ID = ZoneId.of("America/Chicago");
 
     @BeforeEach
     void setUp() {
         resourceRepository = InMemoryResourceRepository.createEmpty();
-        projectRepository = InMemoryProjectRepository.createEmpty();
-        project = Project.create("Project A (12345)");
+        ProjectRepository projectRepository = InMemoryProjectRepository.createEmpty();
+        Project project = Project.create("Project A (12345)");
         projectRepository.save(project);
         service = new ClockOutService(resourceRepository);
         resource.timesheet().clockIn(clockInTime, ZONE_ID);

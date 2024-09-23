@@ -1,6 +1,6 @@
 package dev.nathanlively.application.functions.clockin;
 
-import dev.nathanlively.domain.TimesheetEntry;
+import dev.nathanlively.application.TimesheetEntryDto;
 
-public record ClockInResponse(String message, TimesheetEntry timesheetEntry) {
+public record ClockInResponse(String message, TimesheetEntryDto timesheetEntry) {
 }
